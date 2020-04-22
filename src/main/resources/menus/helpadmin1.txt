@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+ &6&lWerewolf &7Help Menu                      &7Page &8[&71&8/&72&8]
+ 
+ &c/wwa reload &6&l| &fReloads plugin.
+ &c/wwa spawn <item> &6&l| &fSpawn Werewolf item.
+ &c/wwa infect <player> <clan> &6&l| &fInfects player with this clan.
+ &c/wwa transform <player> &6&l| &fToggle transformation for player.
+ &c/wwa setlevel <player> <level> &6&l| &fSet level for player.
+ &c/wwa setalpha <player> &6&l| &fPromote player to Alpha.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

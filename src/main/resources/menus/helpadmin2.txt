@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+ &6&lWerewolf &7Help Menu                      &7Page &8[&72&8/&72&8]
+ 
+ &c/wwa cure <player> &6&l| &fMakes player human.
+ &c/wwa purge &6&l| &fClears all broken player files.
+ &c/wwa import &6&l| &fImports legacy data.
+ 
+ &7&oRemember to have your &b&owerewolves.yml &7&oand &b&oclans.yml &7&oin
+ &7&othe import folder before running &c&o/wwa import&7&o.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

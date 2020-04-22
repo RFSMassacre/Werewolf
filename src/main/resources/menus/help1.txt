@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+ &6&lWerewolf &7Help Menu                      &7Page &8[&71&8/&72&8]
+ 
+ &6/ww &6&l| &fPrints Werewolf menu.
+ &6/ww help [&e#&6] &6&l| &fPrint help menu.
+ &6/ww clan &6&l| &fShow clan information.
+ &6/ww list &6&l| &fShow clan members.
+ &6/ww transform &6&l| &fToggle transformation.
+ &6/ww intent &6&l| &fToggle infection intent.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

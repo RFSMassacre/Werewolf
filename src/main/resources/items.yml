@@ -1,0 +1,188 @@
+################################################################
+###               Werewolf (Recorded) Items                  ###
+################################################################
+
+INFECTION_POTION:
+  name: "&6Werewolf Infection Potion"
+  lore:
+    - ""
+    - "  &7This bottle radiates with the  "
+    - "  &7scent of fleas...  "
+    - ""
+    - "  &cDrinking this will make you  "
+    - "  &cthe beast... You will become  "
+    - "  &3Witherfang&c...  "
+    - ""
+    
+CURE_POTION:
+  name: "&dWerewolf Cure Potion"
+  lore:
+    - ""
+    - "  &7This bottle glows a white  "
+    - "  &7light...  "
+    - ""
+    - "  &aDrinking this will make you  "
+    - "  &ahuman once more...  "
+    - ""
+    
+WOLFSBANE_POTION:
+  name: "&4WolfsBane Potion"
+  lore:
+    - ""
+    - "  &7This bottle trembles with  "
+    - "  &7energy...  "
+    - ""
+    - "  &eThrowing this on a Werewolf  "
+    - "  &ein Wolf Form will force them  "
+    - "  &einto their human form."
+    - ""
+    
+ASH:
+  name: "&fAsh"
+  lore:
+    - ""
+    - "  &7The failed remains of armor.  "
+    - ""
+    
+SILVER_SWORD:
+  name: "&cSilver Sword"
+  lore:
+    - ""
+    - "  &7The purified metal from your  "
+    - "  &7iron sword has become silver.  "
+    - "  &7This blade pierces through the  "
+    - "  &7defense of any Werewolf.  "
+    - ""
+    
+VAMPIRE_TRACKER:
+  name: "&4Vampire Tracker"
+  lore:
+    - ""
+    - "  &fRight click &7on the tracker  "
+    - "  &7to keep track of the nearest  "
+    - "  &cVampire &7at night.  "
+    - ""
+    - "  &fLeft click &7to clear your  "
+    - "  &7target.  "
+    - ""
+    
+WEREWOLF_TRACKER:
+  name: "&6Werewolf Tracker"
+  lore:
+    - ""
+    - "  &fRight click &7on the tracker  "
+    - "  &7to keep track of the nearest  "
+    - "  &7&6Werewolf&7 in wolf form.  "
+    - ""
+    - "  &fLeft click &7to clear your  "
+    - "  &7target.  "
+    - ""
+    
+SALT:
+  name: "&fSalt"
+  lore:
+    - ""
+    - "  &fRight click &7on ground to  "
+    - "  &7place it. It disintegrates  "
+    - "  &7after 30 Minutes.  "
+    - ""
+    - "  &cVampires &7cannot cross  "
+    - "  &7over &fSalt&7.  "
+    - ""
+    
+WASHED_HELMET:
+  name: "&6Washed Diamond Helmet"
+  lore:
+    - ""
+    - "  &7Cleansed with salt and  "
+    - "  &7fire, the impurities of  "
+    - "  &7this helmet are washed.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+WASHED_CHESTPLATE:
+  name: "&6Washed Diamond Chestplate"
+  lore:
+    - ""
+    - "  &7Cleansed with salt and  "
+    - "  &7fire, the impurities of  "
+    - "  &7this chestplate are  "
+    - "  &7washed.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+WASHED_LEGGINGS:
+  name: "&6Washed Diamond Leggings"
+  lore:
+    - ""
+    - "  &7Cleansed with salt and  "
+    - "  &7fire, the impurities of  "
+    - "  &7these leggings are washed.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+WASHED_BOOTS:
+  name: "&6Washed Diamond Boots"
+  lore:
+    - ""
+    - "  &7Cleansed with salt and  "
+    - "  &7fire, the impurities of  "
+    - "  &7these boots are washed.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+PURIFIED_HELMET:
+  name: "&ePurified Diamond Helmet"
+  lore:
+    - ""
+    - "  &7The final step: purge.  "
+    - "  &7The last of the former  "
+    - "  &7helmet are now purified.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+PURIFIED_CHESTPLATE:
+  name: "&ePurified Diamond Chestplate"
+  lore:
+    - ""
+    - "  &7The final step: purge.  "
+    - "  &7The last of the former  "
+    - "  &7chestplate are now purified.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+    
+PURIFIED_LEGGINGS:
+  name: "&ePurified Diamond Leggings"
+  lore:
+    - ""
+    - "  &7The final step: purge.  "
+    - "  &7The last of the former  "
+    - "  &7leggings are now purified.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""
+  
+PURIFIED_BOOTS:
+  name: "&ePurified Diamond Boots"
+  lore:
+    - ""
+    - "  &7The final step: purge.  "
+    - "  &7The last of the former  "
+    - "  &7boots are now purified.  "
+    - ""
+    - "  &ePurity &6&l> &a+?%  "
+    - "  &bDefense &6&l> &a+!% "
+    - ""

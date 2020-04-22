@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+ &5&lSilvermane &7&lClan                           &7&l{members} Members
+ 
+ &dThe Silvermane Clan are known for their increased
+ &dhealth regeneration.
+ &7Silvermane believes the Beast can be controlled if
+ &7one is willing to follow the Order. They aim to bring
+ &7the Order to all Werewolves, and show that anyone can
+ &7control their inner beast.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

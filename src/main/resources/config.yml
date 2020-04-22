@@ -1,0 +1,312 @@
+################################################################
+###            Werewolf (Recoded) by RFSMassacre             ###
+###                                                          ###
+###   Discord Contact: RFSMassacre#8365                      ###
+###                                                          ###
+### Feel free to contact me for support, but be curtous and  ###
+### don't freak out and scream vaguely like I'm some Trump   ###
+### supporter. :[                                            ###
+###                                                          ###
+################################################################
+
+#Whether alpha stats should take in effect
+alphas: true
+
+#Werewolf Ability Cooldowns
+cooldowns:
+    #In minutes
+    transform: 20
+    howl: 3
+    growl: 3
+    
+#Howl Sound
+sound:
+    growl: "ENTITY_WOLF_GROWL"
+    howl: "ENTITY_WOLF_HOWL"
+
+#Werewolf Level Perks
+maturity:
+    intent: 2
+    no-drop: 10
+    scent-track: 20
+    free-transform: 30
+    gold-immunity: 35
+    
+#Transformation Time Period
+transformation:
+    #Whether to limit transformation time or not
+    limit: true
+    #Whether levels should increase time by LINEAR, EXPONENTIAL, or FLAT.
+    #Not choosing the right name will default to FLAT, meaning it will not increase time limit per level.
+    equation: LINEAR
+    #Amount of time given at the start.
+    base: 0
+    #How fast seconds are earned, does not affect FLAT equation.
+    modifier: 15
+    
+#Damage Stats
+#Defense numbers lower than 1.0 increases defense.
+#Alpha werewolves are intended to have more defense and damage than normal werewolves.
+werewolf-stats:
+    witherfang:
+        speed: 0.6
+        werewolf:
+            defense: 0.3
+            fist-damage: 6.0
+            item-damage: 1.0
+        alpha:
+            defense: 0.15
+            fist-damage: 12.0
+            item-damage: 2.0
+    silvermane:
+        speed: 0.4
+        werewolf:
+            defense: 0.4
+            fist-damage: 5.0
+            item-damage: 1.0
+        alpha:
+            defense: 0.2
+            fist-damage: 10.0
+            item-damage: 2.0
+    bloodmoon:
+        speed: 0.3
+        werewolf:
+            defense: 0.333
+            fist-damage: 5.0
+            item-damage: 1.0
+        alpha:
+            defense: 0.166
+            fist-damage: 10.0
+            item-damage: 2.0
+    
+#Silver Penalty
+#Damage per second when Werewolf holds a silver sword
+silver-penalty: 3    
+    
+#Werewolf Infection Rate
+#By chance out of 100
+infection:
+    wolf:
+        chance: 5
+    werewolf:
+        chance: 1
+        intent: 5
+ 
+#Auto-Cure Setting
+auto-cure:
+    enabled: true
+    days: 14
+
+#Scent Tracking
+track:
+    chance: 10
+    range: 8
+    y-offset: 0
+    particle: "SPELL_MOB"
+    particle-amount: 20
+    #Distances must be in descending values.
+    distances:
+        far: 500
+        close: 200
+        very-close: 50
+    safe-zones: false
+    
+#Recipes
+recipes:
+    cure-potion: true
+    infection-potion: true
+    wolfsbane-potion: true
+    silver-sword: true
+    vampire-tracker: true
+    werewolf-tracker: true
+    washed-helmet: true
+    washed-chestplate: true
+    washed-leggings: true
+    washed-boots: true
+    purified-helmet: true
+    purified-chestplate: true
+    purified-leggings: true
+    purified-boots: true
+    salt: true
+    
+#What ingedient defines the tracker's recipe
+#This is so 1.8 and below can craft these items optionally    
+tracker-ingredient:
+    vampire: GHAST_TEAR
+    werewolf: RABBIT_FOOT
+    
+#Werewolf Clan Skins
+#These should be taken in as UUIDs now instead of player names
+skins:
+    Alpha: e0d074bd-6722-47fc-95d3-f28e2899e155
+    Witherfang: c61647e5-fc2f-4536-abe9-c851911ad22f
+    Silvermane: b68a8f00-7d24-4c52-b6ad-1423bfbe26ee
+    Bloodmoon: da508ecc-dbd9-46c5-8095-47b91aa4ff5f
+    #This is for offline mode players. It will reset their skin to nothing.
+    Default: ec561538-f3fd-461d-aff5-086b22154bce
+ 
+#Check Intervals
+#Lower numbers may cause lag on low-end servers, but will responding in realtime on high-end servers.
+#If you lower silver check below 20, they will lose more than 1 HP per second.
+#If you lower the alpha check it might cause some lag if you have 100+ werewolves on the server.
+intervals:
+    moon-cycle: 10
+    cure-check: 20
+    werewolf-buffs: 10
+    werewolf-skins: 10
+    werewolf-drops: 10
+    werewolf-silver: 20
+    werewolf-scent: 100
+    alpha-update: 1200
+    trackers: 20
+    item-update: 40
+    hunting-armor-checker: 20
+    hybrid-check: 20
+ 
+#List of worlds were Werewolf powers will not work whatsoever.
+no-werewolf-worlds:
+    - world_nether
+    - world_the_end
+ 
+#List of worlds where the moon cycle will not happen
+#Moon cycles will load moons to every world with a NORMAL enviornment.
+#If the name of that world is here, it will skip this.
+blocked-worlds:
+    - world_nether
+    - world_the_end
+    
+#List of commands that are blocked while in werewolf form.
+blocked-commands:
+    alpha:
+        - /pvp
+    werewolf:
+        - /skin
+        - /myskin
+    all:
+        - /v o
+        - /v offer
+        - /vampire o
+        - /vampire offer
+        - /v a
+        - /v accept
+        - /vampire a
+        - /vampire accept
+        - /v flask
+        - /v f
+        - /vampire flask
+        - /vampire f
+        
+#List of potion effect that are cleared in werewolf form.
+blocked-potions:
+    - ABSORPTION
+    - DAMAGE_RESISTANCE
+    - FIRE_RESISTANCE
+    - HEALTH_BOOST
+    - INVISIBILITY
+    - LUCK
+    - WATER_BREATHING
+    
+#Display names of each moon phase
+moon-phases:
+    FULL_MOON: "Full Moon"
+    WANING_GIBBOUS: "Waning Gibbous"
+    LAST_QUARTER: "Last Quarter"
+    WANING_CRESCENT: "Waning Crescent"
+    NEW_MOON: "New Moon"
+    WAXING_CRESCENT: "Waxing Crescent"
+    FIRST_QUARTER: "First Quarter"
+    WAXING_GIBBOUS: "Waxing Gibbous"
+    
+#What is replaces the placeholders in the menus
+menu:
+    not-applied: "&7N/A"
+    race:
+        werewolf: "&6Lvl {level} {clan} Werewolf"
+        vampire: "&cVampire"
+        human: "&fHuman"
+    days:
+        now: "&3&lNow"
+        tonight: "&bTonight"
+        tomorrow: "&bTomorrow Night"
+        later: "{time} Days"
+    clan:
+        WITHERFANG: "&2&lWitherfang"
+        SILVERMANE: "&d&lSilvermane"
+        BLOODMOON: "&4&lBloodmoon"
+        
+    
+#List of items werewolves are not allowed to eat at all times
+#The idea is to only give them meat
+diet:
+    enabled: true
+    prevent-consumption: false
+    blocked-foods:
+        - APPLE
+        - BREAD
+        - MUSHROOM_SOUP
+        - GOLDEN_APPLE
+        - CARROT_ITEM
+        - POTATO_ITEM
+        - BAKED_POTATO
+        - POISONOUS_POTATO
+        - PUMPKIN_PIE
+        - COOKIE
+        - CAKE
+        - MELON
+        - BEETROOT
+        - BEETROOT_SOUP
+        - CHORUS_FRUIT
+        - ROTTEN_FLESH
+
+#Options pertaining to the hunting of other races
+hunting:
+    enabled: true
+    trackers:
+        use-either-hand: true
+    purification:
+        #Chance of failure out of 100
+        chance: 75
+    force-pvp:
+        #Force PVP in claims you do not have permission to.
+        alphas: true
+        claims: true
+        admin-claims: false
+    target:
+        vampire:
+            daytime: false
+            nighttime: true
+        werewolf:
+            wolf-form: true
+            human-form: true
+            daytime: false
+            nighttime: true
+        safe-zones: false
+
+purity:
+    washed:
+        diamond-helmet: 5
+        diamond-chestplate: 20
+        diamond-leggings: 15
+        diamond-boots: 5 
+    purified:
+        diamond-helmet: 10
+        diamond-chestplate: 45
+        diamond-leggings: 35
+        diamond-boots: 10
+        
+bonus:
+    washed:
+        diamond-helmet: 4
+        diamond-chestplate: 10
+        diamond-leggings: 7
+        diamond-boots: 4
+    purified:
+        diamond-helmet: 8
+        diamond-chestplate: 20
+        diamond-leggings: 14
+        diamond-boots: 8
+        
+#Plugin support
+support:
+    PvPManager: true
+    WorldGuard: false

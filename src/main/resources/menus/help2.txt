@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+ &6&lWerewolf &7Help Menu                      &7Page &8[&72&8/&72&8]
+ 
+ &6/ww track &6&l| &fSee the scent of your target.
+ &6/ww growl &6&l| &fMakes you growl.
+ &6/ww howl &6&l| &fMakes you howl.
+ 
+ 
+ 
+&6&l  «&e&l&m*-------------------------------------*&6&l»

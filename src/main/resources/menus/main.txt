@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+                          &6&lWerewolf                   
+               &7{werewolves} Werewolves roam this world...
+ 
+ &aRace &2&l> &a{race}
+ &bCurrent Moon Phase &3&l> &b{phase}
+ &eNext Full Moon &6&l> &e{days}
+ 
+ &7&oUse &6&o/ww help &7for a list of commands.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

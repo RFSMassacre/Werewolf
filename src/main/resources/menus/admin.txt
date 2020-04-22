@@ -1,0 +1,10 @@
+&6&l  «&e&l&m*-------------------------------------*&6&l»
+                          &6&lWerewolf                   
+               &7{werewolves} Werewolves roam this world...
+ 
+ &2&lWitherfang &7&lClan &6&l> &f{wf-members} Members 
+ &5&lSilvermane &7&lClan &6&l> &f{sm-members} Members
+ &4&lBloodmoon &7&lClan &6&l> &f{bm-members} Members
+ 
+ &7&oUse &c&o/wwa help &7for a list of commands.
+&6&l  «&e&l&m*-------------------------------------*&6&l»

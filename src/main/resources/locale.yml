@@ -1,0 +1,145 @@
+################################################################
+###              Werewolf (Recorded) Locale                  ###
+################################################################
+
+prefix:
+    werewolf: "&6&lWerewolf &7&l> &e"
+    hunter: "&3&lHunting &7&l> &b"
+
+infection:
+    werewolf-potion: "&cThe taste of this drink reeks! But you feel... Nimble."
+    wolf-bite: "&cThe wolf left a mark on your arm. But... It's healing?"
+    werewolf-bite: "&cSharp teeth has bitten your skin, yet... You feel more powerful."
+    
+cure:
+    cure-potion: "&eTastes like lemon. The infection has been cured."
+    wolfsbane-potion: "&cAgainst your will, a &4WolfsBane Potion &chas negated your Werewolf powers..."
+    auto-cure: "&f{werewolf}&d's Werewolf infection subsided..."
+    
+clan:
+    no-clan: "&cYou are not part of a Werewolf clan."
+    invalid-arg: "&cYou must supply a page number."
+    killed-alpha: "&f{killer} &ehas killed &f{alpha} &eand became the new &3{clan} Alpha&e!"
+    no-alpha: "&f{alpha} &6has been cured and is no longer the {clan} Alpha."
+    hunted-alpha: "&f{killer} &6hunted down the {clan} Alpha. &f{alpha} &6is no longer worthy!"
+    new-alpha: "&f{alpha} &ehas become the new &3{clan} Alpha&e!"
+    alpha-pvp: "&cAlpha werewolves cannot cower that way!"
+    
+full-moon:
+    tonight: "&3Tonight is the &bFull Moon&3..."
+    tonight-count: "&6{werewolves} Werewolves will roam tonight..."
+    transformed: "&eThe &bFull Moon &eempowers you! You have transformed!"
+    morning: "&cThe &bFull Moon &chas set, along with your energy..."
+
+transform:
+    to-form: "&eYou show your true form!"
+    from-form: "&aYou return back to human form."
+    not-leveled: "&cYou can't control your form yet... You must be Lvl {level}."
+    not-infected: "&cYou must be a Werewolf to transform."
+    cant-transform: "&cYour powers are not working right now!"
+    on-cooldown: "&cYou still feel weak... You can transform again in {minutes} minutes."
+    full-moon: "&cYou cannot control your powers during a &bFull Moon&c!"
+    
+intent:
+    to-intent: "&eYour intention to infect has been &aenabled&e."
+    from-intent: "&eYour intention to infect has been &cdisabled&e."
+    not-leveled: "&cYou can't control your intent yet. You must be Lvl {level}."
+    not-infected: "&cYou must be a Werewolf to intend to infect."
+
+track:
+    scent-try: "&7*sniff*"
+    scent-found: "&e*sniff* *sniff* You picked up &f{player}&e's scent..."
+    to-track: "&a*sniff* &f{player}&a can be sensed in this direction..."
+    from-track: "&eYou open your eyes and lose their trail."
+    not-in-same-world: "&cYour target must be in the same world."
+    not-found: "&cYour target cannot be found."
+    no-target: "&cYou currently have no target."
+    not-leveled: "&cYou don't know how to track scent yet. You must be Lvl {level}."
+    not-infected: "&cYou must be a Werewolf to track the scent of players."
+    not-in-form: "&cYou must be in wolf form to follow someone's scent."
+    
+howl:
+    success: "*howl*"
+    on-cooldown: "&cYou can howl again in {minutes} minutes."
+    not-leveled: "&cYour still to weak to howl. You must be Lvl {level}."
+    not-infected: "&cYou must be a Werewolf to howl."
+    not-in-form: "&cYou must be in wolf form to howl."
+    
+growl:
+    success: "*growl*"
+    on-cooldown: "&cYou can growl again in {minutes} minutes."
+    not-leveled: "&cYour still to weak to growl. You must be Lvl {level}."
+    not-infected: "&cYou must be a Werewolf to growl."
+    not-in-form: "&cYou must be in wolf form to growl."
+    
+invalid:
+    no-permission: "&cYou do not have permission for this command."
+    main-args: "&fUnknown command. Use &6/ww help &ffor a list of commands."
+    admin-args: "&fUnknown command. Use &c/wwa help &ffor a list of commands."
+    no-vampire: "&3Vampire &cplugin not found. Vampire infections will not be monitored."
+    blocked-command: "&cWerewolves cannot use this command ever!"
+    blocked-command-world: "&cWerewolves cannot use this command in wolf form!"
+    blocked-command-alpha: "&cAlpha werewolves cannot use this command!"
+    outdated-server: "&cMinecraft 1.7.10 and below is not fully supported! Please consider updating to at least Minecraft 1.8.8 or higher to fully use all features."
+    no-skins: "&3MySkin &cplugin not found. Skins will not be applied until it is installed."
+    no-regions: "&3WorldGuard &cplugin not found. Region checks will not be enabled."
+    
+hunting:
+    disabled: "Hunting vampires and werewolves is disabled on this server."
+    racial: 
+        use: "&cOnly &bHumans &care able to use the {item}&c!"
+        craft: "&cOnly &bHumans &care able to craft the {item}&c!"
+        smelt: "&cOnly &bHumans &ccan purify {item}&c!"
+    armor:
+        cleansed: "&eYour armor has kept you cleansed."
+        wrong-item: "&cYou can only purify armor that has been washed with &fQuartz &cand &eBlaze Powder&c."
+        burned: "&cOh no! The purification failed and burned the armor to ashes."
+    tracker: 
+        actionbar: "&f{target} &3&l| &e{distance} Blocks &baway"
+        found: "&bYour &f{item} &bis pointing toward &f{target}&b and is &e{distance} Blocks &baway."
+        already-found: "&bYou are tracking &f{target}&b."
+        failed: "&cNo targets found within this world."
+        lost: "&cYour &f{item} &chas lost sight of {target}&c."
+        clear-target: "&cYour &f{item} &chas been cleared."
+        no-target: "&cYour &f{item} &ccurrently has no target."
+    claims:
+        trespassing: "&cYou're trespassing in &f{owner}&c's land. Your PVP has been forced on!"
+        
+    
+admin:
+    level:
+        no-args: "&cYou must specify the Werewolf and what to level them to."
+        success: "&eYou have set {player}&e to Lvl {level}."
+        not-infected: "&f{player}&c is not a Werewolf!"
+    infect:
+        no-args: "&cYou must specify the who to infect and the clan type."
+        success: "&eYou have infected &f{player}&e with the &3{clan} &eInfection."
+        not-human: "&f{player}&c must be a human to be infected!"
+    cure:
+        no-args: "&cYou must specify an online Werewolf!"
+        success: "&eYou have cured &f{player}&e from the Werewolf Infection."
+        not-infected: "&f{player}&c is not a Werewolf!"
+    transform:
+        success: "&aYou have toggled the form of &f{werewolf}&a."
+        not-infected: "&f{player}&c is not a Werewolf!"
+        no-args: "&cYou must specify an online Werewolf."
+        full-moon: "&cYou cannot transform Werewolves during a &bFull Moon&c."
+    spawn:
+        no-args: "&cYou must specify the item to spawn."
+        console: "&cOnly players can run this command."
+        success: "&aYou have spawned a(n) {item}&a."
+    setalpha:
+        success: "&aYou have set &f{werewolf}&a as the &3{clan} Alpha&a!"
+        not-infected: "&f{player}&c is not a Werewolf!"
+        no-args: "&cYou must specify an online Werewolf."
+    setphase:
+        no-args: "&cYou must specify the moon phase."
+        console: "&cOnly players can run this command."
+        success: "&aYou have set this world's moon phase to {phase}."
+        blocked-world: "&cThis world has been blacklisted."
+        no-moon: "&cThis world has no moon!"
+    import:
+        no-files: "&cNo files found to import. Make sure you have &bwerewolves.yml &cand &bclans.yml &cin your &bplugins/Werewolf/import &cfolder."
+        complete: "&aLegacy Werewolf data has been imported. ;) Now you're free from buggy plugins."
+    reload: "&aWerewolf has been reloaded."
+    purge: "&7All broken player files have been cleared."
