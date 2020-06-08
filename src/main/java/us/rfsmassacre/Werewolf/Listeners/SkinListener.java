@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.Werewolf.Events.NewAlphaEvent;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -15,12 +16,14 @@ import us.rfsmassacre.Werewolf.Managers.SkinManager;
 import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 
 public class SkinListener implements Listener
-{	
+{
+	private ConfigManager config;
 	private WerewolfManager werewolves;
 	private SkinManager skins;
 	
 	public SkinListener()
-	{	
+	{
+		config = WerewolfPlugin.getConfigManager();
 		werewolves = WerewolfPlugin.getWerewolfManager();
 		skins = new SkinManager();
 	}
@@ -32,7 +35,7 @@ public class SkinListener implements Listener
 		{
 			if (event.toWolfForm())
 			{
-				skins.applySkin(werewolves.getWerewolf(event.getPlayer()));
+				skins.applySkinByName(werewolves.getWerewolf(event.getPlayer()), false);
 			}
 			else
 			{
@@ -57,11 +60,11 @@ public class SkinListener implements Listener
                 {
                     if (oldAlpha != null && oldAlpha.inWolfForm())
                     {
-                        skins.applySkin(werewolves.getWerewolf(oldAlpha.getPlayer()));
+						skins.applySkinByName(werewolves.getWerewolf(oldAlpha.getPlayer()), false);
                     }
                     if (newAlpha != null && newAlpha.inWolfForm())
                     {
-                        skins.applySkin(werewolves.getWerewolf(newAlpha.getPlayer()));
+						skins.applySkinByName(werewolves.getWerewolf(newAlpha.getPlayer()), false);
                     }
                 }
             }.runTaskLater(WerewolfPlugin.getInstance(), 1L);

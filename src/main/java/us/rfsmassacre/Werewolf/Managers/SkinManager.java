@@ -1,16 +1,15 @@
 package us.rfsmassacre.Werewolf.Managers;
 
-import java.util.UUID;
-
-import eu.blackfire62.MySkin.Shared.SkinCache;
-import eu.blackfire62.MySkin.Shared.SkinHandler;
-import eu.blackfire62.MySkin.Shared.SkinProperty;
-import eu.blackfire62.MySkin.Shared.Util.MojangAPI;
-import eu.blackfire62.MySkin.Shared.Util.MojangAPIException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
-
+import skinsrestorer.bukkit.SkinsRestorer;
+import skinsrestorer.bukkit.skinfactory.SkinFactory;
+import skinsrestorer.shared.exception.SkinRequestException;
+import skinsrestorer.shared.storage.Config;
+import skinsrestorer.shared.storage.Locale;
+import skinsrestorer.shared.storage.SkinStorage;
+import skinsrestorer.shared.utils.C;
+import skinsrestorer.shared.utils.MineSkinAPI;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -21,8 +20,9 @@ public class SkinManager
 	private ConfigManager config;
 	private WerewolfManager werewolves;
 
-	private SkinCache cache;
-	private SkinHandler handler;
+	private SkinFactory factory;
+	private SkinStorage storage;
+	private MineSkinAPI api;
 
 	private int skinTaskId;
 	
@@ -30,37 +30,12 @@ public class SkinManager
 	{
 		this.config = WerewolfPlugin.getConfigManager();
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
-		this.cache = WerewolfPlugin.getSkinCache();
-		this.handler = WerewolfPlugin.getSkinHandler();
-
-		//Save profiles
-        try
-        {
-            SkinProperty alphaProperty = MojangAPI.getSkinProperty(getSkinUUID("Alpha"));
-            SkinProperty wfProperty = MojangAPI.getSkinProperty(getSkinUUID("Witherfang"));
-            SkinProperty smProperty = MojangAPI.getSkinProperty(getSkinUUID("Silvermane"));
-            SkinProperty bmProperty = MojangAPI.getSkinProperty(getSkinUUID("Bloodmoon"));
-            SkinProperty defaultProperty = MojangAPI.getSkinProperty(getSkinUUID("Default"));
-
-            cache.saveSkinProperty(getSkinUUID("Alpha"), alphaProperty);
-            cache.saveSkinProperty(getSkinUUID("Witherfang"), wfProperty);
-            cache.saveSkinProperty(getSkinUUID("Silvermane"), smProperty);
-            cache.saveSkinProperty(getSkinUUID("Bloodmoon"), bmProperty);
-            cache.saveSkinProperty(getSkinUUID("Default"), defaultProperty);
-        }
-        catch (MojangAPIException exception)
-        {
-            //Do nothing
-        }
-
-		//Save UUIDs
-		cache.saveUUID("WerewolfAlpha", getSkinUUID("Alpha"));
-        cache.saveUUID("WF_Werewolf", getSkinUUID("Witherfang"));
-        cache.saveUUID("SM_Werewolf", getSkinUUID("Silvermane"));
-        cache.saveUUID("BM_Werewolf", getSkinUUID("Bloodmoon"));
-        cache.saveUUID("Default", getSkinUUID("Default"));
+		this.factory = SkinsRestorer.getInstance().getFactory();
+		this.storage = SkinsRestorer.getInstance().getSkinStorage();
+		this.api = SkinsRestorer.getInstance().getMineSkinAPI();
 	}
-	
+
+	/*
 	public void startSkinChecker()
 	{
 		//Correct skins of werewolves
@@ -90,78 +65,135 @@ public class SkinManager
             }
         }, 0L, config.getInt("intervals.werewolf-skins"));
 	}
+	 */
 
-	public boolean applySkin(Werewolf werewolf)
+	public void applySkinByName(Werewolf werewolf, boolean clear)
 	{
-		SkinProperty property = cache.loadSkinProperty(getSkinUUID(werewolf));
-		SkinProperty original = handler.getSkinProperty(werewolf.getPlayer());
-		if (original == null)
+		Bukkit.getScheduler().runTaskAsynchronously(SkinsRestorer.getInstance(), () ->
 		{
-			original = cache.loadSkinProperty(getSkinUUID("Default"));
-		}
-		cache.saveSkinProperty(werewolf.getUUID(), original);
+			Player player = werewolf.getPlayer();
+			String skinName = getSkinName(werewolf);
+			if (clear)
+			{
+				skinName = storage.getDefaultSkinNameIfEnabled(player.getName(), true);
+			}
 
-		handler.setSkinProperty(werewolf.getPlayer(), property);
-		handler.update(werewolf.getPlayer());
+			if (C.validUsername(skinName))
+			{
+				try
+				{
+				/*
+				if (save)
+				{
+					this.plugin.getSkinStorage().setPlayerSkin(p.getName(), skin);
+				}
+				 */
 
-		if (!usingSkin(werewolf))
-		{
-			return false;
-		}
-
-		return true;
-
+					factory.applySkin(player, storage.getOrCreateSkinForPlayer(skinName));
+				}
+				catch (SkinRequestException exception)
+				{
+					player.sendMessage(exception.getReason());
+					/*
+					if (save)
+					{
+						this.plugin.getSkinStorage().setPlayerSkin(p.getName(), oldSkinName != null ? oldSkinName : p.getName());
+					}
+					 */
+				}
+			}
+		});
 	}
-	public boolean removeSkin(Werewolf werewolf)
+	public void applySkinByURL(Werewolf werewolf, boolean clear)
 	{
-		SkinProperty property = cache.loadSkinProperty(werewolf.getUUID());
-		handler.setSkinProperty(werewolf.getPlayer(), property);
-		handler.update(werewolf.getPlayer());
-		cache.resetSkinOfPlayer(werewolf.getUUID());
-
-		if (usingSkin(werewolf))
+		Bukkit.getScheduler().runTaskAsynchronously(SkinsRestorer.getInstance(), () ->
 		{
-			return false;
-		}
+			Player player = werewolf.getPlayer();
+			String skinURL = getSkinURL(werewolf);
 
-		return true;
+			if (C.validUrl(skinURL))
+			{
+				Bukkit.broadcastMessage(skinURL);
+
+				try
+				{
+					storage.setSkinData(player.getName(), api.genSkin(skinURL));
+					storage.setPlayerSkin(player.getName(), player.getName());
+					factory.applySkin(player, storage.getSkinData(player.getName()));
+				}
+				catch (SkinRequestException exception)
+				{
+					player.sendMessage(exception.getReason());
+				/*
+				if (save)
+				{
+					this.plugin.getSkinStorage().setPlayerSkin(p.getName(), oldSkinName != null ? oldSkinName : p.getName());
+				}
+				 */
+				}
+				catch (Exception exception)
+				{
+					System.out.println("[SkinsRestorer] [ERROR] could not generate skin url:");
+					exception.printStackTrace();
+				/*
+				if (save)
+				{
+					this.plugin.getSkinStorage().setPlayerSkin(p.getName(), oldSkinName != null ? oldSkinName : p.getName());
+				}
+				 */
+				}
+			}
+		});
 	}
-	public boolean usingSkin(Werewolf werewolf)
+
+	public void removeSkin(Werewolf werewolf)
 	{
-		UUID customId = cache.loadSkinOfPlayer(werewolf.getUUID());
-		UUID skinId = getSkinUUID(werewolf);
-
-		if (customId != null && skinId != null)
+		Bukkit.getScheduler().runTaskAsynchronously(SkinsRestorer.getInstance(), () ->
 		{
-			return customId.equals(skinId);
-		}
-
-		return false;
+			Player player = werewolf.getPlayer();
+			storage.removePlayerSkin(player.getName());
+			applySkinByName(werewolf, true);
+		});
 	}
-	
+
+	/*
 	public void endCycles()
 	{
 		//In case we need to stop the buff cycle for a reload
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 		scheduler.cancelTask(skinTaskId);
 	}
+	 */
 
-	public UUID getSkinUUID(Werewolf werewolf)
+	public String getSkinName(Werewolf werewolf)
 	{
 		String skinType = werewolves.isAlpha(werewolf.getPlayer()) ? "Alpha" : werewolf.getType().toString();
-		return getSkinUUID(skinType);
+		return getSkinName(skinType);
 	}
-	public UUID getSkinUUID(String type)
+	public String getSkinName(String type)
 	{
-		String skinId = config.getString("skins." + type);
+		String skinName = config.getString("skins." + type);
 
 		try
 		{
-			return UUID.fromString(skinId);
+			return skinName;
 		}
 		catch (IllegalArgumentException exception)
 		{
 			return null;
 		}
+	}
+
+	public String getType(Werewolf werewolf)
+	{
+		return werewolves.isAlpha(werewolf.getPlayer()) ? "Alpha" : werewolf.getType().toString();
+	}
+	public String getSkinURL(Werewolf werewolf)
+	{
+		return getSkinURL(getType(werewolf));
+	}
+	public String getSkinURL(String type)
+	{
+		return config.getString("urls." + type);
 	}
 }

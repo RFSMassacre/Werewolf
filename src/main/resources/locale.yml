@@ -81,7 +81,7 @@ invalid:
     blocked-command-world: "&cWerewolves cannot use this command in wolf form!"
     blocked-command-alpha: "&cAlpha werewolves cannot use this command!"
     outdated-server: "&cMinecraft 1.7.10 and below is not fully supported! Please consider updating to at least Minecraft 1.8.8 or higher to fully use all features."
-    no-skins: "&3MySkin &cplugin not found. Skins will not be applied until it is installed."
+    no-skins: "&3SkinsRestorer &cplugin not found. Skins will not be applied until it is installed."
     no-regions: "&3WorldGuard &cplugin not found. Region checks will not be enabled."
     
 hunting:

@@ -6,7 +6,7 @@
 
     <groupId>us.rfsmassacre</groupId>
     <artifactId>Werewolf</artifactId>
-    <version>1.4.7-SNAPSHOT</version>
+    <version>1.4.8-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -29,6 +29,10 @@
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -38,7 +42,11 @@
             <version>1.15-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com</groupId>
+            <artifactId>skinsrestorer</artifactId>
+            <version>13.7.8-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>me.ryanhamshire</groupId>
             <artifactId>GriefPrevention</artifactId>

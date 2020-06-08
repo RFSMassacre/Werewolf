@@ -1,14 +1,6 @@
 package us.rfsmassacre.Werewolf;
 
-import eu.blackfire62.MySkin.Bukkit.Listener.OnLogin;
-import eu.blackfire62.MySkin.Bukkit.SkinHandler.*;
-import eu.blackfire62.MySkin.Shared.FileSkinCache;
-import eu.blackfire62.MySkin.Shared.SkinCache;
-import eu.blackfire62.MySkin.Shared.SkinHandler;
-import eu.blackfire62.MySkin.Shared.Util.Reflect;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
@@ -22,7 +14,6 @@ import us.rfsmassacre.Werewolf.Data.LegacyAlphaDataManager;
 import us.rfsmassacre.Werewolf.Data.LegacyWerewolfDataManager;
 import us.rfsmassacre.Werewolf.Listeners.*;
 import us.rfsmassacre.Werewolf.Managers.*;
-import us.rfsmassacre.Werewolf.Origin.Clan;
 
 public class WerewolfPlugin extends JavaPlugin
 {
@@ -39,9 +30,6 @@ public class WerewolfPlugin extends JavaPlugin
 	private static MessageManager messages;
 	private static MoonManager moons;
 	private static EventManager events;
-
-	private static SkinHandler skinHandler;
-	private static SkinCache skinCache;
 	
 	private static LegacyWerewolfDataManager legacyWerewolfData;
 	private static LegacyAlphaDataManager legacyAlphaData;
@@ -80,6 +68,15 @@ public class WerewolfPlugin extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new CraftingListener(), this);
 		getServer().getPluginManager().registerEvents(new WerewolfHuntingListener(), this);
 		getServer().getPluginManager().registerEvents(new PvPListener(), this);
+		//Sets up the needed modules for skins
+		if (dependency.hasPlugin("SkinsRestorer"))
+		{
+			getServer().getPluginManager().registerEvents(new SkinListener(), this);
+		}
+		else
+		{
+			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-skins");
+		}
 
 		//Fixes odd error with WorldGuard by making checking at this level before initializing.
 		if (dependency.hasPlugin("WorldEdit") && dependency.hasPlugin("WorldGuard"))
@@ -100,92 +97,6 @@ public class WerewolfPlugin extends JavaPlugin
 		else
 		{
 			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vampire");
-		}
-		
-		//Sets up the needed modules for skins
-		try
-		{
-			String version = dependency.getServerVersion();
-			if (version.startsWith("1.15"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_15_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.14"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_14_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (dependency.betweenVersions("1.13.1", "1.13.2"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_13_R2.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.13"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_13_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.12"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_12_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.11"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_11_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.10"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_10_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.9.4"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_9_R2.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (dependency.betweenVersions("1.9.0", "1.9.3"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_9_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (dependency.betweenVersions("1.8.4", "1.8.8"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_8_R3.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (version.startsWith("1.8.3"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_8_R2.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else if (dependency.betweenVersions("1.8.0", "1.8.2"))
-			{
-				skinHandler = (SkinHandler)Class.forName(SkinHandler_v1_8_R1.class.getPackage().getName() + ".SkinHandler_" + Reflect.serverVersion).getConstructor(((this)).getClass()).newInstance(new Object[]{this});
-				skinCache = new FileSkinCache(this.getDataFolder());
-				getServer().getPluginManager().registerEvents(new SkinListener(), this);
-			}
-			else
-			{
-				messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-skins");
-			}
-		}
-		catch (Exception e)
-		{
-			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-skins");
 		}
 		//getServer().getPluginManager().registerEvents(new OnLogin(this), this);
 		
@@ -259,14 +170,6 @@ public class WerewolfPlugin extends JavaPlugin
 	public static EventManager getEventManager()
 	{
 		return events;
-	}
-	public static SkinHandler getSkinHandler()
-	{
-		return skinHandler;
-	}
-	public static SkinCache getSkinCache()
-	{
-		return skinCache;
 	}
 	public static LegacyWerewolfDataManager getLegacyDataManager()
 	{

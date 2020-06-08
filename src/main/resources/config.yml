@@ -136,14 +136,18 @@ tracker-ingredient:
     werewolf: RABBIT_FOOT
     
 #Werewolf Clan Skins
-#These should be taken in as UUIDs now instead of player names
+#These should be taken in as names now that we're using SkinRestorer
+use-urls: false
 skins:
-    Alpha: e0d074bd-6722-47fc-95d3-f28e2899e155
-    Witherfang: c61647e5-fc2f-4536-abe9-c851911ad22f
-    Silvermane: b68a8f00-7d24-4c52-b6ad-1423bfbe26ee
-    Bloodmoon: da508ecc-dbd9-46c5-8095-47b91aa4ff5f
-    #This is for offline mode players. It will reset their skin to nothing.
-    Default: ec561538-f3fd-461d-aff5-086b22154bce
+    Alpha: "WerewolfAlpha"
+    Witherfang: "WF_Werewolf"
+    Silvermane: "SM_Werewolf"
+    Bloodmoon: "BM_Werewolf"
+urls:
+    Alpha: "https://namemc.com/texture/0b1f72e143cf4501.png"
+    Witherfang: "https://namemc.com/texture/5948ee02bbefda90.png"
+    Silvermane: "https://namemc.com/texture/171f1781a2a32894.png"
+    Bloodmoon: "https://namemc.com/texture/685fa38aac7f36e4.png"
  
 #Check Intervals
 #Lower numbers may cause lag on low-end servers, but will responding in realtime on high-end servers.
