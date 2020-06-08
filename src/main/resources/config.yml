@@ -143,11 +143,6 @@ skins:
     Witherfang: "WF_Werewolf"
     Silvermane: "SM_Werewolf"
     Bloodmoon: "BM_Werewolf"
-urls:
-    Alpha: "https://namemc.com/texture/0b1f72e143cf4501.png"
-    Witherfang: "https://namemc.com/texture/5948ee02bbefda90.png"
-    Silvermane: "https://namemc.com/texture/171f1781a2a32894.png"
-    Bloodmoon: "https://namemc.com/texture/685fa38aac7f36e4.png"
  
 #Check Intervals
 #Lower numbers may cause lag on low-end servers, but will responding in realtime on high-end servers.

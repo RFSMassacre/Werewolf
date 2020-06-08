@@ -33,6 +33,18 @@ public class SkinManager
 		this.factory = SkinsRestorer.getInstance().getFactory();
 		this.storage = SkinsRestorer.getInstance().getSkinStorage();
 		this.api = SkinsRestorer.getInstance().getMineSkinAPI();
+
+		try
+		{
+			storage.getOrCreateSkinForPlayer(config.getString("skins.Alpha"));
+			storage.getOrCreateSkinForPlayer(config.getString("skins.Witherfang"));
+			storage.getOrCreateSkinForPlayer(config.getString("skins.Silvermane"));
+			storage.getOrCreateSkinForPlayer(config.getString("skins.Bloodmoon"));
+		}
+		catch (SkinRequestException exception)
+		{
+			exception.printStackTrace();
+		}
 	}
 
 	/*
