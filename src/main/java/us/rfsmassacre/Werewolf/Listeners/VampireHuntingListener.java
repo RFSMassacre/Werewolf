@@ -20,7 +20,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Events.TrackerTargetEvent;
 import us.rfsmassacre.Werewolf.Events.TrackerTargetEvent.TargetType;
 import us.rfsmassacre.Werewolf.Items.Trackers.VampireTracker;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Managers.EventManager;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
@@ -92,7 +92,7 @@ public class VampireHuntingListener implements Listener
         {
             public void run() 
             {
-            	VampireTracker tracker = (VampireTracker)items.getWerewolfItem(WerewolfItemType.VAMPIRE_TRACKER);
+            	VampireTracker tracker = new VampireTracker();
             	
         		for (Player hunter : hunters.keySet())
         		{
@@ -119,7 +119,7 @@ public class VampireHuntingListener implements Listener
 		        			hunter.setCompassTarget(hunters.get(hunter).vampire.getLocation());
 		        			
 		        			messages.sendHunterAction(hunter, "hunting.tracker.actionbar",
-		        					"{item}", tracker.getItemName(),
+		        					"{item}", tracker.getDisplayName(),
 									"{target}", target.vampire.getDisplayName(),
 									"{distance}", Integer.toString((int)Math.round(target.getDistance())));
 		        			
@@ -131,7 +131,7 @@ public class VampireHuntingListener implements Listener
     				hunter.setCompassTarget(new Location(hunter.getWorld(), 0, 0, 0));
     				
     				messages.sendHunterLocale(hunter, "hunting.tracker.lost",
-    						"{item}", tracker.getItemName(),
+    						"{item}", tracker.getDisplayName(),
 							"{target}", target.vampire.getDisplayName());
         		}
             }
@@ -154,7 +154,7 @@ public class VampireHuntingListener implements Listener
 		Action action = event.getAction();
 		ItemStack item = event.getItem();
 		
-		VampireTracker tracker = (VampireTracker)items.getWerewolfItem(WerewolfItemType.VAMPIRE_TRACKER);
+		VampireTracker tracker = new VampireTracker();
 
 		if (tracker.equals(item))
 		{
@@ -191,7 +191,7 @@ public class VampireHuntingListener implements Listener
 								{
 									hunters.put(hunter, target);
 									messages.sendHunterLocale(hunter, "hunting.tracker.found",
-											"{item}", tracker.getItemName(),
+											"{item}", tracker.getDisplayName(),
 											"{target}", target.vampire.getDisplayName(),
 											"{distance}", Integer.toString((int)Math.round(target.getDistance())));
 									
@@ -216,7 +216,7 @@ public class VampireHuntingListener implements Listener
 						Target target = hunters.get(hunter);
 						
 						messages.sendHunterLocale(hunter, "hunting.tracker.lost",
-								"{item}", tracker.getItemName(),
+								"{item}", tracker.getName(),
 								"{target}", target.vampire.getDisplayName());
 						
 						hunters.remove(hunter);
@@ -225,7 +225,7 @@ public class VampireHuntingListener implements Listener
 					else
 					{
 						messages.sendHunterLocale(hunter, "hunting.tracker.no-target",
-								"{item}", tracker.getItemName());
+								"{item}", tracker.getDisplayName());
 					}
 					
 					return;
@@ -233,7 +233,7 @@ public class VampireHuntingListener implements Listener
 			}
 			
 			messages.sendHunterLocale(hunter, "hunting.racial.use",
-					"{item}", tracker.getItemName());
+					"{item}", tracker.getDisplayName());
 			
 			return;
 		}

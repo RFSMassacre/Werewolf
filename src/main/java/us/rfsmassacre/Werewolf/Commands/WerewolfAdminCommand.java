@@ -13,10 +13,12 @@ import us.rfsmassacre.HeavenLib.Commands.SpigotCommand;
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
+import us.rfsmassacre.Werewolf.Events.WerewolfInfectionEvent;
+import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Data.LegacyAlphaDataManager;
 import us.rfsmassacre.Werewolf.Data.LegacyWerewolfDataManager;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Managers.ClanManager;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
@@ -121,16 +123,20 @@ public class WerewolfAdminCommand extends SpigotCommand
 				Player player = (Player)sender;
 				if (args.length >= 2)
 				{
-					WerewolfItemType type = WerewolfItemType.fromString(args[1].toUpperCase());
+					String name = args[1];
 					
-					if (type != null)
+					if (name != null)
 					{
-						ItemStack item = items.getWerewolfItem(type).getItem();
-						player.getInventory().addItem(item);
-			
-						messages.sendWolfLocale(player, "admin.spawn.success",
-								"{item}", item.getItemMeta().getDisplayName());
-						return;
+						WerewolfItem werewolfItem = items.getWerewolfItem(args[1].toUpperCase());
+						if (werewolfItem != null)
+						{
+							ItemStack item = werewolfItem.getItemStack();
+							player.getInventory().addItem(item);
+
+							messages.sendWolfLocale(player, "admin.spawn.success",
+									"{item}", werewolfItem.getDisplayName());
+							return;
+						}
 					}
 					
 					//Invalid arg error
@@ -227,11 +233,21 @@ public class WerewolfAdminCommand extends SpigotCommand
 				{
 					if (werewolves.isHuman(player))
 					{
-						werewolves.infectWerewolf(player, type);
-						clan.addMember(player);
-						messages.sendWolfLocale(sender, "admin.infect.success",
-								"{player}", player.getDisplayName(),
-								"{clan}", type.toString());
+						WerewolfInfectionEvent event = new WerewolfInfectionEvent(player, type);
+						Bukkit.getPluginManager().callEvent(event);
+						if (!event.isCancelled())
+						{
+							werewolves.infectWerewolf(player, type);
+							clan.addMember(player);
+							messages.sendWolfLocale(sender, "admin.infect.success",
+									"{player}", player.getDisplayName(),
+									"{clan}", type.toString());
+						}
+						else
+						{
+							messages.sendWolfLocale(sender, "admin.infect.failed",
+									"{player}", player.getDisplayName());
+						}
 					}
 					else
 					{

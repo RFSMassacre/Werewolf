@@ -11,8 +11,9 @@ import com.massivecraft.vampire.entity.UPlayer;
 import com.massivecraft.vampire.event.EventVampirePlayerInfectionChange;
 import com.massivecraft.vampire.event.EventVampirePlayerVampireChange;
 
-import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.WerewolfPlugin;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
 import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
@@ -46,7 +47,7 @@ public class VampireInfectionListener implements Listener
 		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()))
 		{
 			event.setCancelled(true);
-			
+
 			if (uPlayer.isVampire())
 				uPlayer.setVampire(false);
 		}

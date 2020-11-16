@@ -4,15 +4,16 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import us.rfsmassacre.HeavenLib.Items.HeavenItem;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+
+import java.util.ArrayList;
 
 public class SilverSword extends WerewolfItem
 {
 	public SilverSword() 
 	{
-		super(Material.IRON_SWORD, WerewolfItemType.SILVER_SWORD);
-		
-		setRecipe(createRecipe());
+		super(Material.IRON_SWORD, "SILVER_SWORD");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -23,11 +24,11 @@ public class SilverSword extends WerewolfItem
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItem());
+			recipe = new ShapedRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapedRecipe(getItem());
+			recipe = new ShapedRecipe(getItemStack());
 		}
 		
 		recipe.shape("ABQ", "AQB", "IAA");

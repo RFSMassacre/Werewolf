@@ -9,7 +9,7 @@ public class Ash extends WerewolfItem
 {
 	public Ash() 
 	{
-		super(ItemManager.getCorrectMaterial("SULPHUR"), WerewolfItemType.ASH); //Enum was changed in 1.13
+		super(ItemManager.getCorrectMaterial("SULPHUR"), "ASH"); //Enum was changed in 1.13
 	}
 
 	@Override

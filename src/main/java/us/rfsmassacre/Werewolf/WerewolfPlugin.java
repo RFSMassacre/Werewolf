@@ -38,17 +38,17 @@ public class WerewolfPlugin extends JavaPlugin
 	public void onEnable()
 	{
 		instance = this;
-		
+
 		//Set up data folder
 		if (!getDataFolder().exists())
 			getDataFolder().mkdir();
-		
+
 		//Set up library managers
 		chat = new ChatManager(this);
 		config = new ConfigManager(this);
 		locale = new LocaleManager(this);
 		dependency = new DependencyManager(this);
-		
+
 		//Initialize Werewolf managers
 		messages = new MessageManager();
 		clans = new ClanManager();
@@ -56,11 +56,11 @@ public class WerewolfPlugin extends JavaPlugin
 		items = new ItemManager();
 		moons = new MoonManager();
 		events = new EventManager();
-		
+
 		//Initialize legacy support
 		legacyWerewolfData = new LegacyWerewolfDataManager();
 		legacyAlphaData = new LegacyAlphaDataManager();
-		
+
 		//Initialize listeners
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new WerewolfInfectionListener(), this);
@@ -94,16 +94,20 @@ public class WerewolfPlugin extends JavaPlugin
 			getServer().getPluginManager().registerEvents(new VampireInfectionListener(), this);
 			getServer().getPluginManager().registerEvents(new VampireHuntingListener(), this);
 		}
+		else if (dependency.hasPlugin("VampireRevamp"))
+		{
+			getServer().getPluginManager().registerEvents(new VampireHuntingListener(), this);
+		}
 		else
 		{
 			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vampire");
 		}
 		//getServer().getPluginManager().registerEvents(new OnLogin(this), this);
-		
+
 		//Register commands
 		this.getCommand("werewolf").setExecutor(new WerewolfCommand());
 		this.getCommand("werewolfadmin").setExecutor(new WerewolfAdminCommand());
-		
+
 		if (dependency.getServerVersion().startsWith("1.7"))
 		{
 			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.outdated-server");

@@ -7,6 +7,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.HeavenLib.Managers.MenuManager;
 
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -23,6 +24,7 @@ public class ClanManager
 	private MenuManager witherfangMenu;
 	private MenuManager silvermaneMenu;
 	private MenuManager bloodmoonMenu;
+	private ConfigManager config;
 	
 	private int alphaTaskId;
 	
@@ -35,6 +37,7 @@ public class ClanManager
 		witherfangMenu = new MenuManager("witherfang.txt");
 		silvermaneMenu = new MenuManager("silvermane.txt");
 		bloodmoonMenu = new MenuManager("bloodmoon.txt");
+		config = WerewolfPlugin.getConfigManager();
 		
 		//Load default settings
 		Clan newWitherfangClan = new Clan(ClanType.WITHERFANG, witherfangMenu.getText());
@@ -142,6 +145,11 @@ public class ClanManager
         {
             public void run() 
             {
+            	if (!config.getBoolean("alphas"))
+				{
+					return;
+				}
+
             	for (Clan clan : clans.values())
             	{	
             		if (clan.getAlphaId() == null && clan.getSize() > 0)

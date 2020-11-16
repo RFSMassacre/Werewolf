@@ -77,7 +77,7 @@ public class Werewolf implements Comparable<Werewolf>
 		setTargetId(null);
 		setTracking(false);
 		setWolfForm(false);
-		setWolfPack(new ArrayList<Wolf>());
+		setWolfPack(new ArrayList<>());
 		setLastTransform(System.currentTimeMillis());
 		setLastHowl(0);
 		setLastGrowl(0);

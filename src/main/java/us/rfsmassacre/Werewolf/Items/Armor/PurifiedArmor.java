@@ -6,16 +6,16 @@ import org.bukkit.inventory.Recipe;
 
 public class PurifiedArmor extends WerewolfArmor
 {
-	public PurifiedArmor(Material material) 
+	public PurifiedArmor(Material material)
 	{	
-		super(material, WerewolfItemType.valueOf("PURIFIED_" + material.name().replace("DIAMOND_", "")));
+		super(material, "PURIFIED_" + material.toString().replace("DIAMOND_", ""));
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected Recipe createRecipe() 
 	{
-		FurnaceRecipe recipe = new FurnaceRecipe(getItem(), getItem().getType());
+		FurnaceRecipe recipe = new FurnaceRecipe(getItemStack(), getItemStack().getType());
 		
 		try
 		{
@@ -32,12 +32,12 @@ public class PurifiedArmor extends WerewolfArmor
 	@Override
 	public int getPurity() 
 	{
-		return getValue("purity.purified." + getItem().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("purity.purified." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 	
 	@Override
 	public int getDefense()
 	{
-		return getValue("defense.purified." + getItem().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("defense.purified." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 }

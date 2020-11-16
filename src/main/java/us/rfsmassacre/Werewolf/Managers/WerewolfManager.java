@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import com.clanjhoo.vampire.VampireAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ import us.rfsmassacre.Werewolf.Data.WerewolfDataManager;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent.CureType;
 import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Origin.Clan;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
@@ -217,7 +218,7 @@ public class WerewolfManager
         		for (Werewolf werewolf : getOnlineWerewolves())
         		{
         			Player player = werewolf.getPlayer();
-        			SilverSword silverSword = (SilverSword)WerewolfPlugin.getItemManager().getWerewolfItem(WerewolfItemType.SILVER_SWORD);
+        			SilverSword silverSword = new SilverSword();
         			
         			if (silverSword.isHoldingItem(player, true) && silverSword.hasItem(player))
         				player.damage(config.getInt("silver-penalty"));
@@ -509,6 +510,8 @@ public class WerewolfManager
 	{
 		if (WerewolfPlugin.getDependencyManager().hasPlugin("Vampire"))
 			return UPlayer.get(player).isVampire();
+		else if (WerewolfPlugin.getDependencyManager().hasPlugin("VampireRevamp"))
+			return VampireAPI.isVampire(player);
 		else
 			return false;
 	}
@@ -519,7 +522,7 @@ public class WerewolfManager
 	}
 	
 	//Runs the numbers to see if the infection was successful
-	public boolean canWolfInfect(boolean hasIntent)
+	public boolean canWolfInfect()
 	{
 		int chance = config.getInt("infection.wolf.chance");
 		
@@ -528,7 +531,7 @@ public class WerewolfManager
 			return false;
 		
 		//Random number between 1 and 100
-		int random = new Random().nextInt(100) + 1; 
+		int random = new Random(System.currentTimeMillis()).nextInt(100) + 1;
 		return random <= chance;
 	}
 	public boolean canWerewolfInfect(boolean hasIntent)
@@ -541,7 +544,7 @@ public class WerewolfManager
 			return false;
 		
 		//Random number between 1 and 100
-		int random = new Random().nextInt(100) + 1; 
+		int random = new Random(System.currentTimeMillis()).nextInt(100) + 1;
 		return hasIntent ? random <= intent : random <= chance;
 	}
 	public boolean canTrack()

@@ -8,7 +8,7 @@ public class WerewolfTracker extends Tracker
 {
 	public WerewolfTracker() 
 	{
-		super(WerewolfItemType.WEREWOLF_TRACKER);
+		super("WEREWOLF_TRACKER");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -19,11 +19,11 @@ public class WerewolfTracker extends Tracker
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItem());
+			recipe = new ShapedRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapedRecipe(getItem());
+			recipe = new ShapedRecipe(getItemStack());
 		}
 		
 		try

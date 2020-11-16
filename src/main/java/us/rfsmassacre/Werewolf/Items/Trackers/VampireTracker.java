@@ -8,7 +8,7 @@ public class VampireTracker extends Tracker
 {
 	public VampireTracker() 
 	{
-		super(WerewolfItemType.VAMPIRE_TRACKER);
+		super("VAMPIRE_TRACKER");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -19,11 +19,11 @@ public class VampireTracker extends Tracker
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItem());
+			recipe = new ShapedRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapedRecipe(getItem());
+			recipe = new ShapedRecipe(getItemStack());
 		}
 		
 		try

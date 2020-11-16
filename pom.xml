@@ -6,7 +6,7 @@
 
     <groupId>us.rfsmassacre</groupId>
     <artifactId>Werewolf</artifactId>
-    <version>1.4.8-SNAPSHOT</version>
+    <version>1.5.3-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
@@ -16,6 +16,61 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                    <relocations>
+                        <relocation>
+                            <pattern>de.tr7zw.nbtapi</pattern>
+                            <shadedPattern>de.tr7zw.werewolf.nbtapi</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <artifactSet>
+                                <includes>
+                                    <include>de.tr7zw:item-nbt-api-plugin</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>de.tr7zw:item-nbt-api-plugin</artifact>
+                                    <excludeDefaults>true</excludeDefaults>
+                                    <includes>
+                                        <include>de/tr7zw/nbtapi/**</include>
+                                    </includes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -30,8 +85,9 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>codemc-snapshots</id>
-            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 
@@ -39,7 +95,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15-R0.1-SNAPSHOT</version>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -102,6 +158,18 @@
             <version>7.0.0-beta-02</version>
             <scope>system</scope>
             <systemPath>${basedir}\lib\worldguard-legacy-7.0.0-beta-02.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>mowstyl.vampire</groupId>
+            <artifactId>vampirerevamp</artifactId>
+            <version>1.0-BETA-5</version>
+            <scope>system</scope>
+            <systemPath>${basedir}\lib\VampireRevamp-1.0.BETA-5.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.6.0</version>
         </dependency>
 
         <dependency>

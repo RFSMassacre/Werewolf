@@ -11,7 +11,7 @@ public class InfectionPotion extends WerewolfPotion
 {
 	public InfectionPotion() 
 	{
-		super(WerewolfItemType.INFECTION_POTION, false, Color.ORANGE, PotionType.FIRE_RESISTANCE);
+		super("INFECTION_POTION", false, Color.ORANGE, PotionType.FIRE_RESISTANCE);
 	}
 
 	@Override
@@ -21,11 +21,11 @@ public class InfectionPotion extends WerewolfPotion
 		
 		try
 		{
-			recipe = new ShapelessRecipe(getKey(), getItem());
+			recipe = new ShapelessRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapelessRecipe(getItem());
+			recipe = new ShapelessRecipe(getItemStack());
 		}
 		
 		recipe.addIngredient(Material.SLIME_BALL);

@@ -13,7 +13,7 @@ public class WolfsbanePotion extends WerewolfPotion
 {
 	public WolfsbanePotion() 
 	{
-		super(WerewolfItemType.WOLFSBANE_POTION, true, Color.RED, PotionType.INSTANT_HEAL);
+		super("WOLFSBANE_POTION", true, Color.RED, PotionType.INSTANT_HEAL);
 	}
 	
 	@Override
@@ -23,11 +23,11 @@ public class WolfsbanePotion extends WerewolfPotion
 		
 		try
 		{
-			recipe = new ShapelessRecipe(getKey(), getItem());
+			recipe = new ShapelessRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapelessRecipe(getItem());
+			recipe = new ShapelessRecipe(getItemStack());
 		}
 		
 		recipe.addIngredient(Material.GLASS_BOTTLE);

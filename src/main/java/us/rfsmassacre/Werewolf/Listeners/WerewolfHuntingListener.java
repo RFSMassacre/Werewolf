@@ -22,15 +22,16 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
+import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Events.TrackerTargetEvent;
 import us.rfsmassacre.Werewolf.Events.TrackerTargetEvent.TargetType;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
 import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Items.Potions.WolfsbanePotion;
 import us.rfsmassacre.Werewolf.Items.Trackers.WerewolfTracker;
 import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Managers.EventManager;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
@@ -102,7 +103,7 @@ public class WerewolfHuntingListener implements Listener
         {
             public void run() 
             {
-            	WerewolfTracker tracker = (WerewolfTracker)items.getWerewolfItem(WerewolfItemType.WEREWOLF_TRACKER);
+            	WerewolfTracker tracker = new WerewolfTracker();
             	
         		for (Player hunter : hunters.keySet())
         		{
@@ -130,7 +131,7 @@ public class WerewolfHuntingListener implements Listener
 		        			hunter.setCompassTarget(hunters.get(hunter).werewolf.getLocation());
 		        			
 		        			messages.sendHunterAction(hunter, "hunting.tracker.actionbar",
-		        					"{item}", tracker.getItemName(),
+		        					"{item}", tracker.getDisplayName(),
 									"{target}", target.werewolf.getDisplayName(),
 									"{distance}", Integer.toString((int)Math.round(target.getDistance())));
 		        			
@@ -142,7 +143,7 @@ public class WerewolfHuntingListener implements Listener
     				hunter.setCompassTarget(new Location(hunter.getWorld(), 0, 0, 0));
     				
     				messages.sendHunterLocale(hunter, "hunting.tracker.lost",
-    						"{item}", tracker.getItemName(),
+    						"{item}", tracker.getDisplayName(),
 							"{target}", target.werewolf.getDisplayName());
         		}
             }
@@ -165,7 +166,7 @@ public class WerewolfHuntingListener implements Listener
 		Action action = event.getAction();
 		ItemStack item = event.getItem();
 		
-		WerewolfTracker tracker = (WerewolfTracker)items.getWerewolfItem(WerewolfItemType.WEREWOLF_TRACKER);
+		WerewolfTracker tracker = new WerewolfTracker();
 
 		if (tracker.equals(item))
 		{
@@ -206,7 +207,7 @@ public class WerewolfHuntingListener implements Listener
 								{
 									hunters.put(hunter, target);
 									messages.sendHunterLocale(hunter, "hunting.tracker.found",
-											"{item}", tracker.getItemName(),
+											"{item}", tracker.getDisplayName(),
 											"{target}", target.werewolf.getDisplayName(),
 											"{distance}", Integer.toString((int)Math.round(target.getDistance())));
 									
@@ -231,7 +232,7 @@ public class WerewolfHuntingListener implements Listener
 						Target target = hunters.get(hunter);
 						
 						messages.sendHunterLocale(hunter, "hunting.tracker.lost",
-								"{item}", tracker.getItemName(),
+								"{item}", tracker.getDisplayName(),
 								"{target}", target.werewolf.getDisplayName());
 						
 						hunters.remove(hunter);
@@ -240,7 +241,7 @@ public class WerewolfHuntingListener implements Listener
 					else
 					{
 						messages.sendHunterLocale(hunter, "hunting.tracker.no-target",
-								"{item}", tracker.getItemName());
+								"{item}", tracker.getDisplayName());
 					}
 					
 					return;
@@ -248,7 +249,7 @@ public class WerewolfHuntingListener implements Listener
 			}
 			
 			messages.sendHunterLocale(hunter, "hunting.racial.use",
-					"{item}", tracker.getItemName());
+					"{item}", tracker.getDisplayName());
 			
 			return;
 		}
@@ -299,7 +300,7 @@ public class WerewolfHuntingListener implements Listener
 				Werewolf werewolf = werewolves.getWerewolf(victim);
 				String clan = werewolf.getType().toKey();
 				
-				if (werewolf.inWolfForm() && WerewolfItem.isHoldingItem(goldSword, attacker, false) && WerewolfItem.hasItem(goldSword, attacker))
+				if (werewolf.inWolfForm() && WerewolfItemOld.isHoldingItem(goldSword, attacker, false) && WerewolfItemOld.hasItem(goldSword, attacker))
 				{
 					event.setDamage(event.getDamage() / config.getDouble("werewolf-stats." + clan + ".werewolf.defense"));
 				}

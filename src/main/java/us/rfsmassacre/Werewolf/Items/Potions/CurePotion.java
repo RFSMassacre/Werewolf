@@ -13,7 +13,7 @@ public class CurePotion extends WerewolfPotion
 {
 	public CurePotion() 
 	{
-		super(WerewolfItemType.CURE_POTION, false, Color.WHITE, PotionType.SPEED);
+		super("CURE_POTION", false, Color.WHITE, PotionType.SPEED);
 	}
 
 	@Override
@@ -23,11 +23,11 @@ public class CurePotion extends WerewolfPotion
 		
 		try
 		{
-			recipe = new ShapelessRecipe(getKey(), getItem());
+			recipe = new ShapelessRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapelessRecipe(getItem());
+			recipe = new ShapelessRecipe(getItemStack());
 		}
 		
 		recipe.addIngredient(ItemManager.getCorrectMaterial("RED_ROSE")); //Enum was changed in 1.13

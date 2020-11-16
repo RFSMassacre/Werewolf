@@ -12,11 +12,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
+import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent.CureType;
 import us.rfsmassacre.Werewolf.Events.WerewolfInfectionEvent;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
 import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Items.Potions.CurePotion;
 import us.rfsmassacre.Werewolf.Items.Potions.InfectionPotion;
@@ -101,7 +102,7 @@ public class WerewolfInfectionListener implements Listener
 				
 				if (werewolves.isHuman(player) && !wolf.isTamed())
 				{
-					if (werewolves.canWerewolfInfect(false))
+					if (werewolves.canWolfInfect())
 					{
 						ClanType type = ClanType.SILVERMANE;
 						Clan clan = clans.getClan(type);

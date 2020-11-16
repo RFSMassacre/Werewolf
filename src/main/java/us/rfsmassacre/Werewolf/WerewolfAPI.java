@@ -2,7 +2,10 @@ package us.rfsmassacre.Werewolf;
 
 import java.util.UUID;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class WerewolfAPI 
 {
@@ -36,5 +39,44 @@ public class WerewolfAPI
 	public static boolean isAlpha(UUID playerId)
 	{
 		return WerewolfPlugin.getWerewolfManager().isAlpha(playerId);
+	}
+
+	/*
+	 * Item Checks
+	 */
+	public static boolean isWerewolfItem(ItemStack item)
+	{
+		NBTItem otherItem = new NBTItem(item);
+		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
+		if (compound == null)
+		{
+			return false;
+		}
+
+		String value = compound.getString("IID");
+		return value != null;
+	}
+	public static boolean isWerewolfItem(ItemStack item, String name)
+	{
+		NBTItem otherItem = new NBTItem(item);
+		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
+		if (compound == null)
+		{
+			return false;
+		}
+
+		String value = compound.getString("IID");
+		return value.equalsIgnoreCase(name);
+	}
+	public static String getWerewolfItemID(ItemStack item)
+	{
+		NBTItem otherItem = new NBTItem(item);
+		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
+		if (compound == null)
+		{
+			return null;
+		}
+
+		return compound.getString("IID");
 	}
 }

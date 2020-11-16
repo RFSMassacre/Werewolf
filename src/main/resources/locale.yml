@@ -115,6 +115,7 @@ admin:
         no-args: "&cYou must specify the who to infect and the clan type."
         success: "&eYou have infected &f{player}&e with the &3{clan} &eInfection."
         not-human: "&f{player}&c must be a human to be infected!"
+        failed: "&cThe infection failed for &f{player}&c!"
     cure:
         no-args: "&cYou must specify an online Werewolf!"
         success: "&eYou have cured &f{player}&e from the Werewolf Infection."

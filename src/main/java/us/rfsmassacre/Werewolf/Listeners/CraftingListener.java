@@ -17,9 +17,14 @@ import org.bukkit.inventory.ItemStack;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
-import us.rfsmassacre.Werewolf.WerewolfPlugin;
+import us.rfsmassacre.Werewolf.Items.Potions.CurePotion;
+import us.rfsmassacre.Werewolf.Items.Potions.InfectionPotion;
+import us.rfsmassacre.Werewolf.Items.Potions.WolfsbanePotion;
+import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.WerewolfPlugin;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Items.Armor.Ash;
 import us.rfsmassacre.Werewolf.Items.Armor.PurifiedArmor;
 import us.rfsmassacre.Werewolf.Items.Armor.WashedArmor;
@@ -34,7 +39,7 @@ public class CraftingListener implements Listener
 	private WerewolfManager werewolves;
 	private ItemManager items;
 	
-	private ArrayList<WerewolfItemType> exemptItems;
+	private ArrayList<String> exemptItems;
 	private ArrayList<Material> armorTypes;
 	
 	public CraftingListener()
@@ -44,13 +49,13 @@ public class CraftingListener implements Listener
 		werewolves = WerewolfPlugin.getWerewolfManager();
 		items = WerewolfPlugin.getItemManager();
 		
-		exemptItems = new ArrayList<WerewolfItemType>();
-		exemptItems.add(WerewolfItemType.INFECTION_POTION);
-		exemptItems.add(WerewolfItemType.CURE_POTION);
-		exemptItems.add(WerewolfItemType.WOLFSBANE_POTION);
-		exemptItems.add(WerewolfItemType.SILVER_SWORD);
+		exemptItems = new ArrayList<>();
+		exemptItems.add(new InfectionPotion().getName());
+		exemptItems.add(new CurePotion().getName());
+		exemptItems.add(new WolfsbanePotion().getName());
+		exemptItems.add(new SilverSword().getName());
 		
-		armorTypes = new ArrayList<Material>();
+		armorTypes = new ArrayList<>();
 		armorTypes.add(Material.DIAMOND_HELMET);
 		armorTypes.add(Material.DIAMOND_CHESTPLATE);
 		armorTypes.add(Material.DIAMOND_LEGGINGS);
@@ -71,10 +76,10 @@ public class CraftingListener implements Listener
 		
 		if (invType.equals(InventoryType.CRAFTING) || invType.equals(InventoryType.WORKBENCH))
 		{
-			for (WerewolfItemType itemType : WerewolfItemType.values())
+			for (WerewolfItem werewolfItem : items.getWerewolfItems())
 			{
-				WerewolfItem werewolfItem = items.getWerewolfItem(itemType);
-				if (werewolfItem != null && werewolfItem.equals(event.getRecipe().getResult()) && !exemptItems.contains(werewolfItem.getType()))
+				if (werewolfItem != null && werewolfItem.equals(event.getRecipe().getResult())
+				&& !exemptItems.contains(werewolfItem.getDisplayName()))
 				{
 					if (!config.getBoolean("hunting.enabled"))
 					{
@@ -82,12 +87,12 @@ public class CraftingListener implements Listener
 						messages.sendHunterLocale(hunter, "hunting.disabled");
 						return;
 					}
-					
+
 					if (!werewolves.isHuman(hunter))
 					{
 						event.setCancelled(true);
 						messages.sendHunterLocale(hunter, "hunting.racial.craft",
-								"{item}", werewolfItem.getItemName());
+								"{item}", werewolfItem.getDisplayName());
 					}
 				}
 			}
@@ -129,7 +134,7 @@ public class CraftingListener implements Listener
 					hunter.closeInventory();
 					hunter.updateInventory();
 					messages.sendHunterLocale(hunter, "hunting.racial.use", 
-							  "{item}", armor.getItemName());
+							  "{item}", armor.getDisplayName());
 					return;
 				}
 			}
@@ -157,7 +162,7 @@ public class CraftingListener implements Listener
 						hunter.closeInventory();
 						hunter.updateInventory();
 						messages.sendHunterLocale(hunter, "hunting.racial.smelt", 
-								  "{item}", armor.getItemName());
+								  "{item}", armor.getDisplayName());
 						return;
 					}
 				}
@@ -176,7 +181,7 @@ public class CraftingListener implements Listener
 						hunter.closeInventory();
 						hunter.updateInventory();
 						messages.sendHunterLocale(hunter, "hunting.racial.smelt", 
-												  "{item}", armor.getItemName());
+												  "{item}", armor.getDisplayName());
 						return;
 					}
 				}
@@ -194,7 +199,7 @@ public class CraftingListener implements Listener
 				//Burn the armor if it wasn't washed
 				if (item == null || !(item instanceof WashedArmor))
 				{
-					event.setResult(items.getWerewolfItem(WerewolfItemType.ASH).getItem());
+					event.setResult(new Ash().getItemStack());
 					return;
 				}
 				else
@@ -204,7 +209,7 @@ public class CraftingListener implements Listener
 					
 					if (random <= chance)
 					{
-						event.setResult(items.getWerewolfItem(WerewolfItemType.ASH).getItem());
+						event.setResult(new Ash().getItemStack());
 						return;
 					}
 				}
@@ -215,9 +220,9 @@ public class CraftingListener implements Listener
 	public void onPurificationFail(FurnaceExtractEvent event)
 	{
 		Player hunter = event.getPlayer();
-		Ash ash = (Ash)items.getWerewolfItem(WerewolfItemType.ASH);
+		Ash ash = new Ash();
 		
-		if (ash.getItem().getType().equals(event.getItemType()))
+		if (ash.getItemStack().getType().equals(event.getItemType()))
 		{
 			messages.sendHunterLocale(hunter, "hunting.armor.burned");
 			return;

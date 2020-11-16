@@ -15,9 +15,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
-import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Items.Armor.Ash;
 import us.rfsmassacre.Werewolf.Items.Armor.PurifiedArmor;
 import us.rfsmassacre.Werewolf.Items.Armor.WashedArmor;
@@ -34,7 +33,7 @@ public class ItemManager
 	private WerewolfPlugin instance;
 	private ConfigManager config;
 	
-	private HashMap<WerewolfItemType, WerewolfItem> items;
+	private HashMap<String, WerewolfItem> items;
 	private int itemTaskId;
 	private int armorTaskId;
 	
@@ -43,7 +42,7 @@ public class ItemManager
 		instance = WerewolfPlugin.getInstance();
 		config = WerewolfPlugin.getConfigManager();
 		
-		items = new HashMap<WerewolfItemType, WerewolfItem>();
+		items = new HashMap<>();
 		
 		reloadItems();
 		loadRecipes();
@@ -56,26 +55,26 @@ public class ItemManager
 	{
 		items.clear();
 		
-		items.put(WerewolfItemType.INFECTION_POTION, new InfectionPotion());
-		items.put(WerewolfItemType.CURE_POTION, new CurePotion());
-		items.put(WerewolfItemType.WOLFSBANE_POTION, new WolfsbanePotion());
+		items.put(new InfectionPotion().getName(), new InfectionPotion());
+		items.put(new CurePotion().getName(), new CurePotion());
+		items.put(new WolfsbanePotion().getName(), new WolfsbanePotion());
 		
-		items.put(WerewolfItemType.ASH, new Ash());
+		items.put(new Ash().getName(), new Ash());
 		
-		items.put(WerewolfItemType.SILVER_SWORD, new SilverSword());
+		items.put(new SilverSword().getName(), new SilverSword());
 		
-		items.put(WerewolfItemType.VAMPIRE_TRACKER, new VampireTracker());
-		items.put(WerewolfItemType.WEREWOLF_TRACKER, new WerewolfTracker());
+		items.put(new VampireTracker().getName(), new VampireTracker());
+		items.put(new WerewolfTracker().getName(), new WerewolfTracker());
 		
-		items.put(WerewolfItemType.WASHED_HELMET, new WashedArmor(Material.DIAMOND_HELMET));
-		items.put(WerewolfItemType.WASHED_CHESTPLATE, new WashedArmor(Material.DIAMOND_CHESTPLATE));
-		items.put(WerewolfItemType.WASHED_LEGGINGS, new WashedArmor(Material.DIAMOND_LEGGINGS));
-		items.put(WerewolfItemType.WASHED_BOOTS, new WashedArmor(Material.DIAMOND_BOOTS));
+		items.put(new WashedArmor(Material.DIAMOND_HELMET).getName(), new WashedArmor(Material.DIAMOND_HELMET));
+		items.put(new WashedArmor(Material.DIAMOND_CHESTPLATE).getName(), new WashedArmor(Material.DIAMOND_CHESTPLATE));
+		items.put(new WashedArmor(Material.DIAMOND_LEGGINGS).getName(), new WashedArmor(Material.DIAMOND_LEGGINGS));
+		items.put(new WashedArmor(Material.DIAMOND_BOOTS).getName(), new WashedArmor(Material.DIAMOND_BOOTS));
 		
-		items.put(WerewolfItemType.PURIFIED_HELMET, new PurifiedArmor(Material.DIAMOND_HELMET));
-		items.put(WerewolfItemType.PURIFIED_CHESTPLATE, new PurifiedArmor(Material.DIAMOND_CHESTPLATE));
-		items.put(WerewolfItemType.PURIFIED_LEGGINGS, new PurifiedArmor(Material.DIAMOND_LEGGINGS));
-		items.put(WerewolfItemType.PURIFIED_BOOTS, new PurifiedArmor(Material.DIAMOND_BOOTS));
+		items.put(new PurifiedArmor(Material.DIAMOND_HELMET).getName(), new PurifiedArmor(Material.DIAMOND_HELMET));
+		items.put(new PurifiedArmor(Material.DIAMOND_CHESTPLATE).getName(), new PurifiedArmor(Material.DIAMOND_CHESTPLATE));
+		items.put(new PurifiedArmor(Material.DIAMOND_LEGGINGS).getName(), new PurifiedArmor(Material.DIAMOND_LEGGINGS));
+		items.put(new PurifiedArmor(Material.DIAMOND_BOOTS).getName(), new PurifiedArmor(Material.DIAMOND_BOOTS));
 	}
 	
 	//Reload item data
@@ -94,10 +93,10 @@ public class ItemManager
 		//Add recipes
 		for (WerewolfItem item : getWerewolfItems())
 		{
-			String typeName = item.getType().name().toLowerCase().replace("_", "-");
+			String name = item.getName().toLowerCase().replace("_", "-");
 			Recipe recipe = item.getRecipe();
 			
-			if (config.getBoolean("recipes." + typeName) && recipe != null)
+			if (config.getBoolean("recipes." + name) && recipe != null)
 				instance.getServer().addRecipe(recipe);
 		}
 	}
@@ -109,7 +108,7 @@ public class ItemManager
 		{
 			Recipe recipe = iterator.next();
 			allRecipes.add(recipe);
-			if (WerewolfItem.hasId(recipe.getResult()))
+			if (WerewolfItem.isWerewolfItem(recipe.getResult()))
 			{
 				allRecipes.remove(recipe);
 			}
@@ -121,16 +120,16 @@ public class ItemManager
 		}
 	}
 	
-	public WerewolfItem getWerewolfItem(WerewolfItemType type)
+	public WerewolfItem getWerewolfItem(String name)
 	{
-		return items.get(type);
+		return items.get(name);
 	}
 	public WerewolfItem getWerewolfItem(ItemStack item)
 	{
-		for (WerewolfItem werewolfItem : items.values())
+		for (WerewolfItem werewolfItemOld : items.values())
 		{
-			if (werewolfItem.equals(item))
-				return werewolfItem;
+			if (werewolfItemOld.equals(item))
+				return werewolfItemOld;
 		}
 		
 		return null;
@@ -156,13 +155,13 @@ public class ItemManager
         			{
         				if (item != null && item.hasItemMeta())
         				{
-	        				WerewolfItem werewolfItem = getWerewolfItem(item);
+	        				WerewolfItem werewolfItemOld = getWerewolfItem(item);
 	        				ItemMeta meta = item.getItemMeta();
 	        				
-	        				if (werewolfItem != null && !meta.getLore().equals(werewolfItem.getItemLore())
-	        			    && !(werewolfItem instanceof SilverSword) && !(werewolfItem instanceof WerewolfArmor))
+	        				if (werewolfItemOld != null && !meta.getLore().equals(werewolfItemOld.getItemLore())
+	        			    && !(werewolfItemOld instanceof SilverSword) && !(werewolfItemOld instanceof WerewolfArmor))
 	        				{
-	        					meta.setLore(werewolfItem.getItemLore());
+	        					meta.setLore(werewolfItemOld.getItemLore());
 	        					item.setItemMeta(meta);
 	        				}
         				}
@@ -229,7 +228,7 @@ public class ItemManager
 		Material material = Material.getMaterial(name);
 		
 		if (version.startsWith("1.13") || version.startsWith("1.14")
-		|| version.startsWith("1.15"))
+		|| version.startsWith("1.15") || version.startsWith("1.16"))
 		{
 			if (material == null)
 				material = Material.getMaterial(name, true);

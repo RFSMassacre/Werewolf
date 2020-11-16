@@ -6,7 +6,7 @@ import java.util.List;
 import us.rfsmassacre.HeavenLib.BaseManagers.ResourceManager;
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
-import us.rfsmassacre.Werewolf.Items.WerewolfItem.WerewolfItemType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 
 public class ItemDataManager extends ResourceManager
 {	
@@ -18,16 +18,16 @@ public class ItemDataManager extends ResourceManager
 	/*
 	 * Get item configuration from file of werewolf items.
 	 */
-	public String getItemName(WerewolfItemType type)
+	public String getItemName(String name)
 	{
-		return ChatManager.format(file.getString(type.toString() + ".name", defaultFile.getString(type.toString() + ".name")));
+		return ChatManager.format(file.getString(name + ".name", defaultFile.getString(name + ".name")));
 	}
-	public ArrayList<String> getItemLore(WerewolfItemType type)
+	public ArrayList<String> getItemLore(String name)
 	{
 		ArrayList<String> lore = new ArrayList<String>();
 		
-		List<String> fileLore = file.getStringList(type.toString() + ".lore");
-		List<String> defaultLore = defaultFile.getStringList(type.toString() + ".lore");
+		List<String> fileLore = file.getStringList(name + ".lore");
+		List<String> defaultLore = defaultFile.getStringList(name + ".lore");
 		
 		if (fileLore != null && !fileLore.isEmpty())
 		{

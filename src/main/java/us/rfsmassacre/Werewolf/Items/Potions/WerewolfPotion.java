@@ -2,12 +2,12 @@ package us.rfsmassacre.Werewolf.Items.Potions;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 
 @SuppressWarnings("deprecation")
@@ -17,28 +17,30 @@ public abstract class WerewolfPotion extends WerewolfItem
 	private PotionType potionType;
 	
 	//Constructs the Werewolf Potion based on its type
-	public WerewolfPotion(WerewolfItemType itemType, boolean splash, Color color, PotionType potionType) 
+	public WerewolfPotion(String name, boolean splash, Color color, PotionType potionType)
 	{	
-		super(Material.POTION, itemType);
+		super(Material.POTION, name);
 		
 		setSplash(splash);
 		setPotionType(potionType);
 		
 		try
 		{
-			setMaterial(this.splash ? Material.SPLASH_POTION : Material.POTION);
+			Material material = this.splash ? Material.SPLASH_POTION : Material.POTION;
+			this.item.setType(material);
 		}
 		catch (NoSuchFieldError exception)
 		{
 			//This means it's running 1.8 and requires the use of potion objects
 			//and convert it to an item stack in order to keep it all consistent
 			Potion potion = new Potion(this.potionType, 1, this.splash);
+			potion.setType(this.potionType);
 			ItemStack itemStack = potion.toItemStack(1);
 			itemStack.setItemMeta(itemStack.getItemMeta());
-			setItem(itemStack);
-			
-			setItemName(getItemData().getItemName(getType()));
-			setItemLore(getItemData().getItemLore(getType()));
+			this.item = itemStack;
+
+			this.setDisplayName(data.getItemName(name));
+			this.setItemLore(data.getItemLore(name));
 		}
 		
 		try
@@ -52,7 +54,7 @@ public abstract class WerewolfPotion extends WerewolfItem
 		}
 		
 		//Running it on this level should make the color kick in before the recipe is created.
-		setRecipe(createRecipe());
+		this.recipe = createRecipe();
 	}
 	
 	/*
@@ -60,23 +62,24 @@ public abstract class WerewolfPotion extends WerewolfItem
 	 */
 	public void setPotionColor(Color color)
 	{
-		PotionMeta meta = (PotionMeta)getItem().getItemMeta();
+		PotionMeta meta = (PotionMeta)getItemStack().getItemMeta();
 		meta.setColor(color);
-		setItemMeta(meta);
+		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+		this.item.setItemMeta(meta);
 	}
 	public Color getPotionColor()
 	{
-		return ((PotionMeta)getItem().getItemMeta()).getColor();
+		return ((PotionMeta)getItemStack().getItemMeta()).getColor();
 	}
 	
 	/*
-	 * Used for Spigot 1.10-1.9
+	 * Used for Spigot 1.9-1.10
 	 */
 	public void setMainEffect(PotionEffectType effect)
 	{
-		PotionMeta meta = (PotionMeta)getItem().getItemMeta();
+		PotionMeta meta = (PotionMeta)getItemStack().getItemMeta();
 		meta.setMainEffect(effect);
-		setItemMeta(meta);
+		this.item.setItemMeta(meta);
 	}
 	
 	public boolean isSplash() 

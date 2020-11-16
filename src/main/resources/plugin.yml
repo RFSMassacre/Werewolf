@@ -1,9 +1,9 @@
 name: Werewolf
-version: 1.4.8
+version: 1.5.3
 api-version: 1.13
 main: us.rfsmassacre.Werewolf.WerewolfPlugin
 author: RFSMassacre
-softdepend: [SkinsRestorer, Vampire, MCore, MassiveCore, Multiverse-Core]
+softdepend: [SkinsRestorer, Vampire, VampireRevamp, MCore, MassiveCore, Multiverse-Core]
 commands:
   werewolf:
     usage: /ww

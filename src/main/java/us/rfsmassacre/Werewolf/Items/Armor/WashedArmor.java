@@ -6,9 +6,9 @@ import org.bukkit.inventory.ShapedRecipe;
 
 public class WashedArmor extends WerewolfArmor
 {	
-	public WashedArmor(Material material) 
+	public WashedArmor(Material material)
 	{
-		super(material, WerewolfItemType.valueOf("WASHED_" + material.name().replace("DIAMOND_", "")));
+		super(material, "WASHED_" + material.toString().replace("DIAMOND_", ""));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -19,17 +19,17 @@ public class WashedArmor extends WerewolfArmor
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItem());
+			recipe = new ShapedRecipe(getKey(), getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{
-			recipe = new ShapedRecipe(getItem());
+			recipe = new ShapedRecipe(getItemStack());
 		}
 		
 		recipe.shape("BQB", "QAQ", "BQB");
 		recipe.setIngredient('B', Material.BLAZE_POWDER);
 		recipe.setIngredient('Q', Material.QUARTZ);
-		recipe.setIngredient('A', getItem().getType());
+		recipe.setIngredient('A', getItemStack().getType());
 		
 		return recipe;
 	}
@@ -37,12 +37,12 @@ public class WashedArmor extends WerewolfArmor
 	@Override
 	public int getPurity() 
 	{
-		return getValue("purity.washed." + getItem().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("purity.washed." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 	
 	@Override
 	public int getDefense()
 	{
-		return getValue("defense.washed." + getItem().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("defense.washed." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 }

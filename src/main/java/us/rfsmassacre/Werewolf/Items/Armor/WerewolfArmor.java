@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import org.bukkit.Material;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
-import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 public abstract class WerewolfArmor extends WerewolfItem
 {
 	private ConfigManager config;
 	
-	public WerewolfArmor(Material material, WerewolfItemType type) 
+	public WerewolfArmor(Material material, String name)
 	{
-		super(material, type);
+		super(material, name);
 		config = WerewolfPlugin.getConfigManager();
 		
 		ArrayList<String> lore = new ArrayList<String>();
@@ -22,9 +22,7 @@ public abstract class WerewolfArmor extends WerewolfItem
 		{
 			lore.add(line.replace("+?%", "+" + Integer.toString(getPurity()) + "%").replace("+!%", "+" + Integer.toString(getDefense()) + "%"));
 		}
-		setItemLore(lore);
-		
-		setRecipe(createRecipe());
+		this.setItemLore(lore);
 	}
 	
 	protected int getValue(String key)
