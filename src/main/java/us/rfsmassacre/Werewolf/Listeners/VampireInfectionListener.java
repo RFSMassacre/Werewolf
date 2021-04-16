@@ -13,7 +13,6 @@ import com.massivecraft.vampire.event.EventVampirePlayerVampireChange;
 
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
 import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;

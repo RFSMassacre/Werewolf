@@ -1,11 +1,8 @@
 package us.rfsmassacre.Werewolf.Listeners;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.Werewolf.Events.NewAlphaEvent;
@@ -33,13 +30,14 @@ public class SkinListener implements Listener
 	{
 		if (!event.isCancelled() && skins != null)
 		{
+			Werewolf werewolf = werewolves.getWerewolf(event.getPlayer());
 			if (event.toWolfForm())
 			{
-				skins.applySkinByName(werewolves.getWerewolf(event.getPlayer()), false);
+				skins.applySkin(werewolf);
 			}
 			else
 			{
-				skins.removeSkin(werewolves.getWerewolf(event.getPlayer()));
+				skins.removeSkin(werewolf);
 			}
 		}
 	}
@@ -60,11 +58,11 @@ public class SkinListener implements Listener
                 {
                     if (oldAlpha != null && oldAlpha.inWolfForm())
                     {
-						skins.applySkinByName(werewolves.getWerewolf(oldAlpha.getPlayer()), false);
+						skins.applySkin(werewolves.getWerewolf(oldAlpha.getPlayer()));
                     }
                     if (newAlpha != null && newAlpha.inWolfForm())
                     {
-						skins.applySkinByName(werewolves.getWerewolf(newAlpha.getPlayer()), false);
+						skins.applySkin(werewolves.getWerewolf(newAlpha.getPlayer()));
                     }
                 }
             }.runTaskLater(WerewolfPlugin.getInstance(), 1L);

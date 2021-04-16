@@ -152,7 +152,7 @@ public class ClanManager
 
             	for (Clan clan : clans.values())
             	{	
-            		if (clan.getAlphaId() == null && clan.getSize() > 0)
+            		if (clan.getSize() > 0 && clan.getAlphaId() == null)
             		{
 	            		//Check for solo Werewolf
             			Werewolf werewolf = clan.getMembers().get(0);

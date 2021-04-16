@@ -1,5 +1,5 @@
 name: Werewolf
-version: 1.5.3
+version: 1.5.4
 api-version: 1.13
 main: us.rfsmassacre.Werewolf.WerewolfPlugin
 author: RFSMassacre
@@ -7,11 +7,9 @@ softdepend: [SkinsRestorer, Vampire, VampireRevamp, MCore, MassiveCore, Multiver
 commands:
   werewolf:
     usage: /ww
-    permission: werewolf.werewolf
-    aliases: ww
+    #permission: werewolf.werewolf
     default: true
   werewolfadmin:
     usage: /wwa
-    permission: werewolfadmin.werewolf
-    aliases: wwa
-    default: false
+    #permission: werewolfadmin.werewolf
+    default: true

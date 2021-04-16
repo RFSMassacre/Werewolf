@@ -174,6 +174,7 @@ public class Clan
 	{
 		return memberIds.size();
 	}
+
 	@Override
 	public boolean equals(Object object)
 	{

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,6 +47,11 @@ public class WerewolfAPI
 	 */
 	public static boolean isWerewolfItem(ItemStack item)
 	{
+		if (item == null || item.getType().equals(Material.AIR))
+		{
+			return false;
+		}
+
 		NBTItem otherItem = new NBTItem(item);
 		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
 		if (compound == null)
@@ -58,6 +64,11 @@ public class WerewolfAPI
 	}
 	public static boolean isWerewolfItem(ItemStack item, String name)
 	{
+		if (item == null || item.getType().equals(Material.AIR))
+		{
+			return false;
+		}
+
 		NBTItem otherItem = new NBTItem(item);
 		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
 		if (compound == null)
@@ -70,6 +81,11 @@ public class WerewolfAPI
 	}
 	public static String getWerewolfItemID(ItemStack item)
 	{
+		if (item == null || item.getType().equals(Material.AIR))
+		{
+			return null;
+		}
+
 		NBTItem otherItem = new NBTItem(item);
 		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
 		if (compound == null)
