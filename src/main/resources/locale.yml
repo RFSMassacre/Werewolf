@@ -83,6 +83,8 @@ invalid:
     outdated-server: "&cMinecraft 1.7.10 and below is not fully supported! Please consider updating to at least Minecraft 1.8.8 or higher to fully use all features."
     no-skins: "&3SkinsRestorer &cplugin not found. Skins will not be applied until it is installed."
     no-regions: "&3WorldGuard &cplugin not found. Region checks will not be enabled."
+    no-vault: "&3Vault &cplugin not found. Group permissions feature will not be enabled."
+    no-groups: "&cYour permission plugin does not support groups. Group permissions feature is disabled."
     
 hunting:
     disabled: "Hunting vampires and werewolves is disabled on this server."
@@ -119,6 +121,7 @@ admin:
     cure:
         no-args: "&cYou must specify an online Werewolf!"
         success: "&eYou have cured &f{player}&e from the Werewolf Infection."
+        failed: "&cCuring &f{player}&c failed!"
         not-infected: "&f{player}&c is not a Werewolf!"
     transform:
         success: "&aYou have toggled the form of &f{werewolf}&a."
@@ -144,3 +147,4 @@ admin:
         complete: "&aLegacy Werewolf data has been imported. ;) Now you're free from buggy plugins."
     reload: "&aWerewolf has been reloaded."
     purge: "&7All broken player files have been cleared."
+    skins-loaded: "&7Skins have been downloaded."

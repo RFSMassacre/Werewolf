@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WashedArmor extends WerewolfArmor
 {	
 	public WashedArmor(Material material)
@@ -43,6 +46,6 @@ public class WashedArmor extends WerewolfArmor
 	@Override
 	public int getDefense()
 	{
-		return getValue("defense.washed." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("bonus.washed." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 }

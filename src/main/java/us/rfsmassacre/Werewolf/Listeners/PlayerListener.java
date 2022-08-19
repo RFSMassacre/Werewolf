@@ -24,7 +24,7 @@ public class PlayerListener implements Listener
 	/*
 	 * Load Werewolf data on Login
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerJoin(PlayerLoginEvent event)
 	{
 		Player player = event.getPlayer();
@@ -47,12 +47,14 @@ public class PlayerListener implements Listener
 				}
 			}.runTaskLater(WerewolfPlugin.getInstance(), 20L);
 		}
+
+		WerewolfPlugin.updateGroup(player);
 	}
 	
 	/*
 	 * Unload Werewolf data on Leave
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerLeave(PlayerQuitEvent event)
 	{
 		Player player = event.getPlayer();
@@ -69,7 +71,7 @@ public class PlayerListener implements Listener
 	/*
 	 * Untransform on death
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event)
 	{
 		Player player = event.getEntity();

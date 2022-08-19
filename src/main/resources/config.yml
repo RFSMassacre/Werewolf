@@ -3,11 +3,18 @@
 ###                                                          ###
 ###   Discord Contact: RFSMassacre#8365                      ###
 ###                                                          ###
-### Feel free to contact me for support, but be curtous and  ###
-### don't freak out and scream vaguely like I'm some Trump   ###
-### supporter. :[                                            ###
+### Feel free to contact me for support, but be courteous    ###
+### and don't freak out and scream vaguely like I'm some     ###
+### Trump supporter. :[                                      ###
 ###                                                          ###
 ################################################################
+
+#Whether to use the permission group feature.
+#This feature makes a new permission group for werewolves so owners
+#can add custom perms for werewolves.
+group-permissions:
+    enabled: false
+    group: "werewolf"
 
 #Whether alpha stats should take in effect
 alphas: true
@@ -23,6 +30,7 @@ cooldowns:
 sound:
     growl: "ENTITY_WOLF_GROWL"
     howl: "ENTITY_WOLF_HOWL"
+    volume: 10.0
 
 #Werewolf Level Perks
 maturity:
@@ -78,6 +86,27 @@ werewolf-stats:
             defense: 0.166
             fist-damage: 10.0
             item-damage: 2.0
+
+#Potion effects per Clan
+#It MUST be in <name>:<power>:<duration> format otherwise it will not read.
+werewolf-effects:
+    witherfang:
+        - "HUNGER:0:72000"
+        - "NIGHT_VISION:0:72000"
+        - "JUMP:3:72000"
+        - "SPEED:3:72000"
+    silvermane:
+        - "HUNGER:2:72000"
+        - "NIGHT_VISION:0:72000"
+        - "JUMP:2:72000"
+        - "SPEED:1:72000"
+        - "REGENERATION:2:72000"
+    bloodmoon:
+        - "HUNGER:1:72000"
+        - "NIGHT_VISION:0:72000"
+        - "JUMP:1:72000"
+        - "SPEED:0:72000"
+        - "INCREASE_DAMAGE:2:72000"
     
 #Silver Penalty
 #Damage per second when Werewolf holds a silver sword
@@ -96,6 +125,7 @@ infection:
 auto-cure:
     enabled: true
     days: 14
+    alpha-only: false
 
 #Scent Tracking
 track:
@@ -136,22 +166,37 @@ tracker-ingredient:
     werewolf: RABBIT_FOOT
     
 #Werewolf Clan Skins
-#These should be taken in as names now that we're using SkinRestorer
-use-urls: false
+#You have the option to use URL or names below. Remember to specify whether you want CLASSIC or SLIM in each option.
+#Changing skin options will take effect on start up.
 skins:
     Alpha: "WerewolfAlpha"
     Witherfang: "WF_Werewolf"
     Silvermane: "SM_Werewolf"
     Bloodmoon: "BM_Werewolf"
+
+use-urls: false
+skin-urls:
+    Alpha:
+        url: "https://i.imgur.com/T5N6m75.png"
+        skin-type: "SLIM"
+    Witherfang:
+        url: "https://i.imgur.com/kUF6qIH.png"
+        skin-type: "SLIM"
+    Silvermane:
+        url: "https://i.imgur.com/8xQWrjG.png"
+        skin-type: "SLIM"
+    Bloodmoon:
+        url: "https://i.imgur.com/M0qnxXh.png"
+        skin-type: "SLIM"
  
 #Check Intervals
-#Lower numbers may cause lag on low-end servers, but will responding in realtime on high-end servers.
+#Lower numbers may cause lag on low-end servers, but will respond in realtime on high-end servers.
 #If you lower silver check below 20, they will lose more than 1 HP per second.
 #If you lower the alpha check it might cause some lag if you have 100+ werewolves on the server.
 intervals:
     moon-cycle: 10
     cure-check: 20
-    werewolf-buffs: 10
+    werewolf-buffs: 20
     werewolf-skins: 10
     werewolf-drops: 10
     werewolf-silver: 20

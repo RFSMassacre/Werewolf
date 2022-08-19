@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PurifiedArmor extends WerewolfArmor
 {
 	public PurifiedArmor(Material material)
@@ -38,6 +41,6 @@ public class PurifiedArmor extends WerewolfArmor
 	@Override
 	public int getDefense()
 	{
-		return getValue("defense.purified." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
+		return getValue("bonus.purified." + getItemStack().getType().name().toLowerCase().replace("_", "-"));
 	}
 }

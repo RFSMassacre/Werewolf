@@ -1,6 +1,9 @@
 package us.rfsmassacre.Werewolf;
 
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
@@ -33,6 +36,8 @@ public class WerewolfPlugin extends JavaPlugin
 	
 	private static LegacyWerewolfDataManager legacyWerewolfData;
 	private static LegacyAlphaDataManager legacyAlphaData;
+
+	private static Permission permissions;
 	
 	@Override
 	public void onEnable()
@@ -60,6 +65,26 @@ public class WerewolfPlugin extends JavaPlugin
 		//Initialize legacy support
 		legacyWerewolfData = new LegacyWerewolfDataManager();
 		legacyAlphaData = new LegacyAlphaDataManager();
+
+		//Prepare vault permission stuff
+		RegisteredServiceProvider<Permission> provider =
+				getServer().getServicesManager().getRegistration(Permission.class);
+		if (provider != null)
+		{
+			if (config.getBoolean("group-permissions.enabled"))
+			{
+				permissions = provider.getProvider();
+				if (!permissions.hasGroupSupport())
+				{
+					messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-groups");
+					permissions = null;
+				}
+			}
+		}
+		else
+		{
+			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vault");
+		}
 
 		//Initialize listeners
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -126,6 +151,38 @@ public class WerewolfPlugin extends JavaPlugin
 	public static WerewolfPlugin getInstance()
 	{
 		return instance;
+	}
+
+	/*
+	 * User Group Toggle
+	 */
+	public static boolean updateGroup(Player player)
+	{
+		if (werewolves.isWerewolf(player.getUniqueId()))
+		{
+			return setGroup(player, true);
+		}
+		else
+		{
+			return setGroup(player, false);
+		}
+	}
+	public static boolean setGroup(Player player, boolean add)
+	{
+		if (permissions != null)
+		{
+			String groupName = config.getString("group-permissions.group");
+			if (add)
+			{
+				return permissions.playerAddGroup(null, player, groupName);
+			}
+			else
+			{
+				return permissions.playerRemoveGroup(null, player, groupName);
+			}
+		}
+
+		return false;
 	}
 	
 	/*

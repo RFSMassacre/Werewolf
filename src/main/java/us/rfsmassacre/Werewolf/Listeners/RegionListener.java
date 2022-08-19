@@ -39,7 +39,7 @@ public class RegionListener implements Listener
      *
      * I only know about the set.allow method. If any better methods are shown, I will update later.
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onTargetSafeZone(TrackerTargetEvent event)
     {
         if (dependency.hasPlugin("WorldGuard") && config.getBoolean("support.WorldGuard"))
@@ -72,7 +72,7 @@ public class RegionListener implements Listener
      *
      * WorldGuard
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onSniffSafeZone(WerewolfSniffEvent event)
     {
         if (dependency.hasPlugin("WorldGuard") && config.getBoolean("support.WorldGuard"))

@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import com.clanjhoo.vampire.VampireAPI;
+import com.clanjhoo.vampire.entity.UPlayer;
+import com.clanjhoo.vampire.entity.UPlayerColl;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -15,8 +17,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
-
-import com.massivecraft.vampire.entity.UPlayer;
 
 import me.NoChance.PvPManager.PvPlayer;
 
@@ -28,7 +28,6 @@ import us.rfsmassacre.Werewolf.Data.WerewolfDataManager;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent.CureType;
 import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Origin.Clan;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
@@ -58,7 +57,7 @@ public class WerewolfManager
 		config = WerewolfPlugin.getConfigManager();
 		dependency = WerewolfPlugin.getDependencyManager();
 		messages = WerewolfPlugin.getMessageManager();
-		werewolves = new HashMap<Player, Werewolf>();
+		werewolves = new HashMap<>();
 		
 		events = WerewolfPlugin.getEventManager();
 		
@@ -167,8 +166,11 @@ public class WerewolfManager
         				for (PotionEffect buff : clan.getBuffs())
         				{
         					//Ensures the buffs remain permanent for the duration of the transformation
-        					if (!werewolf.getPlayer().hasPotionEffect(buff.getType()))
-        						werewolf.getPlayer().addPotionEffect(buff);
+							PotionEffect first = werewolf.getPlayer().getPotionEffect(buff.getType());
+							if (first == null || first.getAmplifier() <= buff.getAmplifier())
+							{
+								werewolf.getPlayer().addPotionEffect(buff);
+							}
         				}
         			}
         			
@@ -240,6 +242,12 @@ public class WerewolfManager
             {
         		for (Werewolf werewolf : getAllWerewolves())
         		{
+        			boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
+        			if (alphaOnly && !isAlpha(werewolf.getPlayer()))
+					{
+						continue;
+					}
+
         			long noCureTime = System.currentTimeMillis() - werewolf.getLastTransform();
         			long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
         			if (noCureTime >= cureDelay)
@@ -303,7 +311,7 @@ public class WerewolfManager
 	    			{
 	    				if (isVampire(werewolf.getPlayer()))
 	    				{
-	    					UPlayer uPlayer = UPlayer.get(werewolf.getPlayer());
+	    					UPlayer uPlayer = UPlayerColl.get(werewolf.getUUID());
 	    					uPlayer.setVampire(false);
 	    				}
 	    			}
@@ -508,9 +516,7 @@ public class WerewolfManager
 	//Checks if player is a vampire
 	public boolean isVampire(Player player)
 	{
-		if (WerewolfPlugin.getDependencyManager().hasPlugin("Vampire"))
-			return UPlayer.get(player).isVampire();
-		else if (WerewolfPlugin.getDependencyManager().hasPlugin("VampireRevamp"))
+		if (WerewolfPlugin.getDependencyManager().hasPlugin("VampireRevamp"))
 			return VampireAPI.isVampire(player);
 		else
 			return false;

@@ -52,7 +52,7 @@ public class WerewolfListener implements Listener
 	/*
 	 * Werewolves do not receive fall damage when in wolf form.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfFallDamage(EntityDamageEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
@@ -79,7 +79,7 @@ public class WerewolfListener implements Listener
 	/*
 	 * Werewolves naturally reduce incoming damage.
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWerewolfDamage(EntityDamageByEntityEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
@@ -110,7 +110,7 @@ public class WerewolfListener implements Listener
 	 * 
 	 * Takes into account the new and old methods of holding items.
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWerewolfAttack(EntityDamageByEntityEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
@@ -156,7 +156,7 @@ public class WerewolfListener implements Listener
 	 * status is then reset; defaulting to the second player with the highest level.
 	 * (If hunting is enabled on this server.)
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onAlphaDeath(PlayerDeathEvent event)
 	{
 		Player player = event.getEntity();
@@ -211,7 +211,7 @@ public class WerewolfListener implements Listener
 	 * Werewolves must only eat meat (or items configured by
 	 * owner.)
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfEat(PlayerItemConsumeEvent event)
 	{
 		if (event.isCancelled() || !werewolves.isWerewolf(event.getPlayer()))
@@ -261,7 +261,7 @@ public class WerewolfListener implements Listener
 	 * When in /ww track mode, Werewolf sees a scent trail to
 	 * their target.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfSniff(PlayerInteractEntityEvent event) 
 	{
 		if (event.isCancelled() || !werewolves.isWerewolf(event.getPlayer()))
@@ -307,7 +307,7 @@ public class WerewolfListener implements Listener
 	/*
 	 * Werewolves growl when getting hurt in wolf form
 	 */
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onPlayerDamaged(EntityDamageEvent event)
 	{
 		//If no damage was done to a player, cancel now
@@ -329,7 +329,7 @@ public class WerewolfListener implements Listener
 	/*
 	 * Prevent Werewolves from using certain commands.
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onWerewolfChat(PlayerCommandPreprocessEvent event)
 	{
 		if (!event.isCancelled())
@@ -383,7 +383,7 @@ public class WerewolfListener implements Listener
 	/*
 	 * Prevent Werewolves from transforming in no Werewolf world or when not in Survival mode
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onTransform(WerewolfTransformEvent event)
 	{
 		if (!event.isCancelled() && event.toWolfForm())

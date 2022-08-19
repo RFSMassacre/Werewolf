@@ -2,7 +2,6 @@ package us.rfsmassacre.Werewolf.Managers;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
@@ -30,10 +29,10 @@ import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
 
 public class ItemManager 
 {
-	private WerewolfPlugin instance;
-	private ConfigManager config;
+	private final WerewolfPlugin instance;
+	private final ConfigManager config;
 	
-	private HashMap<String, WerewolfItem> items;
+	private final HashMap<String, WerewolfItem> items;
 	private int itemTaskId;
 	private int armorTaskId;
 	
@@ -81,6 +80,7 @@ public class ItemManager
 	public void reloadRecipes()
 	{
 		unloadRecipes();
+		WerewolfItem.reloadData();
 		reloadItems();
 		loadRecipes();
 	}
@@ -97,26 +97,21 @@ public class ItemManager
 			Recipe recipe = item.getRecipe();
 			
 			if (config.getBoolean("recipes." + name) && recipe != null)
+			{
 				instance.getServer().addRecipe(recipe);
+			}
 		}
 	}
 	public void unloadRecipes()
 	{
-		HashSet<Recipe> allRecipes = new HashSet<Recipe>();
 		Iterator<Recipe> iterator = Bukkit.getServer().recipeIterator();
 		while (iterator.hasNext())
 		{
 			Recipe recipe = iterator.next();
-			allRecipes.add(recipe);
 			if (WerewolfItem.isWerewolfItem(recipe.getResult()))
 			{
-				allRecipes.remove(recipe);
+				iterator.remove();
 			}
-		}
-		Bukkit.getServer().clearRecipes();
-		for (Recipe vanillaRecipe : allRecipes)
-		{
-			Bukkit.getServer().addRecipe(vanillaRecipe);
 		}
 	}
 	
@@ -144,67 +139,80 @@ public class ItemManager
 	{
 		//Continuously drop any armor the werewolf might have on
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		itemTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		itemTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () ->
         {
-            public void run() 
-            {
-        		for (Player player : Bukkit.getOnlinePlayers())
-        		{
-        			boolean update = false; //In case inventory needs to be manually updated
-        			for (ItemStack item : player.getInventory().getContents())
-        			{
-        				if (item != null && item.hasItemMeta())
-        				{
-	        				WerewolfItem werewolfItemOld = getWerewolfItem(item);
-	        				ItemMeta meta = item.getItemMeta();
-	        				
-	        				if (werewolfItemOld != null && !meta.getLore().equals(werewolfItemOld.getItemLore())
-	        			    && !(werewolfItemOld instanceof SilverSword) && !(werewolfItemOld instanceof WerewolfArmor))
-	        				{
-	        					meta.setLore(werewolfItemOld.getItemLore());
-	        					item.setItemMeta(meta);
-	        				}
-        				}
-        			}
-        			
-        			if (update)
-        				player.updateInventory();
-        		}
-            }
+			for (Player player : Bukkit.getOnlinePlayers())
+			{
+				boolean update = false;
+				for (ItemStack item : player.getInventory().getContents())
+				{
+					if (item != null && item.hasItemMeta())
+					{
+						WerewolfItem werewolfItemOld = getWerewolfItem(item);
+						ItemMeta meta = item.getItemMeta();
+						if (meta == null)
+						{
+							continue;
+						}
+
+						if (werewolfItemOld != null)
+						{
+							if (!werewolfItemOld.getItemLore().equals(meta))
+							{
+								update = true;
+							}
+							else
+							{
+								continue;
+							}
+
+							if (!werewolfItemOld.getItemLore().equals(meta.getLore()) &&
+									!(werewolfItemOld instanceof SilverSword) &&
+									!(werewolfItemOld instanceof WerewolfArmor))
+							{
+								meta.setLore(werewolfItemOld.getItemLore());
+								item.setItemMeta(meta);
+							}
+						}
+					}
+				}
+
+				if (update)
+				{
+					player.updateInventory();
+				}
+			}
         }, 0L, config.getInt("intervals.item-update"));
 	}
 	public void startArmorChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		itemTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		armorTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () ->
         {
-            public void run() 
-            {
-        		for (Player player : Bukkit.getOnlinePlayers())
-        		{
-        			if (!WerewolfPlugin.getWerewolfManager().isHuman(player))
-        			{
-        				boolean update = false; //In case this player needs to update his inventory
-        				ItemStack[] equipment = player.getInventory().getArmorContents();
-        				for (int slot = 0; slot < equipment.length; slot++)
-        				{
-        					if (getWerewolfItem(equipment[slot]) instanceof WerewolfArmor)
-        					{
-        						player.getWorld().dropItemNaturally(player.getLocation(), equipment[slot]);
-        						equipment[slot] = new ItemStack(Material.AIR);
-        						update = true;
-        					}
-        				}
-        				
-        				if (update)
-        				{
-        					player.getInventory().setArmorContents(equipment);
-        					player.updateInventory();
-        				}
-        			}
-        		}
-            }
+			for (Player player : Bukkit.getOnlinePlayers())
+			{
+				if (!WerewolfPlugin.getWerewolfManager().isHuman(player))
+				{
+					boolean update = false; //In case this player needs to update his inventory
+					ItemStack[] equipment = player.getInventory().getArmorContents();
+					for (int slot = 0; slot < equipment.length; slot++)
+					{
+						if (getWerewolfItem(equipment[slot]) instanceof WerewolfArmor)
+						{
+							player.getWorld().dropItemNaturally(player.getLocation(), equipment[slot]);
+							equipment[slot] = new ItemStack(Material.AIR);
+							update = true;
+						}
+					}
+
+					if (update)
+					{
+						player.getInventory().setArmorContents(equipment);
+						player.updateInventory();
+					}
+				}
+			}
         }, 0L, config.getInt("intervals.hunting-armor-checker"));
 	}
 	
@@ -228,7 +236,9 @@ public class ItemManager
 		Material material = Material.getMaterial(name);
 		
 		if (version.startsWith("1.13") || version.startsWith("1.14")
-		|| version.startsWith("1.15") || version.startsWith("1.16"))
+		|| version.startsWith("1.15") || version.startsWith("1.16")
+		|| version.startsWith("1.17") || version.startsWith("1.18")
+		|| version.startsWith("1.19"))
 		{
 			if (material == null)
 				material = Material.getMaterial(name, true);

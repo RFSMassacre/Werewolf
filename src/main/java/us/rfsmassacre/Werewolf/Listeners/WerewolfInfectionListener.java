@@ -50,7 +50,7 @@ public class WerewolfInfectionListener implements Listener
 	/*
 	 * WITHERFANG CLAN
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInfectionPotionDrink(PlayerItemConsumeEvent event)
 	{
 		Player player = event.getPlayer();
@@ -83,7 +83,7 @@ public class WerewolfInfectionListener implements Listener
 	/*
 	 * SILVERMANE CLAN
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWolfBite(EntityDamageByEntityEvent event)
 	{
 		if (!event.isCancelled() && event.getFinalDamage() > 0)
@@ -125,7 +125,7 @@ public class WerewolfInfectionListener implements Listener
 	/*
 	 * BLOODMOON CLAN
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWerewolfBite(EntityDamageByEntityEvent event)
 	{
 		if (!event.isCancelled() && event.getFinalDamage() > 0)
@@ -169,7 +169,7 @@ public class WerewolfInfectionListener implements Listener
 	/*
 	 * CURE POTION
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onCurePotionDrink(PlayerItemConsumeEvent event)
 	{
 		Player player = event.getPlayer();
@@ -202,7 +202,7 @@ public class WerewolfInfectionListener implements Listener
 	/*
 	 * PURITY ARMOR CHANCE
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPurifiedInfect(WerewolfInfectionEvent event)
 	{
 		Player hunter = event.getPlayer();
@@ -227,5 +227,20 @@ public class WerewolfInfectionListener implements Listener
 				messages.sendHunterLocale(hunter, "hunting.armor.cleansed");
 			}
 		}
+	}
+
+	/*
+	 * Group permission edits.
+	 */
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	public void onWerewolfGroupAdd(WerewolfInfectionEvent event)
+	{
+		WerewolfPlugin.setGroup(event.getPlayer(), true);
+	}
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	public void onWerewolfGroupRemove(WerewolfCureEvent event)
+	{
+		WerewolfPlugin.setGroup(event.getPlayer(), false);
 	}
 }

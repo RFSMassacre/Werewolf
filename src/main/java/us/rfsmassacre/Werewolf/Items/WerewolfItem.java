@@ -23,7 +23,7 @@ public abstract class WerewolfItem extends HeavenItem
         this.setDisplayName(data.getItemName(name));
         this.setItemLore(data.getItemLore(name));
 
-        this.recipe = this.createRecipe();
+        this.recipe = createRecipe();
     }
 
     public static void reloadData()

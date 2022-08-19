@@ -247,7 +247,12 @@ public class Werewolf implements Comparable<Werewolf>
 				howl();
 				dropArmor();
 				dropItems();
-				
+
+				for (PotionEffect effect : player.getActivePotionEffects())
+				{
+					player.removePotionEffect(effect.getType());
+				}
+
 				player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
 				player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
@@ -279,7 +284,13 @@ public class Werewolf implements Comparable<Werewolf>
 				 * the transformation sequence easy.
 				 */
 				growl();
-				
+
+				for (PotionEffect effect : player.getActivePotionEffects())
+				{
+					player.removePotionEffect(effect.getType());
+				}
+
+				/*
 				player.removePotionEffect(PotionEffectType.BLINDNESS);
 				player.removePotionEffect(PotionEffectType.CONFUSION);
 				player.removePotionEffect(PotionEffectType.HUNGER);
@@ -291,6 +302,7 @@ public class Werewolf implements Comparable<Werewolf>
 				player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
                 player.removePotionEffect(PotionEffectType.SLOW);
                 player.removePotionEffect(PotionEffectType.BLINDNESS);
+				 */
 				
 				player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
@@ -310,7 +322,8 @@ public class Werewolf implements Comparable<Werewolf>
 	{
 		try
 		{
-			this.player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.howl")), 10.0F, 1.0F);
+			this.player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.howl")),
+					(float)config.getDouble("sound.volume"),	1.0F);
 		}
 		catch (Exception exception)
 		{
@@ -324,7 +337,8 @@ public class Werewolf implements Comparable<Werewolf>
 	{
 		try
 		{
-			this.player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.growl")), 10.0F, 1.0F);
+			this.player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.growl")),
+					(float)config.getDouble("sound.volume"), 1.0F);
 		}
 		catch (Exception exception)
 		{

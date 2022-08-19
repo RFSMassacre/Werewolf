@@ -68,7 +68,7 @@ public class CraftingListener implements Listener
 	 * 
 	 * Force all but the potions and silver sword from being human only.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onHuntingItemCreate(CraftItemEvent event)
 	{
 		Player hunter = (Player)event.getWhoClicked();
@@ -102,7 +102,7 @@ public class CraftingListener implements Listener
 	/*
 	 * Purification Process
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPurificationCheck(InventoryClickEvent event)
 	{
 		Player hunter = (Player)event.getWhoClicked();
@@ -188,7 +188,7 @@ public class CraftingListener implements Listener
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPurificationAttempt(FurnaceSmeltEvent event)
 	{
 		if (!event.isCancelled())
@@ -216,7 +216,7 @@ public class CraftingListener implements Listener
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPurificationFail(FurnaceExtractEvent event)
 	{
 		Player hunter = event.getPlayer();

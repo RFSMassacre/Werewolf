@@ -13,16 +13,14 @@ import us.rfsmassacre.HeavenLib.Commands.SpigotCommand;
 import us.rfsmassacre.HeavenLib.Managers.ChatManager;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
+import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent;
+import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent.CureType;
 import us.rfsmassacre.Werewolf.Events.WerewolfInfectionEvent;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.Managers.*;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Data.LegacyAlphaDataManager;
 import us.rfsmassacre.Werewolf.Data.LegacyWerewolfDataManager;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
-import us.rfsmassacre.Werewolf.Managers.ClanManager;
-import us.rfsmassacre.Werewolf.Managers.ItemManager;
-import us.rfsmassacre.Werewolf.Managers.MessageManager;
-import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 import us.rfsmassacre.Werewolf.Origin.Clan;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
@@ -34,6 +32,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 	private ClanManager clans;
 	private WerewolfManager werewolves;
 	private MessageManager messages;
+	private EventManager events;
 	
 	public WerewolfAdminCommand() 
 	{
@@ -43,6 +42,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 		this.clans = WerewolfPlugin.getClanManager();
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
 		this.messages = WerewolfPlugin.getMessageManager();
+		this.events = WerewolfPlugin.getEventManager();
 		
 		this.mainCommand = this.new MainCommand(this);
 		this.subCommands.add(this.new SpawnCommand(this));
@@ -286,12 +286,26 @@ public class WerewolfAdminCommand extends SpigotCommand
 					{
 						Werewolf werewolf = werewolves.getWerewolf(player);
 						Clan clan = werewolf.getClan();
-						
-						werewolves.cureWerewolf(werewolf);
-						clan.removeMember(player);
-						
-						messages.sendWolfLocale(sender, "admin.cure.success",
-								"{player}", player.getDisplayName());
+
+						WerewolfCureEvent event = new WerewolfCureEvent(player, CureType.COMMAND);
+						if (events != null)
+						{
+							events.callEvent(event);
+						}
+
+						if (!event.isCancelled())
+						{
+							werewolves.cureWerewolf(werewolf);
+							clan.removeMember(player);
+
+							messages.sendWolfLocale(sender, "admin.cure.success",
+									"{player}", player.getDisplayName());
+						}
+						else
+						{
+							messages.sendWolfLocale(sender, "admin.cure.failed",
+									"{player}", player.getDisplayName());
+						}
 					}
 					else
 					{
@@ -507,13 +521,11 @@ public class WerewolfAdminCommand extends SpigotCommand
 				
 				//Invalid args
 				messages.sendWolfLocale(sender, "admin.setphase.no-args");
-				return;
 			}
 			else
 			{
 				//Console error
 				messages.sendWolfLocale(sender, "admin.setphase.console");
-				return;
 			}
 		}
 	}
@@ -553,7 +565,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 			//Reload configs
 			WerewolfPlugin.getConfigManager().reloadFiles();
 			WerewolfPlugin.getLocaleManager().reloadFiles();
-			//WerewolfPlugin.getItemManager().reloadRecipes();
+			WerewolfPlugin.getItemManager().reloadRecipes();
 			WerewolfPlugin.getMoonManager().reloadMoons();
 			
 			//Reload tasks
@@ -567,9 +579,10 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			WerewolfPlugin.getClanManager().endCycle();
 			WerewolfPlugin.getClanManager().startAlphaChecker();
-			WerewolfPlugin.getClanManager().reloadMenus();
+			WerewolfPlugin.getClanManager().reload();
 			WerewolfPlugin.getMessageManager().reloadText();
 
+			WerewolfPlugin.getItemManager().reloadRecipes();
 			WerewolfPlugin.getItemManager().endCycles();
 			WerewolfPlugin.getItemManager().startItemUpdater();
 			WerewolfPlugin.getItemManager().startArmorChecker();

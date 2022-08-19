@@ -2,6 +2,7 @@ package us.rfsmassacre.HeavenLib.Managers;
 
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.rfsmassacre.HeavenLib.BaseManagers.ResourceManager;
@@ -79,5 +80,24 @@ public class ConfigManager extends ResourceManager
 			option = defaultFile.getLongList(key);
 		
 		return option;
+	}
+
+	public List<String> getPotionList(String key)
+	{
+		List<String> option = file.getStringList(key);
+		if (option.isEmpty())
+		{
+			option = defaultFile.getStringList(key);
+		}
+		return option;
+	}
+	public ConfigurationSection getConfigurationSection(String key)
+	{
+		ConfigurationSection section = file.getConfigurationSection(key);
+		if (section == null)
+		{
+			section = defaultFile.getConfigurationSection(key);
+		}
+		return section;
 	}
 }

@@ -1,27 +1,27 @@
 package us.rfsmassacre.Werewolf.Managers;
 
 import net.skinsrestorer.api.PlayerWrapper;
+import net.skinsrestorer.api.SkinVariant;
 import net.skinsrestorer.api.SkinsRestorerAPI;
-import net.skinsrestorer.shared.exception.SkinRequestException;
+import net.skinsrestorer.api.exception.SkinRequestException;
+import net.skinsrestorer.api.property.IProperty;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
-
-import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
-import java.util.UUID;
 
 public class SkinManager
 {
-	private ConfigManager config;
-	private WerewolfManager werewolves;
-	private MessageManager messages;
+	private final SkinsRestorerAPI api;
 
-	private SkinsRestorerAPI api;
+	private final ConfigManager config;
+	private final MessageManager messages;
+	private final WerewolfManager werewolves;
+
+	private final HashMap<String, IProperty> skins;
 	
 	public SkinManager()
 	{
@@ -30,172 +30,137 @@ public class SkinManager
 		this.messages = WerewolfPlugin.getMessageManager();
 
 		this.api = SkinsRestorerAPI.getApi();
+		this.skins = new HashMap<>();
+		generateSkins(true);
 	}
 
-	/*
-	public void startSkinChecker()
+	public void applySkin(Werewolf werewolf)
 	{
-		//Correct skins of werewolves
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		skinTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-        {
-            public void run() 
-            {
-    			for (Werewolf werewolf : werewolves.getOnlineWerewolves())
-    			{
-					if (werewolf.inWolfForm())
-					{
-						//Updates skin to the correct one
-						if (!usingSkin(werewolf))
-						{
-							applySkin(werewolf);
-						}
-					}
-					else
-					{
-						if (usingSkin(werewolf))
-						{
-							removeSkin(werewolf);
-						}
-					}
-    			}
-            }
-        }, 0L, config.getInt("intervals.werewolf-skins"));
-	}
-	 */
-
-	public void applySkin(@Nonnull Werewolf werewolf)
-	{
-		Player player = werewolf.getPlayer();
-		String type = getType(werewolf);
-		String skinName = getSkinName(type);
-
-		try
-		{
-			api.setSkin(player.getName(), skinName);
-			api.applySkin(new PlayerWrapper(player));
-		}
-		catch (SkinRequestException exception)
-		{
-			messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> " + type + " skin cannot be set.");
-		}
-	}
-
-	/*
-	public void applySkinByName(Werewolf werewolf, boolean clear)
-	{
-		Bukkit.getScheduler().runTaskAsynchronously(SkinsRestorer.getInstance(), () ->
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
 		{
 			Player player = werewolf.getPlayer();
-			String skinName = getSkinName(werewolf);
-			if (clear)
+			String type = getType(werewolf);
+
+			try
 			{
-				skinName = storage.getDefaultSkinNameIfEnabled(player.getName(), true);
+				if (config.getBoolean("use-urls"))
+				{
+					api.applySkin(new PlayerWrapper(player), skins.get(type));
+				}
+				else
+				{
+					api.applySkin(new PlayerWrapper(player), getSkinName(werewolf));
+				}
 			}
-
-			if (C.validUsername(skinName))
+			catch (Exception exception)
 			{
-				try
-				{
-
-					factory.applySkin(player, storage.getOrCreateSkinForPlayer(skinName));
-				}
-				catch (SkinRequestException exception)
-				{
-					player.sendMessage(exception.getReason());
-				}
+				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &c" + type +
+						" skin cannot be set.");
 			}
 		});
 	}
-	*/
-
-	/*
-	public void applySkinByURL(Werewolf werewolf, boolean clear)
-	{
-		Bukkit.getScheduler().runTaskAsynchronously(SkinsRestorer.getInstance(), () ->
-		{
-			Player player = werewolf.getPlayer();
-			String skinURL = getSkinURL(werewolf);
-
-			if (C.validUrl(skinURL))
-			{
-				Bukkit.broadcastMessage(skinURL);
-
-				try
-				{
-					storage.setSkinData(player.getName(), api.genSkin(skinURL));
-					storage.setPlayerSkin(player.getName(), player.getName());
-					factory.applySkin(player, storage.getSkinData(player.getName()));
-				}
-				catch (SkinRequestException exception)
-				{
-					player.sendMessage(exception.getReason());
-				}
-				if (save)
-				{
-					this.plugin.getSkinStorage().setPlayerSkin(p.getName(), oldSkinName != null ? oldSkinName : p.getName());
-				}
-				}
-				catch (Exception exception)
-				{
-					System.out.println("[SkinsRestorer] [ERROR] could not generate skin url:");
-					exception.printStackTrace();
-				}
-				if (save)
-				{
-					this.plugin.getSkinStorage().setPlayerSkin(p.getName(), oldSkinName != null ? oldSkinName : p.getName());
-				}
-				}
-			}
-		});
-	}
-	 */
 
 	public void removeSkin(Werewolf werewolf)
 	{
-		Player player = werewolf.getPlayer();
-		api.removeSkin(player.getName());
-		api.applySkin(new PlayerWrapper(player));
-	}
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
+		{
+			try
+			{
+				IProperty emptySkin = api.createProperty("textures", "", "");
 
-	/*
-	public void endCycles()
-	{
-		//In case we need to stop the buff cycle for a reload
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		scheduler.cancelTask(skinTaskId);
+				Player player = werewolf.getPlayer();
+				api.removeSkin(player.getName());
+				api.applySkin(new PlayerWrapper(player), emptySkin);
+			}
+			catch (Exception exception)
+			{
+				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &c" +
+						werewolf.getPlayer().getName() + "'s skin cannot be cleared.");
+			}
+		});
 	}
-	 */
 
 	public String getSkinName(Werewolf werewolf)
 	{
-		String skinType = werewolves.isAlpha(werewolf.getPlayer()) ? "Alpha" : werewolf.getType().toString();
-		return getSkinName(skinType);
+		return getSkinName(werewolf.getType().toString(), werewolves.isAlpha(werewolf.getPlayer()));
 	}
 	public String getSkinName(String type)
 	{
-		String skinName = config.getString("skins." + type);
+		return config.getString("skins." + type);
+	}
+	public String getSkinName(String type, boolean alpha)
+	{
+		if (alpha)
+		{
+			return config.getString("skins.Alpha");
+		}
 
-		try
-		{
-			return skinName;
-		}
-		catch (IllegalArgumentException exception)
-		{
-			return null;
-		}
+		return config.getString("skins." + type);
 	}
 
 	public String getType(Werewolf werewolf)
 	{
 		return werewolves.isAlpha(werewolf.getPlayer()) ? "Alpha" : werewolf.getType().toString();
 	}
-	public String getSkinURL(Werewolf werewolf)
+	public String getSkinType(String type)
 	{
-		return getSkinURL(getType(werewolf));
+		String skinType = config.getString("skin-urls." + type + ".skin-type");
+		return skinType == null ? "SLIM" : skinType;
 	}
 	public String getSkinURL(String type)
 	{
-		return config.getString("urls." + type);
+		return config.getString("skin-urls." + type + ".url");
+	}
+
+
+	private void generateSkins()
+	{
+		if (config.getBoolean("use-urls"))
+		{
+			String alphaUrl = getSkinURL("Alpha");
+			String witherfangUrl = getSkinURL("Witherfang");
+			String silvermaneUrl = getSkinURL("Silvermane");
+			String bloodmoonUrl = getSkinURL("Bloodmoon");
+
+			String alphaType = getSkinType("Alpha");
+			String witherfangType = getSkinType("Witherfang");
+			String silvermaneType = getSkinType("Silvermane");
+			String bloodmoonType = getSkinType("Bloodmoon");
+
+			try
+			{
+				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &7" +
+						"Loading skins... &cDo not use any skins until it is done loading!");
+
+				IProperty alphaSkin = api.genSkinUrl(alphaUrl, SkinVariant.valueOf(alphaType));
+				IProperty witherfangSkin = api.genSkinUrl(witherfangUrl, SkinVariant.valueOf(witherfangType));
+				IProperty silvermaneSkin = api.genSkinUrl(silvermaneUrl, SkinVariant.valueOf(silvermaneType));
+				IProperty bloodmoonSkin = api.genSkinUrl(bloodmoonUrl, SkinVariant.valueOf(bloodmoonType));
+
+				skins.clear();
+				skins.put("Alpha", alphaSkin);
+				skins.put("Witherfang", witherfangSkin);
+				skins.put("Silvermane", silvermaneSkin);
+				skins.put("Bloodmoon", bloodmoonSkin);
+
+				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &7" +
+						"Skins have been loaded. You may now use skins.");
+			}
+			catch (SkinRequestException exception)
+			{
+				exception.printStackTrace();
+			}
+		}
+	}
+	public void generateSkins(boolean async)
+	{
+		if (async)
+		{
+			Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), (Runnable)this::generateSkins);
+		}
+		else
+		{
+			generateSkins();
+		}
 	}
 }

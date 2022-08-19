@@ -1,8 +1,12 @@
 package us.rfsmassacre.Werewolf.Managers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -41,24 +45,32 @@ public class ClanManager
 		
 		//Load default settings
 		Clan newWitherfangClan = new Clan(ClanType.WITHERFANG, witherfangMenu.getText());
+		Clan newSilvermaneClan = new Clan(ClanType.SILVERMANE, silvermaneMenu.getText());
+		Clan newBloodmoonClan = new Clan(ClanType.BLOODMOON, bloodmoonMenu.getText());
+
+		setPotionEffects(newWitherfangClan);
+		setPotionEffects(newSilvermaneClan);
+		setPotionEffects(newBloodmoonClan);
+
+		/*
 		newWitherfangClan.addBuff(new PotionEffect(PotionEffectType.HUNGER, 72000, 0));
 		newWitherfangClan.addBuff(new PotionEffect(PotionEffectType.NIGHT_VISION, 72000, 1));
 		newWitherfangClan.addBuff(new PotionEffect(PotionEffectType.JUMP, 72000, 3));
 		newWitherfangClan.addBuff(new PotionEffect(PotionEffectType.SPEED, 72000, 3));
-		
-		Clan newSilvermaneClan = new Clan(ClanType.SILVERMANE, silvermaneMenu.getText());
+
 		newSilvermaneClan.addBuff(new PotionEffect(PotionEffectType.HUNGER, 72000, 2));
 		newSilvermaneClan.addBuff(new PotionEffect(PotionEffectType.NIGHT_VISION, 72000, 1));
 		newSilvermaneClan.addBuff(new PotionEffect(PotionEffectType.JUMP, 72000, 2));
 		newSilvermaneClan.addBuff(new PotionEffect(PotionEffectType.SPEED, 72000, 1));
 		newSilvermaneClan.addBuff(new PotionEffect(PotionEffectType.REGENERATION, 72000, 2));
 		
-		Clan newBloodmoonClan = new Clan(ClanType.BLOODMOON, bloodmoonMenu.getText());
+
 		newBloodmoonClan.addBuff(new PotionEffect(PotionEffectType.HUNGER, 72000, 1));
 		newBloodmoonClan.addBuff(new PotionEffect(PotionEffectType.NIGHT_VISION, 72000, 1));
 		newBloodmoonClan.addBuff(new PotionEffect(PotionEffectType.JUMP, 72000, 1));
 		newBloodmoonClan.addBuff(new PotionEffect(PotionEffectType.SPEED, 72000, 0));
 		newBloodmoonClan.addBuff(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 72000, 2));
+		 */
 		
 		//If data is found per clan, loads those instead
 		//Transfer data instead of overwriting the actual object
@@ -102,7 +114,7 @@ public class ClanManager
 		clanData.saveToFile(getClan(ClanType.BLOODMOON), ClanType.BLOODMOON.toString());
 	}
 	
-	public void reloadMenus()
+	public void reload()
 	{
 		witherfangMenu.reloadText();
 		silvermaneMenu.reloadText();
@@ -115,6 +127,10 @@ public class ClanManager
 		witherfangClan.setDescription(witherfangMenu.getText());
 		silvermaneClan.setDescription(silvermaneMenu.getText());
 		bloodmoonClan.setDescription(bloodmoonMenu.getText());
+
+		setPotionEffects(witherfangClan);
+		setPotionEffects(silvermaneClan);
+		setPotionEffects(bloodmoonClan);
 		
 		clans.put(ClanType.WITHERFANG, witherfangClan);
 		clans.put(ClanType.SILVERMANE, silvermaneClan);
@@ -141,26 +157,32 @@ public class ClanManager
 	{
 		//Continuously ensure each clan has an alpha through the criteria
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		alphaTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-        {
-            public void run() 
-            {
-            	if (!config.getBoolean("alphas"))
+		alphaTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable()
+		{
+			public void run()
+			{
+				if (!config.getBoolean("alphas"))
 				{
 					return;
 				}
 
-            	for (Clan clan : clans.values())
-            	{	
-            		if (clan.getSize() > 0 && clan.getAlphaId() == null)
-            		{
-	            		//Check for solo Werewolf
-            			Werewolf werewolf = clan.getMembers().get(0);
-            			clan.makeAlpha(werewolf);
-            		}
-            	}
-            }
-        }, 0L, WerewolfPlugin.getConfigManager().getInt("intervals.alpha-update"));
+				for (Clan clan : clans.values())
+				{
+					if (clan.getAlphaId() == null & !clan.isEmpty())
+					{
+						//Check for solo Werewolf
+						for (Werewolf werewolf : clan.getMembers())
+						{
+							if (werewolf != null)
+							{
+								clan.makeAlpha(werewolf);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}, 0L, WerewolfPlugin.getConfigManager().getInt("intervals.alpha-update"));
 	}
 	
 	public void endCycle()
@@ -168,5 +190,35 @@ public class ClanManager
 		//In case we need to stop the buff cycle for a reload
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 		scheduler.cancelTask(alphaTaskId);
+	}
+
+	private void setPotionEffects(Clan clan)
+	{
+		ClanType clanType = clan.getType();
+		List<String> formats = config.getPotionList("werewolf-effects." + clanType.name().toLowerCase());
+		ArrayList<PotionEffect> effects = new ArrayList<>();
+		for (String format : formats)
+		{
+			try
+			{
+				String[] line = format.split(":");
+				String potionName = line[0];
+				int power = Integer.parseInt(line[1]);
+				int duration = Integer.parseInt(line[2]);
+				PotionEffectType potionType = PotionEffectType.getByName(potionName);
+				if (potionType == null)
+				{
+					continue;
+				}
+
+				PotionEffect effect = new PotionEffect(potionType, duration, power);
+				effects.add(effect);
+			}
+			catch (NumberFormatException exception)
+			{
+				exception.printStackTrace();
+			}
+		}
+		clan.setBuffs(effects);
 	}
 }

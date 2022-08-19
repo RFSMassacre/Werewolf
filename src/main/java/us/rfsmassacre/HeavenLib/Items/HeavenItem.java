@@ -82,15 +82,13 @@ public abstract class HeavenItem
     public void setItemLore(List<String> newLore)
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
 
-        List<String> lines = new ArrayList<>();
+        List<String> lore = new ArrayList<>();
         for (String line : newLore)
         {
-            lines.add(ChatManager.format(line));
+            lore.add(ChatManager.format(line));
         }
 
-        lore.addAll(lines);
         meta.setLore(lore);
         item.setItemMeta(meta);
     }

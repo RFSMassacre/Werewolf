@@ -2,6 +2,7 @@ package us.rfsmassacre.Werewolf.Origin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class Clan
 	/*
 	 * Clan Type
 	 */
-	public static enum ClanType
+	public enum ClanType
 	{
 		WITHERFANG("Witherfang"),
 		SILVERMANE("Silvermane"),
@@ -173,6 +174,10 @@ public class Clan
 	public int getSize()
 	{
 		return memberIds.size();
+	}
+	public boolean isEmpty()
+	{
+		return memberIds.isEmpty();
 	}
 
 	@Override

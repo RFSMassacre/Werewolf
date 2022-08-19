@@ -1,7 +1,9 @@
 package us.rfsmassacre.Werewolf.Items.Armor;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
@@ -10,19 +12,23 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 public abstract class WerewolfArmor extends WerewolfItem
 {
-	private ConfigManager config;
+	private final ConfigManager config;
 	
 	public WerewolfArmor(Material material, String name)
 	{
 		super(material, name);
-		config = WerewolfPlugin.getConfigManager();
-		
-		ArrayList<String> lore = new ArrayList<String>();
+		this.config = WerewolfPlugin.getConfigManager();
+
+		List<String> newLore = new ArrayList<>();
 		for (String line : getItemLore())
 		{
-			lore.add(line.replace("+?%", "+" + Integer.toString(getPurity()) + "%").replace("+!%", "+" + Integer.toString(getDefense()) + "%"));
+			String finalLine = line.replace("+?%", "+" + getPurity() + "%");
+			finalLine = finalLine.replace("+!%", "+" + getDefense() + "%");
+			newLore.add(finalLine);
 		}
-		this.setItemLore(lore);
+		this.setItemLore(newLore);
+
+		this.recipe = createRecipe();
 	}
 	
 	protected int getValue(String key)

@@ -159,7 +159,7 @@ public class WerewolfHuntingListener implements Listener
 	/*
 	 * Werewolf Tracker
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfTracking(PlayerInteractEvent event)
 	{
 		Player hunter = event.getPlayer();
@@ -258,7 +258,7 @@ public class WerewolfHuntingListener implements Listener
 	/*
 	 * Silver Sword
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onSilverSwordHit(EntityDamageByEntityEvent event)
 	{
 		if (!event.isCancelled() && event.getEntity() instanceof Player 
@@ -284,7 +284,7 @@ public class WerewolfHuntingListener implements Listener
 	/*
 	 * Gold Sword
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onGoldSwordHit(EntityDamageByEntityEvent event)
 	{
 		if (!event.isCancelled() && event.getEntity() instanceof Player 
@@ -311,7 +311,7 @@ public class WerewolfHuntingListener implements Listener
 	/*
 	 * WOLFSBANE POTION
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onWolfsBanePotionBreak(PotionSplashEvent event)
 	{
 		//Cancel if the event is cancelled or not wolfsBane
@@ -346,7 +346,7 @@ public class WerewolfHuntingListener implements Listener
 	/*
 	 * PURITY ARMOR BONUS
 	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onSuperNaturalDamage(EntityDamageByEntityEvent event)
 	{
 		if (event.isCancelled())

@@ -33,7 +33,7 @@ public class PvPListener implements Listener
 	 *
 	 * PVPManager
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onTargetPeaceful(TrackerTargetEvent event)
 	{
 		if (dependency.hasPlugin("PvPManager") && config.getBoolean("support.PvPManager"))
@@ -51,7 +51,7 @@ public class PvPListener implements Listener
 	 *
 	 * GriefPrevention
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onTresspass(PlayerMoveEvent event)
 	{
 		if (dependency.hasPlugin("PvPManager") && dependency.hasPlugin("GriefPrevention") 

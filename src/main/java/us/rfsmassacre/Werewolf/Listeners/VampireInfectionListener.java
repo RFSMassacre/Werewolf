@@ -2,14 +2,13 @@ package us.rfsmassacre.Werewolf.Listeners;
 
 import java.util.Random;
 
+import com.clanjhoo.vampire.entity.UPlayer;
+import com.clanjhoo.vampire.event.InfectionChangeEvent;
+import com.clanjhoo.vampire.event.VampireTypeChangeEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-
-import com.massivecraft.vampire.entity.UPlayer;
-import com.massivecraft.vampire.event.EventVampirePlayerInfectionChange;
-import com.massivecraft.vampire.event.EventVampirePlayerVampireChange;
 
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -20,9 +19,9 @@ import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 
 public class VampireInfectionListener implements Listener
 {
-	private MessageManager messages;
-	private WerewolfManager werewolves;
-	private ItemManager items;
+	private final MessageManager messages;
+	private final WerewolfManager werewolves;
+	private final ItemManager items;
 	
 	public VampireInfectionListener()
 	{
@@ -36,8 +35,8 @@ public class VampireInfectionListener implements Listener
 	 * 
 	 * Cancels and cures vampire infection if already a Werewolf.
 	 */
-	@EventHandler
-	public void onVampireInfect(EventVampirePlayerInfectionChange event)
+	@EventHandler(ignoreCancelled = true)
+	public void onVampireInfect(InfectionChangeEvent event)
 	{
 		if (event.isCancelled())
 			return;
@@ -57,8 +56,8 @@ public class VampireInfectionListener implements Listener
 	 * 
 	 * Cancels and cures vampire infection if already a Werewolf.
 	 */
-	@EventHandler
-	public void onVampireComplete(EventVampirePlayerVampireChange event)
+	@EventHandler(ignoreCancelled = true)
+	public void onVampireComplete(VampireTypeChangeEvent event)
 	{
 		if (event.isCancelled())
 			return;
@@ -73,8 +72,8 @@ public class VampireInfectionListener implements Listener
 	/*
 	 * PURITY ARMOR CHANCE
 	 */
-	@EventHandler
-	public void onPurifiedInfect(EventVampirePlayerInfectionChange event)
+	@EventHandler(ignoreCancelled = true)
+	public void onPurifiedInfect(InfectionChangeEvent event)
 	{
 		Player hunter = event.getUplayer().getPlayer();
 		if (!event.isCancelled() && werewolves.isHuman(hunter))
@@ -83,7 +82,7 @@ public class VampireInfectionListener implements Listener
 			for (ItemStack armor : hunter.getInventory().getArmorContents())
 			{
 				WerewolfItem item = items.getWerewolfItem(armor);
-				if (item != null && item instanceof WerewolfArmor)
+				if (item instanceof WerewolfArmor)
 				{
 					WerewolfArmor werewolfArmor = (WerewolfArmor)item;
 					purity += werewolfArmor.getPurity();

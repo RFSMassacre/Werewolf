@@ -147,7 +147,7 @@ public class VampireHuntingListener implements Listener
 	/*
 	 * Vampire Tracker
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onVampireTracking(PlayerInteractEvent event)
 	{
 		Player hunter = event.getPlayer();
