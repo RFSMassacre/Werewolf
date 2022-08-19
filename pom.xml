@@ -118,12 +118,12 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-core</artifactId>
-            <version>7.2.5</version>
+            <version>7.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>7.2.5</version>
+            <version>7.3.0-SNAPSHOT</version>
         </dependency>
         <!-- WorldGuard -->
         <dependency>
@@ -147,6 +147,12 @@
             <groupId>com.clanjhoo</groupId>
             <artifactId>vampire</artifactId>
             <version>1.0.BETA-17</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>us.rfsmassacre</groupId>
+                    <artifactId>Werewolves</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Vault -->
         <dependency>

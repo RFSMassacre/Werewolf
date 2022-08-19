@@ -21,7 +21,7 @@ public class SkinListener implements Listener
 	{
 		config = WerewolfPlugin.getConfigManager();
 		werewolves = WerewolfPlugin.getWerewolfManager();
-		skins = new SkinManager();
+		skins = WerewolfPlugin.getSkinManager();
 	}
 
 	@EventHandler(ignoreCancelled = true)

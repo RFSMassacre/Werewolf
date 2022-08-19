@@ -22,22 +22,23 @@ public class WerewolfPlugin extends JavaPlugin
 {
 	private static WerewolfPlugin instance;
 	
-	private static ChatManager chat;
-	private static ConfigManager config;
-	private static LocaleManager locale;
-	private static DependencyManager dependency;
+	private ChatManager chat;
+	private ConfigManager config;
+	private LocaleManager locale;
+	private DependencyManager dependency;
 	
-	private static ClanManager clans;
-	private static WerewolfManager werewolves;
-	private static ItemManager items;
-	private static MessageManager messages;
-	private static MoonManager moons;
-	private static EventManager events;
+	private ClanManager clans;
+	private WerewolfManager werewolves;
+	private ItemManager items;
+	private MessageManager messages;
+	private MoonManager moons;
+	private EventManager events;
+	private SkinManager skinsManager;
 	
-	private static LegacyWerewolfDataManager legacyWerewolfData;
-	private static LegacyAlphaDataManager legacyAlphaData;
+	private LegacyWerewolfDataManager legacyWerewolfData;
+	private LegacyAlphaDataManager legacyAlphaData;
 
-	private static Permission permissions;
+	private Permission permissions;
 	
 	@Override
 	public void onEnable()
@@ -96,6 +97,7 @@ public class WerewolfPlugin extends JavaPlugin
 		//Sets up the needed modules for skins
 		if (dependency.hasPlugin("SkinsRestorer"))
 		{
+			skinsManager = new SkinManager();
 			getServer().getPluginManager().registerEvents(new SkinListener(), this);
 		}
 		else
@@ -158,7 +160,7 @@ public class WerewolfPlugin extends JavaPlugin
 	 */
 	public static boolean updateGroup(Player player)
 	{
-		if (werewolves.isWerewolf(player.getUniqueId()))
+		if (instance.werewolves.isWerewolf(player.getUniqueId()))
 		{
 			return setGroup(player, true);
 		}
@@ -169,16 +171,16 @@ public class WerewolfPlugin extends JavaPlugin
 	}
 	public static boolean setGroup(Player player, boolean add)
 	{
-		if (permissions != null)
+		if (instance.permissions != null)
 		{
-			String groupName = config.getString("group-permissions.group");
+			String groupName = instance.config.getString("group-permissions.group");
 			if (add)
 			{
-				return permissions.playerAddGroup(null, player, groupName);
+				return instance.permissions.playerAddGroup(null, player, groupName);
 			}
 			else
 			{
-				return permissions.playerRemoveGroup(null, player, groupName);
+				return instance.permissions.playerRemoveGroup(null, player, groupName);
 			}
 		}
 
@@ -190,19 +192,19 @@ public class WerewolfPlugin extends JavaPlugin
 	 */
 	public static ChatManager getChatManager()
 	{
-		return chat;
+		return instance.chat;
 	}
 	public static ConfigManager getConfigManager()
 	{
-		return config;
+		return instance.config;
 	}
 	public static LocaleManager getLocaleManager()
 	{
-		return locale;
+		return instance.locale;
 	}
 	public static DependencyManager getDependencyManager()
 	{
-		return dependency;
+		return instance.dependency;
 	}
 	
 	/*
@@ -210,34 +212,38 @@ public class WerewolfPlugin extends JavaPlugin
 	 */
 	public static ClanManager getClanManager()
 	{
-		return clans;
+		return instance.clans;
 	}
 	public static WerewolfManager getWerewolfManager()
 	{
-		return werewolves;
+		return instance.werewolves;
 	}
 	public static ItemManager getItemManager()
 	{
-		return items;
+		return instance.items;
 	}
 	public static MessageManager getMessageManager()
 	{
-		return messages;
+		return instance.messages;
 	}
 	public static MoonManager getMoonManager()
 	{
-		return moons;
+		return instance.moons;
 	}
 	public static EventManager getEventManager()
 	{
-		return events;
+		return instance.events;
+	}
+	public static SkinManager getSkinManager()
+	{
+		return instance.skinsManager;
 	}
 	public static LegacyWerewolfDataManager getLegacyDataManager()
 	{
-		return legacyWerewolfData;
+		return instance.legacyWerewolfData;
 	}
 	public static LegacyAlphaDataManager getLegacyAlphaDataManager()
 	{
-		return legacyAlphaData;
+		return instance.legacyAlphaData;
 	}
 }
