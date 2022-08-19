@@ -3,6 +3,7 @@ package us.rfsmassacre.Werewolf.Managers;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,7 +33,7 @@ public class ItemManager
 	private final WerewolfPlugin instance;
 	private final ConfigManager config;
 	
-	private final HashMap<String, WerewolfItem> items;
+	private final Map<String, WerewolfItem> items;
 	private int itemTaskId;
 	private int armorTaskId;
 	

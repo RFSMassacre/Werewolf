@@ -1,6 +1,7 @@
 package us.rfsmassacre.HeavenLib.Commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,13 +23,13 @@ public abstract class SpigotCommand implements CommandExecutor
 	private String commandName;
 	
 	protected SubCommand mainCommand;
-	protected ArrayList<SubCommand> subCommands;
+	protected List<SubCommand> subCommands;
 	
 	public SpigotCommand(String commandName)
 	{
 		this.commandName = commandName;
 		
-		this.subCommands = new ArrayList<SubCommand>();
+		this.subCommands = new ArrayList<>();
 		//Remember to define the main command when extending
 		//this class.
 	}

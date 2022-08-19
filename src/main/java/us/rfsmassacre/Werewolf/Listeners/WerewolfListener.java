@@ -1,6 +1,5 @@
 package us.rfsmassacre.Werewolf.Listeners;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.GameMode;
@@ -34,11 +33,11 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 public class WerewolfListener implements Listener
 {
-	private ConfigManager config;
-	private EventManager events;
-	private WerewolfManager werewolves;
-	private ClanManager clans;
-	private MessageManager messages;
+	private final ConfigManager config;
+	private final EventManager events;
+	private final WerewolfManager werewolves;
+	private final ClanManager clans;
+	private final MessageManager messages;
 	
 	public WerewolfListener()
 	{
@@ -56,7 +55,7 @@ public class WerewolfListener implements Listener
 	public void onWerewolfFallDamage(EntityDamageEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
-		if (event.isCancelled() || !(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof Player))
 			return;
 		
 		Player player = (Player)event.getEntity();
@@ -83,7 +82,7 @@ public class WerewolfListener implements Listener
 	public void onWerewolfDamage(EntityDamageByEntityEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
-		if (event.isCancelled() || !(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof Player))
 			return;
 		
 		Player player = (Player)event.getEntity();
@@ -114,7 +113,7 @@ public class WerewolfListener implements Listener
 	public void onWerewolfAttack(EntityDamageByEntityEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
-		if (event.isCancelled() || !(event.getDamager() instanceof Player))
+		if (!(event.getDamager() instanceof Player))
 			return;
 		
 		Player player = (Player)event.getDamager();
@@ -188,7 +187,7 @@ public class WerewolfListener implements Listener
 				}
 				else if (config.getBoolean("hunting.enabled") && werewolves.isHuman(killer) && clan.getSize() > 1)
 				{
-					ArrayList<Werewolf> clanMembers = clan.getMembers();
+					List<Werewolf> clanMembers = clan.getMembers();
 					Werewolf runnerUp = !clanMembers.get(0).equals(alpha) ? clanMembers.get(0) : clanMembers.get(1);
 					NewAlphaEvent alphaEvent = new NewAlphaEvent(player, clan.getType());
 					events.callEvent(alphaEvent);
@@ -214,7 +213,7 @@ public class WerewolfListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfEat(PlayerItemConsumeEvent event)
 	{
-		if (event.isCancelled() || !werewolves.isWerewolf(event.getPlayer()))
+		if (!werewolves.isWerewolf(event.getPlayer()))
 			return;
 		
 		ConfigManager config = WerewolfPlugin.getConfigManager();
@@ -264,7 +263,7 @@ public class WerewolfListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfSniff(PlayerInteractEntityEvent event) 
 	{
-		if (event.isCancelled() || !werewolves.isWerewolf(event.getPlayer()))
+		if (!werewolves.isWerewolf(event.getPlayer()))
 			return;
 		
 		Werewolf werewolf = werewolves.getWerewolf(event.getPlayer());
@@ -291,8 +290,6 @@ public class WerewolfListener implements Listener
 							
 							messages.sendWolfLocale(event.getPlayer(), "track.scent-found",
 									"{player}", target.getDisplayName());
-							
-							return;
 						}
 						else
 						{
@@ -311,7 +308,7 @@ public class WerewolfListener implements Listener
 	public void onPlayerDamaged(EntityDamageEvent event)
 	{
 		//If no damage was done to a player, cancel now
-		if (event.isCancelled() || event.getDamage() <= 0 || 
+		if (event.getDamage() <= 0 ||
 		  !(event.getEntity() instanceof Player))
 			return;
 		
@@ -332,49 +329,46 @@ public class WerewolfListener implements Listener
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onWerewolfChat(PlayerCommandPreprocessEvent event)
 	{
-		if (!event.isCancelled())
-		{
-			Player player = event.getPlayer();
+		Player player = event.getPlayer();
 
-			//Commands blocked from werewolves in any form
-            if (werewolves.isWerewolf(player))
-            {
-                for (String command : config.getStringList("blocked-commands.all"))
-                {
-                    if (event.getMessage().startsWith(command))
-                    {
-                        event.setCancelled(true);
-                        messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command");
-                        return;
-                    }
-                }
-            }
-			
-			//Commands blocked from werewolves in werewolf form
-			if (werewolves.isWerewolf(player) && werewolves.getWerewolf(player).inWolfForm())
+		//Commands blocked from werewolves in any form
+		if (werewolves.isWerewolf(player))
+		{
+			for (String command : config.getStringList("blocked-commands.all"))
 			{
-				for (String command : config.getStringList("blocked-commands.werewolf"))
+				if (event.getMessage().startsWith(command))
 				{
-					if (event.getMessage().startsWith(command))
-					{
-						event.setCancelled(true);
-						messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command-wolf");
-						return;
-					}
+					event.setCancelled(true);
+					messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command");
+					return;
 				}
 			}
-			
-			//Commands always blocked for werewolf alphas
-			if (werewolves.isAlpha(player))
+		}
+
+		//Commands blocked from werewolves in werewolf form
+		if (werewolves.isWerewolf(player) && werewolves.getWerewolf(player).inWolfForm())
+		{
+			for (String command : config.getStringList("blocked-commands.werewolf"))
 			{
-				for (String command : config.getStringList("blocked-commands.alpha"))
+				if (event.getMessage().startsWith(command))
 				{
-					if (event.getMessage().startsWith(command))
-					{
-						event.setCancelled(true);
-						messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command-alpha");
-						return;
-					}
+					event.setCancelled(true);
+					messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command-wolf");
+					return;
+				}
+			}
+		}
+
+		//Commands always blocked for werewolf alphas
+		if (werewolves.isAlpha(player))
+		{
+			for (String command : config.getStringList("blocked-commands.alpha"))
+			{
+				if (event.getMessage().startsWith(command))
+				{
+					event.setCancelled(true);
+					messages.sendWolfLocale(event.getPlayer(), "invalid.blocked-command-alpha");
+					return;
 				}
 			}
 		}
@@ -386,18 +380,13 @@ public class WerewolfListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onTransform(WerewolfTransformEvent event)
 	{
-		if (!event.isCancelled() && event.toWolfForm())
+		if (event.toWolfForm())
 		{
-			if (config.getStringList("no-werewolf-worlds").contains(event.getPlayer().getWorld().getName()))
+			if (config.getStringList("no-werewolf-worlds").contains(event.getPlayer().getWorld().getName()) ||
+					event.getPlayer().getGameMode().equals(GameMode.SPECTATOR) ||
+					event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
 			{
 				event.setCancelled(true);
-				return;
-			}
-			
-			if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR) || event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
-			{
-				event.setCancelled(true);
-				return;
 			}
 		}
 	}

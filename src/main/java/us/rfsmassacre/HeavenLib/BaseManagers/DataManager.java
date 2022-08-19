@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class DataManager extends Manager
+public abstract class DataManager<T> extends Manager
 {
 	protected File folder;
 	
@@ -45,7 +45,7 @@ public abstract class DataManager extends Manager
 		return false;
 	}
 	
-	public void saveToFile(Object object, String fileName)
+	public void saveToFile(T object, String fileName)
 	{
 		//Delete and create a new file to save data.
 		//Avoids failure to remove previous unwanted data.
@@ -66,7 +66,7 @@ public abstract class DataManager extends Manager
 		}
 	}
 	
-	public Object loadFromFile(File file)
+	public T loadFromFile(File file)
 	{
 		if (file.exists())
 		{
@@ -84,7 +84,7 @@ public abstract class DataManager extends Manager
 		
 		return null;
 	}
-	public Object loadFromFile(String fileName)
+	public T loadFromFile(String fileName)
 	{
 		return loadFromFile(getFile(fileName));
 	}
@@ -107,7 +107,7 @@ public abstract class DataManager extends Manager
 	 * 
 	 * To be casted if loading from this.
 	 */
-	protected abstract void storeData(Object object, YamlConfiguration data) throws Exception;
+	protected abstract void storeData(T object, YamlConfiguration data) throws Exception;
 	
-	protected abstract Object loadData(YamlConfiguration data) throws Exception;
+	protected abstract T loadData(YamlConfiguration data) throws Exception;
 }

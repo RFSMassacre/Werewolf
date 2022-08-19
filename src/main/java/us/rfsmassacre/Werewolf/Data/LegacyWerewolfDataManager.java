@@ -1,7 +1,7 @@
 package us.rfsmassacre.Werewolf.Data;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,7 +12,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 
-public class LegacyWerewolfDataManager extends DataManager
+public class LegacyWerewolfDataManager extends DataManager<List<Werewolf>>
 {
 	public LegacyWerewolfDataManager() 
 	{
@@ -20,9 +20,9 @@ public class LegacyWerewolfDataManager extends DataManager
 	}
 
 	@Override
-	protected ArrayList<Werewolf> loadData(YamlConfiguration data) throws IOException 
+	protected List<Werewolf> loadData(YamlConfiguration data)
 	{
-		ArrayList<Werewolf> oldWerewolves = new ArrayList<Werewolf>();
+		List<Werewolf> oldWerewolves = new ArrayList<>();
 		if (data.getKeys(false).size() > 0)
 		{
 			/* 
@@ -70,7 +70,7 @@ public class LegacyWerewolfDataManager extends DataManager
 	}
 
 	@Override
-	protected void storeData(Object object, YamlConfiguration data) throws IOException 
+	protected void storeData(List<Werewolf> object, YamlConfiguration data)
 	{
 		//We are not storing anything in the legacy files
 	}

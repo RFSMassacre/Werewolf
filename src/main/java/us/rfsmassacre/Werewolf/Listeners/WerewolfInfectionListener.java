@@ -17,7 +17,6 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent;
 import us.rfsmassacre.Werewolf.Events.WerewolfCureEvent.CureType;
 import us.rfsmassacre.Werewolf.Events.WerewolfInfectionEvent;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
 import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Items.Potions.CurePotion;
 import us.rfsmassacre.Werewolf.Items.Potions.InfectionPotion;
@@ -32,11 +31,11 @@ import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 
 public class WerewolfInfectionListener implements Listener 
 {
-	private MessageManager messages;
-	private WerewolfManager werewolves;
-	private ClanManager clans;
-	private ItemManager items;
-	private EventManager events;
+	private final MessageManager messages;
+	private final WerewolfManager werewolves;
+	private final ClanManager clans;
+	private final ItemManager items;
+	private final EventManager events;
 	
 	public WerewolfInfectionListener()
 	{
@@ -54,7 +53,7 @@ public class WerewolfInfectionListener implements Listener
 	public void onInfectionPotionDrink(PlayerItemConsumeEvent event)
 	{
 		Player player = event.getPlayer();
-		if (!event.isCancelled() && werewolves.isHuman(player))
+		if (werewolves.isHuman(player))
 		{
 			//Only continue if they have permission to
 			if (!player.hasPermission("werewolf.becomeinfected"))
@@ -86,7 +85,7 @@ public class WerewolfInfectionListener implements Listener
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWolfBite(EntityDamageByEntityEvent event)
 	{
-		if (!event.isCancelled() && event.getFinalDamage() > 0)
+		if (event.getFinalDamage() > 0)
 		{
 			Entity defendingEntity = event.getEntity();
 			Entity attackingEntity = event.getDamager();
@@ -128,7 +127,7 @@ public class WerewolfInfectionListener implements Listener
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWerewolfBite(EntityDamageByEntityEvent event)
 	{
-		if (!event.isCancelled() && event.getFinalDamage() > 0)
+		if (event.getFinalDamage() > 0)
 		{
 			Entity defendingEntity = event.getEntity();
 			Entity attackingEntity = event.getDamager();
@@ -173,7 +172,7 @@ public class WerewolfInfectionListener implements Listener
 	public void onCurePotionDrink(PlayerItemConsumeEvent event)
 	{
 		Player player = event.getPlayer();
-		if (event.isCancelled() || !werewolves.isWerewolf(player))
+		if (!werewolves.isWerewolf(player))
 			return;
 		
 		Werewolf werewolf = werewolves.getWerewolf(player);
@@ -206,7 +205,7 @@ public class WerewolfInfectionListener implements Listener
 	public void onPurifiedInfect(WerewolfInfectionEvent event)
 	{
 		Player hunter = event.getPlayer();
-		if (!event.isCancelled() && werewolves.isHuman(hunter))
+		if (werewolves.isHuman(hunter))
 		{
 			double purity = 0;
 			for (ItemStack armor : hunter.getInventory().getArmorContents())

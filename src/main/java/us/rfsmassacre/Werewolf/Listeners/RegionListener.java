@@ -4,11 +4,9 @@ import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,9 +19,9 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 public class RegionListener implements Listener
 {
-    private ConfigManager config;
-    private DependencyManager dependency;
-    private MessageManager messages;
+    private final ConfigManager config;
+    private final DependencyManager dependency;
+    private final MessageManager messages;
 
     public RegionListener()
     {
@@ -44,24 +42,18 @@ public class RegionListener implements Listener
     {
         if (dependency.hasPlugin("WorldGuard") && config.getBoolean("support.WorldGuard"))
         {
-            WorldGuardPlugin plugin = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
+            WorldGuardPlugin plugin = WorldGuardPlugin.inst();
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionQuery query = container.createQuery();
 
             Player target = event.getTarget();
             LocalPlayer localTarget = plugin.wrapPlayer(target);
             Location location = localTarget.getLocation();
-            ApplicableRegionSet set = query.getApplicableRegions(location);
 
-            if (set != null)
-            {
-                if (!set.testState(localTarget, Flags.PVP)
-                        || !set.testState(localTarget, Flags.INVINCIBILITY))
-                {
-                    if (config.getBoolean("hunting.target.safe-zones"))
-                    {
-                        event.setCancelled(true);
-                    }
+            if (!query.testState(location, localTarget, Flags.PVP)
+                    || !query.testState(location, localTarget, Flags.INVINCIBILITY)) {
+                if (config.getBoolean("hunting.target.safe-zones")) {
+                    event.setCancelled(true);
                 }
             }
         }
@@ -77,24 +69,18 @@ public class RegionListener implements Listener
     {
         if (dependency.hasPlugin("WorldGuard") && config.getBoolean("support.WorldGuard"))
         {
-            WorldGuardPlugin plugin = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
+            WorldGuardPlugin plugin = WorldGuardPlugin.inst();
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionQuery query = container.createQuery();
 
             Player target = event.getTarget();
             LocalPlayer localTarget = plugin.wrapPlayer(target);
             Location location = localTarget.getLocation();
-            ApplicableRegionSet set = query.getApplicableRegions(location);
 
-            if (set != null)
-            {
-                if (!set.testState(localTarget, Flags.PVP)
-                        || !set.testState(localTarget, Flags.INVINCIBILITY))
-                {
-                    if (config.getBoolean("track.safe-zones"))
-                    {
-                        event.setCancelled(true);
-                    }
+            if (!query.testState(location, localTarget, Flags.PVP)
+                    || !query.testState(location, localTarget, Flags.INVINCIBILITY)) {
+                if (config.getBoolean("track.safe-zones")) {
+                    event.setCancelled(true);
                 }
             }
         }

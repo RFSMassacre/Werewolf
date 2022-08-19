@@ -40,17 +40,11 @@ public abstract class WerewolfItem extends HeavenItem
 
         NBTItem otherItem = new NBTItem(itemStack);
         NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
-        if (compound == null)
-        {
-            //Bukkit.broadcastMessage("Is Null!");
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+
+        return compound != null;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isHoldingItem(Player hunter, boolean bothHands)
     {
         try

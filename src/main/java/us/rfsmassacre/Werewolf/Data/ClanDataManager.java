@@ -2,6 +2,7 @@ package us.rfsmassacre.Werewolf.Data;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,7 +12,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Clan;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 
-public class ClanDataManager extends DataManager
+public class ClanDataManager extends DataManager<Clan>
 {
 	public ClanDataManager(WerewolfPlugin instance) 
 	{
@@ -36,19 +37,12 @@ public class ClanDataManager extends DataManager
 			}
 		}
 		
-		if (data.getStringList("member-ids") != null)
-		{
-			for (String stringId : data.getStringList("member-ids"))
-			{
-				try
-				{
+		if (data.getStringList("member-ids") != null) {
+			for (String stringId : data.getStringList("member-ids")) {
+				try {
 					clan.addMemberId(UUID.fromString(stringId));
 				}
-				catch (IllegalArgumentException exception)
-				{
-					//Skip to the next thing on the list
-					continue;
-				}
+				catch (IllegalArgumentException ignored) {}
 			}
 		}
 		
@@ -56,13 +50,8 @@ public class ClanDataManager extends DataManager
 	}
 
 	@Override
-	protected void storeData(Object object, YamlConfiguration data) throws IOException 
+	protected void storeData(Clan clan, YamlConfiguration data)
 	{
-		//Cancel if it's not a clan object
-		if (!(object instanceof Clan))
-			throw new IOException();
-		
-		Clan clan = (Clan)object;
 		data.set("clan-type", clan.getType().toString());
 		
 		if (clan.getAlphaId() != null)
@@ -70,7 +59,7 @@ public class ClanDataManager extends DataManager
 		
 		if (clan.getMemberIds() != null)
 		{
-			ArrayList<String> stringIds = new ArrayList<String>();
+			List<String> stringIds = new ArrayList<>();
 			for (UUID memberId : clan.getMemberIds())
 			{
 				stringIds.add(memberId.toString());

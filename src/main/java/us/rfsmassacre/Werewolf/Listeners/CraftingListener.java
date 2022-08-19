@@ -1,6 +1,7 @@
 package us.rfsmassacre.Werewolf.Listeners;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -23,8 +24,6 @@ import us.rfsmassacre.Werewolf.Items.Potions.WolfsbanePotion;
 import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Items.Armor.Ash;
 import us.rfsmassacre.Werewolf.Items.Armor.PurifiedArmor;
 import us.rfsmassacre.Werewolf.Items.Armor.WashedArmor;
@@ -34,13 +33,13 @@ import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 
 public class CraftingListener implements Listener
 {
-	private ConfigManager config;
-	private MessageManager messages;
-	private WerewolfManager werewolves;
-	private ItemManager items;
+	private final ConfigManager config;
+	private final MessageManager messages;
+	private final WerewolfManager werewolves;
+	private final ItemManager items;
 	
-	private ArrayList<String> exemptItems;
-	private ArrayList<Material> armorTypes;
+	private final List<String> exemptItems;
+	private final List<Material> armorTypes;
 	
 	public CraftingListener()
 	{
@@ -182,40 +181,36 @@ public class CraftingListener implements Listener
 						hunter.updateInventory();
 						messages.sendHunterLocale(hunter, "hunting.racial.smelt", 
 												  "{item}", armor.getDisplayName());
-						return;
 					}
 				}
 			}
 		}
 	}
+
 	@EventHandler(ignoreCancelled = true)
 	public void onPurificationAttempt(FurnaceSmeltEvent event)
 	{
-		if (!event.isCancelled())
+		WerewolfItem item = items.getWerewolfItem(event.getSource());
+		if (armorTypes.contains(event.getSource().getType()))
 		{
-			WerewolfItem item = items.getWerewolfItem(event.getSource());
-			if (armorTypes.contains(event.getSource().getType()))
+			//Burn the armor if it wasn't washed
+			if (item == null || !(item instanceof WashedArmor))
 			{
-				//Burn the armor if it wasn't washed
-				if (item == null || !(item instanceof WashedArmor))
+				event.setResult(new Ash().getItemStack());
+			}
+			else
+			{
+				int chance = config.getInt("hunting.purification.chance");
+				int random = new Random().nextInt(100) + 1;
+
+				if (random <= chance)
 				{
 					event.setResult(new Ash().getItemStack());
-					return;
-				}
-				else
-				{
-					int chance = config.getInt("hunting.purification.chance");
-					int random = new Random().nextInt(100) + 1;
-					
-					if (random <= chance)
-					{
-						event.setResult(new Ash().getItemStack());
-						return;
-					}
 				}
 			}
 		}
 	}
+
 	@EventHandler(ignoreCancelled = true)
 	public void onPurificationFail(FurnaceExtractEvent event)
 	{
@@ -225,7 +220,6 @@ public class CraftingListener implements Listener
 		if (ash.getItemStack().getType().equals(event.getItemType()))
 		{
 			messages.sendHunterLocale(hunter, "hunting.armor.burned");
-			return;
 		}
 	}
 }

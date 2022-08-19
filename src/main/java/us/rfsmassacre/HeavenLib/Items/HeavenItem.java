@@ -75,35 +75,38 @@ public abstract class HeavenItem
     public void setDisplayName(String displayName)
     {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatManager.format(displayName));
-        item.setItemMeta(meta);
+        if (meta != null) {
+            meta.setDisplayName(ChatManager.format(displayName));
+            item.setItemMeta(meta);
+        }
     }
     //Adds the ID to the first line to ensure when checking it's O(1).
     public void setItemLore(List<String> newLore)
     {
         ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            List<String> lore = new ArrayList<>();
+            for (String line : newLore) {
+                lore.add(ChatManager.format(line));
+            }
 
-        List<String> lore = new ArrayList<>();
-        for (String line : newLore)
-        {
-            lore.add(ChatManager.format(line));
+            meta.setLore(lore);
+            item.setItemMeta(meta);
         }
-
-        meta.setLore(lore);
-        item.setItemMeta(meta);
     }
     public List<String> getItemLore()
     {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-        return lore;
+        return meta.hasLore() ? meta.getLore() : new ArrayList<>();
     }
 
     protected void addFlag(ItemFlag... flags)
     {
         ItemMeta meta = item.getItemMeta();
-        meta.addItemFlags(flags);
-        item.setItemMeta(meta);
+        if (meta != null) {
+            meta.addItemFlags(flags);
+            item.setItemMeta(meta);
+        }
     }
 
     /*

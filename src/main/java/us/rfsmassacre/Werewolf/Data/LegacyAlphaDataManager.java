@@ -1,7 +1,7 @@
 package us.rfsmassacre.Werewolf.Data;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,7 +10,7 @@ import us.rfsmassacre.HeavenLib.BaseManagers.DataManager;
 
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
-public class LegacyAlphaDataManager extends DataManager
+public class LegacyAlphaDataManager extends DataManager<List<UUID>>
 {
 	public LegacyAlphaDataManager() 
 	{
@@ -18,9 +18,9 @@ public class LegacyAlphaDataManager extends DataManager
 	}
 
 	@Override
-	protected ArrayList<UUID> loadData(YamlConfiguration data) throws IOException 
+	protected List<UUID> loadData(YamlConfiguration data)
 	{
-		ArrayList<UUID> alphaWerewolves = new ArrayList<UUID>();
+		List<UUID> alphaWerewolves = new ArrayList<>();
 		if (data.getKeys(false).size() > 0)
 		{
 			for (String key : data.getKeys(false))
@@ -37,7 +37,7 @@ public class LegacyAlphaDataManager extends DataManager
 	}
 
 	@Override
-	protected void storeData(Object object, YamlConfiguration data) throws IOException 
+	protected void storeData(List<UUID> object, YamlConfiguration data)
 	{
 		//We are not storing anything in the legacy files
 	}

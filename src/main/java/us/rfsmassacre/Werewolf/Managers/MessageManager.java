@@ -1,6 +1,7 @@
 package us.rfsmassacre.Werewolf.Managers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -128,7 +129,7 @@ public class MessageManager
 	//Formats the member list for this clan
 	public String getMembersList(Clan clan, int number)
 	{
-		ArrayList<String> pages = new ArrayList<String>();
+		List<String> pages = new ArrayList<>();
 		final int MEMBERS_PER_PAGE = 6;
 		
 		//Top border
@@ -143,7 +144,7 @@ public class MessageManager
 		String clanDisplay = config.getString("menu.clan." + clan.getType().name());
 		String border = "&6&l  «&e&l&m*-------------------------------------*&6&l»";
 		String header = border + "\n &6&l" + clanDisplay + " &7Member List                   &7Page &8[&7" + (number + 1) + "&8/&7" + maxPages + "&8]";
-		header = header += "\n      ";
+		header += "\n      ";
 		
 		if (clan.getSize() > 0)
 		{

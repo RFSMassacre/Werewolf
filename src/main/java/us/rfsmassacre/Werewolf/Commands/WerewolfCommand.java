@@ -17,9 +17,9 @@ import us.rfsmassacre.Werewolf.Origin.Moon.MoonPhase;
 
 public class WerewolfCommand extends SpigotCommand
 {
-	private ConfigManager config;
-	private WerewolfManager werewolves;
-	private MessageManager messages;
+	private final ConfigManager config;
+	private final WerewolfManager werewolves;
+	private final MessageManager messages;
 	
 	public WerewolfCommand() 
 	{
@@ -30,14 +30,14 @@ public class WerewolfCommand extends SpigotCommand
 		this.messages = WerewolfPlugin.getMessageManager();
 		
 		this.mainCommand = this.new MainCommand(this);
-		this.subCommands.add(this.new ListCommand(this));
+		this.subCommands.add(new ListCommand(this));
 		this.subCommands.add(this.new ClanCommand(this));
 		this.subCommands.add(this.new TransformCommand(this));
 		this.subCommands.add(this.new TrackCommand(this));
 		this.subCommands.add(this.new IntentCommand(this));
 		this.subCommands.add(this.new HowlCommand(this));
 		this.subCommands.add(this.new GrowlCommand(this));
-		this.subCommands.add(this.new HelpCommand(this));
+		this.subCommands.add(new HelpCommand(this));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class WerewolfCommand extends SpigotCommand
 				MoonPhase phase = WerewolfPlugin.getMoonManager().getMoonPhase(player.getWorld());
 				if (phase != null)
 				{
-					menu = menu.replace("{phase}", config.getString("moon-phases." + phase.toString()));
+					menu = menu.replace("{phase}", config.getString("moon-phases." + phase));
 					
 					int daysLeft = phase.getPosition();
 					
@@ -139,7 +139,7 @@ public class WerewolfCommand extends SpigotCommand
 	/*
 	 * List Command
 	 */
-	private class ListCommand extends SubCommand
+	private static class ListCommand extends SubCommand
 	{
 		public ListCommand(SpigotCommand command) 
 		{
@@ -252,7 +252,6 @@ public class WerewolfCommand extends SpigotCommand
 					{
 						//Send full moon cancels transform message
 						messages.sendWolfLocale(player, "transform.full-moon");
-						return;
 					}
 					else
 					{
@@ -266,7 +265,6 @@ public class WerewolfCommand extends SpigotCommand
 								messages.sendWolfLocale(player, "transform.from-form");
 							
 							//Don't do much because whatever prevented the untransformation should send a message
-							return;
 						}
 						//But check their level when they go into the form
 						else
@@ -283,25 +281,23 @@ public class WerewolfCommand extends SpigotCommand
 									{
 										messages.sendWolfLocale(player, "transform.cant-transform");
 									}
-									
-									return;
+
 								}
 								else
 								{
 									int nextTransform = werewolf.getNextTransform();
 									messages.sendWolfLocale(player, "transform.on-cooldown", 
 											"{minutes}", Integer.toString(nextTransform));
-									return;
 								}
 							}
 							else
 							{
 								messages.sendWolfLocale(player, "transform.not-leveled",
 										"{level}", Integer.toString(transformLvl));
-								return;
 							}
 						}
 					}
+					return;
 				}
 			}
 			
@@ -424,21 +420,19 @@ public class WerewolfCommand extends SpigotCommand
 						{
 							werewolf.setIntent(true);
 							messages.sendWolfLocale(player, "intent.to-intent");
-							return;
 						}
 						else
 						{
 							werewolf.setIntent(false);
 							messages.sendWolfLocale(player, "intent.from-intent");
-							return;
 						}
 					}
 					else
 					{
 						messages.sendWolfLocale(player, "intent.not-leveled",
 								"{level}", Integer.toString(transformLvl));
-						return;
 					}
+					return;
 				}
 			}
 			
@@ -472,15 +466,14 @@ public class WerewolfCommand extends SpigotCommand
 						{
 							werewolf.howl();
 							messages.sendWolfLocale(player, "howl.success");
-							return;
 						}
 						else
 						{
 							int nextHowl = werewolf.getNextHowl();
 							messages.sendWolfLocale(player, "howl.on-cooldown", 
 									"{minutes}", Integer.toString(nextHowl));
-							return;
 						}
+						return;
 					}
 					
 					messages.sendWolfLocale(player, "howl.not-in-form");
@@ -518,15 +511,14 @@ public class WerewolfCommand extends SpigotCommand
 						{
 							werewolf.growl();
 							messages.sendWolfLocale(player, "growl.success");
-							return;
 						}
 						else
 						{
 							int nextGrowl = werewolf.getNextGrowl();
 							messages.sendWolfLocale(player, "growl.on-cooldown",
 									"{minutes}", Integer.toString(nextGrowl));
-							return;
 						}
+						return;
 					}
 					
 					messages.sendWolfLocale(player, "growl.not-in-form");
@@ -542,7 +534,7 @@ public class WerewolfCommand extends SpigotCommand
 	/*
 	 * Help Command
 	 */
-	private class HelpCommand extends SubCommand
+	private static class HelpCommand extends SubCommand
 	{
 		public HelpCommand(SpigotCommand command) 
 		{

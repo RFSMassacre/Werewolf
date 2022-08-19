@@ -1,12 +1,8 @@
 package us.rfsmassacre.Werewolf.Managers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -23,7 +19,7 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 public class ClanManager 
 {
 	private ClanDataManager clanData;
-	private HashMap<ClanType, Clan> clans;
+	private Map<ClanType, Clan> clans;
 	
 	private MenuManager witherfangMenu;
 	private MenuManager silvermaneMenu;
@@ -35,7 +31,7 @@ public class ClanManager
 	public ClanManager()
 	{
 		clanData = new ClanDataManager(WerewolfPlugin.getInstance());
-		clans = new HashMap<ClanType, Clan>();
+		clans = new HashMap<>();
 		
 		//Load clan descriptions
 		witherfangMenu = new MenuManager("witherfang.txt");
@@ -157,27 +153,23 @@ public class ClanManager
 	{
 		//Continuously ensure each clan has an alpha through the criteria
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		alphaTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable()
-		{
-			public void run()
+		alphaTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () -> {
+			if (!config.getBoolean("alphas"))
 			{
-				if (!config.getBoolean("alphas"))
-				{
-					return;
-				}
+				return;
+			}
 
-				for (Clan clan : clans.values())
+			for (Clan clan : clans.values())
+			{
+				if (clan.getAlphaId() == null & !clan.isEmpty())
 				{
-					if (clan.getAlphaId() == null & !clan.isEmpty())
+					//Check for solo Werewolf
+					for (Werewolf werewolf : clan.getMembers())
 					{
-						//Check for solo Werewolf
-						for (Werewolf werewolf : clan.getMembers())
+						if (werewolf != null)
 						{
-							if (werewolf != null)
-							{
-								clan.makeAlpha(werewolf);
-								break;
-							}
+							clan.makeAlpha(werewolf);
+							break;
 						}
 					}
 				}
@@ -196,7 +188,7 @@ public class ClanManager
 	{
 		ClanType clanType = clan.getType();
 		List<String> formats = config.getPotionList("werewolf-effects." + clanType.name().toLowerCase());
-		ArrayList<PotionEffect> effects = new ArrayList<>();
+		List<PotionEffect> effects = new ArrayList<>();
 		for (String format : formats)
 		{
 			try

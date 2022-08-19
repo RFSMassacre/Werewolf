@@ -61,24 +61,24 @@ public class Clan
 	private String description;
 	
 	private UUID alphaId;
-	private ArrayList<UUID> memberIds;
+	private List<UUID> memberIds;
 	
-	private ArrayList<PotionEffect> buffs;
+	private List<PotionEffect> buffs;
 	
 	/*
 	 * Constructor
 	 */
 	public Clan()
 	{
-		setMemberIds(new ArrayList<UUID>());
-		setBuffs(new ArrayList<PotionEffect>());
+		setMemberIds(new ArrayList<>());
+		setBuffs(new ArrayList<>());
 	}
 	public Clan(ClanType type, String description)
 	{
 		setType(type);
 		setDescription(description);
-		setMemberIds(new ArrayList<UUID>());
-		setBuffs(new ArrayList<PotionEffect>());
+		setMemberIds(new ArrayList<>());
+		setBuffs(new ArrayList<>());
 	}
 
 	/*
@@ -111,11 +111,11 @@ public class Clan
 		this.alphaId = alphaId;
 	}
 
-	public ArrayList<UUID> getMemberIds() 
+	public List<UUID> getMemberIds()
 	{
 		return memberIds;
 	}
-	public void setMemberIds(ArrayList<UUID> memberIds) 
+	public void setMemberIds(List<UUID> memberIds)
 	{
 		this.memberIds = memberIds;
 	}
@@ -142,11 +142,11 @@ public class Clan
 		removeMemberId(player.getUniqueId());
 	}
 
-	public ArrayList<PotionEffect> getBuffs() 
+	public List<PotionEffect> getBuffs()
 	{
 		return buffs;
 	}
-	public void setBuffs(ArrayList<PotionEffect> buffs) 
+	public void setBuffs(List<PotionEffect> buffs)
 	{
 		this.buffs = buffs;
 	}
@@ -186,17 +186,16 @@ public class Clan
 		if (object instanceof Clan)
 		{
 			Clan clan = (Clan)object;
-			if (this.clanType.equals(clan.getType()))
-				return true;
+			return this.clanType.equals(clan.getType());
 		}
 		
 		return false;
 	}
 		
-	public ArrayList<Werewolf> getMembers()
+	public List<Werewolf> getMembers()
 	{
 		WerewolfManager werewolves = WerewolfPlugin.getWerewolfManager();
-		ArrayList<Werewolf> members = new ArrayList<Werewolf>();
+		List<Werewolf> members = new ArrayList<>();
 		for (UUID memberId : memberIds)
 		{
 			//Load online data and if not found load offline data
@@ -210,7 +209,7 @@ public class Clan
 		}
 		
 		//Sort from highest level to lowest level
-		Collections.sort(members, Collections.reverseOrder());
+		members.sort(Collections.reverseOrder());
 		
 		return members;
 	}

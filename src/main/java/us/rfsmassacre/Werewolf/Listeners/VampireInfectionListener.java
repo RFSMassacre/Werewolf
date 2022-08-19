@@ -44,10 +44,10 @@ public class VampireInfectionListener implements Listener
 		UPlayer uPlayer = event.getUplayer();
 		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()))
 		{
-			event.setCancelled(true);
-
+			event.setInfection(0);
 			if (uPlayer.isVampire())
 				uPlayer.setVampire(false);
+			event.setCancelled(true);
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package us.rfsmassacre.Werewolf.Origin;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class Moon
 	}
 	
 	//Moon Phases
-	public static enum MoonPhase
+	public enum MoonPhase
 	{
 		FULL_MOON(13000, 24000, 8),
 		WANING_GIBBOUS(37000, 48000, 7),
@@ -79,7 +80,7 @@ public class Moon
 	}
 	
 	private World world;
-	private ArrayList<UUID> transformedIds; //Ensures WWs can't relog for more levels
+	private List<UUID> transformedIds; //Ensures WWs can't relog for more levels
 	private int taskId;
 	
 	//This is so we don't need to constantly keep looping through every tick.
@@ -91,7 +92,7 @@ public class Moon
 	{
 		setWorld(world);
 		
-		transformedIds = new ArrayList<UUID>();
+		transformedIds = new ArrayList<>();
 		werewolves = WerewolfPlugin.getWerewolfManager();
 		messages = WerewolfPlugin.getMessageManager();
 		
@@ -103,58 +104,54 @@ public class Moon
 		//Continuously force Werewolves outside to transform
 		//Done this long to only use one single thread. Too many threads cause lag
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        taskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-        {
-            public void run() 
-            {	
-            	if (!werewolves.getOnlineWerewolves().isEmpty())
-            	{
-            		//Trigger all outdoor Werewolves to transform without control during full moons
-	            	if (isFullMoon())
-	            	{
-	            		for (Player player : world.getPlayers())
-            			{
-            				//Untransform if you're in wolf form to ensure you get a level when transforming again
-	            			Werewolf werewolf = werewolves.getWerewolf(player);
-            				if (werewolf != null && werewolf.isOutside() && !werewolf.inWolfForm())
-            				{
-            					//Attempt to transform werewolf
-            					if (werewolf.transform())
-            					{
-            						messages.sendWolfLocale(werewolf.getPlayer(), "full-moon.transformed");
-            						//Add level if they haven't leveled this night
-            						if (!transformedIds.contains(werewolf.getUUID()))
-            						{
-            							werewolf.addLevel();
-            							transformedIds.add(werewolf.getUUID());
-            						}
-            					}
-            				}
-            			}
-            		}
-	            	else //Else if it's no longer the full moon
-	            	{
-	            		//If successfully untransformed, remove from list
-	            		//This is so we can keep trying to untransform anyone who failed to untransform
-	            		ListIterator<UUID> iterator = transformedIds.listIterator();
-	            		while (iterator.hasNext())
-	            		{
-	            			Werewolf werewolf = werewolves.getWerewolf(iterator.next());
-	            			if (werewolf != null && werewolf.inWolfForm())
-	            			{
-	            				if (werewolf.untransform())
-	            				{
-	            					messages.sendWolfLocale(werewolf.getPlayer(), "full-moon.morning");
-	            					iterator.remove();
-	            				}
-	            			}
-	            			else //This means they logged off or untransformed and no longer need to be tracked
-	            				iterator.remove();
-	            		}
-	            	}
-            	}
-            }
-        }, 0L, WerewolfPlugin.getConfigManager().getInt("intervals.moon-cycle"));
+        taskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () -> {
+			if (!werewolves.getOnlineWerewolves().isEmpty())
+			{
+				//Trigger all outdoor Werewolves to transform without control during full moons
+				if (isFullMoon())
+				{
+					for (Player player : world.getPlayers())
+					{
+						//Untransform if you're in wolf form to ensure you get a level when transforming again
+						Werewolf werewolf = werewolves.getWerewolf(player);
+						if (werewolf != null && werewolf.isOutside() && !werewolf.inWolfForm())
+						{
+							//Attempt to transform werewolf
+							if (werewolf.transform())
+							{
+								messages.sendWolfLocale(werewolf.getPlayer(), "full-moon.transformed");
+								//Add level if they haven't leveled this night
+								if (!transformedIds.contains(werewolf.getUUID()))
+								{
+									werewolf.addLevel();
+									transformedIds.add(werewolf.getUUID());
+								}
+							}
+						}
+					}
+				}
+				else //Else if it's no longer the full moon
+				{
+					//If successfully untransformed, remove from list
+					//This is so we can keep trying to untransform anyone who failed to untransform
+					ListIterator<UUID> iterator = transformedIds.listIterator();
+					while (iterator.hasNext())
+					{
+						Werewolf werewolf = werewolves.getWerewolf(iterator.next());
+						if (werewolf != null && werewolf.inWolfForm())
+						{
+							if (werewolf.untransform())
+							{
+								messages.sendWolfLocale(werewolf.getPlayer(), "full-moon.morning");
+								iterator.remove();
+							}
+						}
+						else //This means they logged off or untransformed and no longer need to be tracked
+							iterator.remove();
+					}
+				}
+			}
+		}, 0L, WerewolfPlugin.getConfigManager().getInt("intervals.moon-cycle"));
 	}
 	public void endCycle()
 	{
