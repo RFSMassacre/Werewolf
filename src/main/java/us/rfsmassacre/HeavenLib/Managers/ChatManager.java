@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,9 +40,12 @@ public class ChatManager extends Manager
 		try
 		{
 			InputStream is = instance.getResource(fileName);
+			if (is == null) {
+				return null;
+			}
 			BufferedReader bfReader = new BufferedReader(new InputStreamReader(is));
 			
-			ArrayList<String> lines = new ArrayList<String>();
+			List<String> lines = new ArrayList<>();
 			String line;
 			
 			while (!(line = bfReader.readLine()).equals("END"))

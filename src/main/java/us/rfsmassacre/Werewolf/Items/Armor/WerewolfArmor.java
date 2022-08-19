@@ -3,7 +3,6 @@ package us.rfsmassacre.Werewolf.Items.Armor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;

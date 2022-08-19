@@ -12,6 +12,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SkinManager
 {
@@ -21,7 +22,7 @@ public class SkinManager
 	private final MessageManager messages;
 	private final WerewolfManager werewolves;
 
-	private final HashMap<String, IProperty> skins;
+	private final Map<String, IProperty> skins;
 	
 	public SkinManager()
 	{

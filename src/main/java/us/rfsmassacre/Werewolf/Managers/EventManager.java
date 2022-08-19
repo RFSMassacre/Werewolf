@@ -6,7 +6,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 public class EventManager 
 {
-	private WerewolfPlugin instance;
+	private final WerewolfPlugin instance;
 	
 	public EventManager()
 	{

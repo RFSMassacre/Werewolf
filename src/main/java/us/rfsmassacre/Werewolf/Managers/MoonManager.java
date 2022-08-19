@@ -2,6 +2,7 @@ package us.rfsmassacre.Werewolf.Managers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -16,12 +17,12 @@ import us.rfsmassacre.Werewolf.Origin.Moon.MoonPhase;
 public class MoonManager 
 {	
 	private static ConfigManager config;
-	private static HashMap<World, Moon> moons;
+	private static Map<World, Moon> moons;
 	
 	public MoonManager()
 	{
 		config = WerewolfPlugin.getConfigManager();
-		setMoons(new HashMap<World, Moon>());
+		setMoons(new HashMap<>());
 		
 		reloadMoons();
 	}

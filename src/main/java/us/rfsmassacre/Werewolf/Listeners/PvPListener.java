@@ -92,8 +92,6 @@ public class PvPListener implements Listener
 					
 					messages.sendHunterLocale(player, "hunting.claims.trespassing", 
 							"{owner}", claim.getOwnerName());
-					
-					return;
 				}
 			}
 		}

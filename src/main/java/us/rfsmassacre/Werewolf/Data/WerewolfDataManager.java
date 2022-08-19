@@ -1,6 +1,5 @@
 package us.rfsmassacre.Werewolf.Data;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,7 +9,7 @@ import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 
-public class WerewolfDataManager extends DataManager
+public class WerewolfDataManager extends DataManager<Werewolf>
 {
 	public WerewolfDataManager(WerewolfPlugin instance) 
 	{
@@ -18,7 +17,7 @@ public class WerewolfDataManager extends DataManager
 	}
 
 	@Override
-	protected Werewolf loadData(YamlConfiguration data) throws Exception 
+	protected Werewolf loadData(YamlConfiguration data)
 	{
 		Werewolf werewolf = new Werewolf();
 		werewolf.setPlayer(null);
@@ -34,13 +33,8 @@ public class WerewolfDataManager extends DataManager
 	}
 	
 	@Override
-	protected void storeData(Object object, YamlConfiguration data) throws Exception 
+	protected void storeData(Werewolf werewolf, YamlConfiguration data)
 	{
-		//Cancel if it's not a Werewolf object
-		if (!(object instanceof Werewolf))
-			throw new IOException();
-		
-		Werewolf werewolf = (Werewolf)object;
 		data.set("uuid", werewolf.getUUID().toString());
 		data.set("display-name", werewolf.getDisplayName());
 		data.set("clan", werewolf.getType().toString());
@@ -49,6 +43,4 @@ public class WerewolfDataManager extends DataManager
 		data.set("wolf-form", werewolf.inWolfForm());
 		data.set("last-transform", werewolf.getLastTransform());
 	}
-
-	
 }

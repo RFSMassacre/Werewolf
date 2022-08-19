@@ -13,9 +13,9 @@ import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 
 public class SkinListener implements Listener
 {
-	private ConfigManager config;
-	private WerewolfManager werewolves;
-	private SkinManager skins;
+	private final ConfigManager config;
+	private final WerewolfManager werewolves;
+	private final SkinManager skins;
 	
 	public SkinListener()
 	{
@@ -27,7 +27,7 @@ public class SkinListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onWerewolfTransform(WerewolfTransformEvent event)
 	{
-		if (!event.isCancelled() && skins != null)
+		if (skins != null)
 		{
 			Werewolf werewolf = werewolves.getWerewolf(event.getPlayer());
 			if (event.toWolfForm())
@@ -45,7 +45,7 @@ public class SkinListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onNewAlpha(final NewAlphaEvent event)
 	{
-		if (!event.isCancelled() && skins != null)
+		if (skins != null)
 		{
 			final Werewolf oldAlpha = werewolves.getWerewolf(event.getAlpha());
 			final Werewolf newAlpha = werewolves.getWerewolf(event.getNewAlpha());

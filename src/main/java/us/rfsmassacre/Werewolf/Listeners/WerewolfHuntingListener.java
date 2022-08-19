@@ -1,8 +1,6 @@
 package us.rfsmassacre.Werewolf.Listeners;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,7 +29,6 @@ import us.rfsmassacre.Werewolf.Items.Armor.WerewolfArmor;
 import us.rfsmassacre.Werewolf.Items.Potions.WolfsbanePotion;
 import us.rfsmassacre.Werewolf.Items.Trackers.WerewolfTracker;
 import us.rfsmassacre.Werewolf.Items.Weapons.SilverSword;
-import us.rfsmassacre.Werewolf.Items.WerewolfItemOld.WerewolfItemType;
 import us.rfsmassacre.Werewolf.Managers.EventManager;
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
@@ -41,20 +38,20 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 public class WerewolfHuntingListener implements Listener
 {
-	private MessageManager messages;
-	private ConfigManager config;
-	private WerewolfManager werewolves;
-	private ItemManager items;
-	private MoonManager moons;
-	private EventManager events;
+	private final MessageManager messages;
+	private final ConfigManager config;
+	private final WerewolfManager werewolves;
+	private final ItemManager items;
+	private final MoonManager moons;
+	private final EventManager events;
 	
-	private HashMap<Player, Target> hunters;
+	private final Map<Player, Target> hunters;
 	private int trackerTaskId;
 	
-	private class Target implements Comparable<Target>
+	private static class Target implements Comparable<Target>
 	{
-		private Player hunter;
-		private Player werewolf;
+		private final Player hunter;
+		private final Player werewolf;
 		
 		public Target(Player hunter, Player werewolf)
 		{
@@ -69,12 +66,7 @@ public class WerewolfHuntingListener implements Listener
 
 		public int compareTo(Target other) 
 		{
-			if (this.getDistance() > other.getDistance())
-				return -1;
-			else if (this.getDistance() < other.getDistance())
-				return 1;
-			else
-				return 0;
+			return Double.compare(other.getDistance(), this.getDistance());
 		}
 	}
 	
@@ -87,7 +79,7 @@ public class WerewolfHuntingListener implements Listener
 		moons = WerewolfPlugin.getMoonManager();
 		events = WerewolfPlugin.getEventManager();
 		
-		hunters = new HashMap<Player, Target>();
+		hunters = new HashMap<>();
 		startTrackerChecker();
 	}
 	
@@ -99,55 +91,55 @@ public class WerewolfHuntingListener implements Listener
 	{
 		//Continuously drop any armor the werewolf might have on
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		trackerTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-        {
-            public void run() 
-            {
-            	WerewolfTracker tracker = new WerewolfTracker();
-            	
-        		for (Player hunter : hunters.keySet())
-        		{
-        			Target target = hunters.get(hunter);
-        			Werewolf werewolf = werewolves.getWerewolf(target.werewolf);
-        			
-        			/*
-        			 * Stops tracking if...
-        			 * 
-        			 * The hunter or target log off,
-        			 * The target moves to another world,
-        			 * The hunter no longer holds the item in their hand,
-        			 * or if the hunter no longer has the item in their inventory.
-        			 */
-        			if (hunter != null && target != null && werewolf != null && werewolf.getPlayer() != null
-        			 && werewolf.getPlayer().getWorld().equals(hunter.getWorld())
-        			 && tracker.isHoldingItem(hunter, config.getBoolean("hunting.trackers.use-either-hand"))
-        			 && tracker.hasItem(hunter) && werewolves.isHuman(hunter) && config.getBoolean("hunting.enabled")
-        			 && isValid(hunter, target.werewolf))
-        			{
-        				TrackerTargetEvent event = new TrackerTargetEvent(hunter, target.werewolf, TargetType.WEREWOLF_TARGET);
-        				events.callEvent(event);
-        				if (!event.isCancelled())
-        				{
-		        			hunter.setCompassTarget(hunters.get(hunter).werewolf.getLocation());
-		        			
-		        			messages.sendHunterAction(hunter, "hunting.tracker.actionbar",
-		        					"{item}", tracker.getDisplayName(),
-									"{target}", target.werewolf.getDisplayName(),
-									"{distance}", Integer.toString((int)Math.round(target.getDistance())));
-		        			
-		        			continue;
-        				}
-        			}
-        			
-    				hunters.remove(hunter);
-    				hunter.setCompassTarget(new Location(hunter.getWorld(), 0, 0, 0));
-    				
-    				messages.sendHunterLocale(hunter, "hunting.tracker.lost",
-    						"{item}", tracker.getDisplayName(),
+		trackerTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () -> {
+			WerewolfTracker tracker = new WerewolfTracker();
+
+			for (Player hunter : hunters.keySet())
+			{
+				Target target = hunters.get(hunter);
+				Werewolf werewolf = werewolves.getWerewolf(target.werewolf);
+
+				/*
+				 * Stops tracking if...
+				 *
+				 * The hunter or target log off,
+				 * The target moves to another world,
+				 * The hunter no longer holds the item in their hand,
+				 * or if the hunter no longer has the item in their inventory.
+				 */
+				if (hunter != null && target != null && werewolf != null && werewolf.getPlayer() != null
+				 && werewolf.getPlayer().getWorld().equals(hunter.getWorld())
+				 && tracker.isHoldingItem(hunter, config.getBoolean("hunting.trackers.use-either-hand"))
+				 && tracker.hasItem(hunter) && werewolves.isHuman(hunter) && config.getBoolean("hunting.enabled")
+				 && isValid(hunter, target.werewolf))
+				{
+					TrackerTargetEvent event = new TrackerTargetEvent(hunter, target.werewolf, TargetType.WEREWOLF_TARGET);
+					events.callEvent(event);
+					if (!event.isCancelled())
+					{
+						hunter.setCompassTarget(hunters.get(hunter).werewolf.getLocation());
+
+						messages.sendHunterAction(hunter, "hunting.tracker.actionbar",
+								"{item}", tracker.getDisplayName(),
+								"{target}", target.werewolf.getDisplayName(),
+								"{distance}", Integer.toString((int)Math.round(target.getDistance())));
+
+						continue;
+					}
+				}
+
+				hunters.remove(hunter);
+				if (hunter != null) {
+					hunter.setCompassTarget(new Location(hunter.getWorld(), 0, 0, 0));
+				}
+
+				if (target != null) {
+					messages.sendHunterLocale(hunter, "hunting.tracker.lost",
+							"{item}", tracker.getDisplayName(),
 							"{target}", target.werewolf.getDisplayName());
-        		}
-            }
-        }, 0L, config.getInt("intervals.trackers"));
+				}
+			}
+		}, 0L, config.getInt("intervals.trackers"));
 	}
 	public void endCycles()
 	{
@@ -185,7 +177,7 @@ public class WerewolfHuntingListener implements Listener
 					
 					if (!hunters.containsKey(hunter))
 					{
-						ArrayList<Target> targets = new ArrayList<Target>();
+						List<Target> targets = new ArrayList<>();
 						for (Player player : hunter.getWorld().getPlayers())
 						{
 							if (werewolves.isWerewolf(player))
@@ -197,7 +189,7 @@ public class WerewolfHuntingListener implements Listener
 						
 						if (!targets.isEmpty())
 						{
-							Collections.sort(targets, Collections.reverseOrder());
+							targets.sort(Collections.reverseOrder());
 							
 							for (Target target : targets)
 							{
@@ -250,8 +242,6 @@ public class WerewolfHuntingListener implements Listener
 			
 			messages.sendHunterLocale(hunter, "hunting.racial.use",
 					"{item}", tracker.getDisplayName());
-			
-			return;
 		}
 	}
 	
@@ -261,7 +251,7 @@ public class WerewolfHuntingListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onSilverSwordHit(EntityDamageByEntityEvent event)
 	{
-		if (!event.isCancelled() && event.getEntity() instanceof Player 
+		if (event.getEntity() instanceof Player
 		  && event.getDamager() instanceof Player)
 		{
 			Player victim = (Player)event.getEntity();
@@ -287,7 +277,7 @@ public class WerewolfHuntingListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onGoldSwordHit(EntityDamageByEntityEvent event)
 	{
-		if (!event.isCancelled() && event.getEntity() instanceof Player 
+		if (event.getEntity() instanceof Player
 				  && event.getDamager() instanceof Player)
 		{
 			Player victim = (Player)event.getEntity();
@@ -316,7 +306,7 @@ public class WerewolfHuntingListener implements Listener
 	{
 		//Cancel if the event is cancelled or not wolfsBane
 		WolfsbanePotion wolfsBane = new WolfsbanePotion();
-		if (!event.isCancelled() && wolfsBane.equals(event.getPotion().getItem()))
+		if (wolfsBane.equals(event.getPotion().getItem()))
 		{
 			for (LivingEntity entity : event.getAffectedEntities())
 			{
@@ -349,9 +339,6 @@ public class WerewolfHuntingListener implements Listener
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onSuperNaturalDamage(EntityDamageByEntityEvent event)
 	{
-		if (event.isCancelled())
-			return;
-		
 		Entity damager = event.getDamager();
 		Entity entity = event.getEntity();
 		
@@ -368,12 +355,12 @@ public class WerewolfHuntingListener implements Listener
 					WerewolfItem item = items.getWerewolfItem(armor);
 					if (item != null && item instanceof WerewolfArmor)
 					{
-						WerewolfArmor werewolfArmor = (WerewolfArmor)item;
+						WerewolfArmor werewolfArmor = (WerewolfArmor) item;
 						rawDefense += werewolfArmor.getDefense();
 					}
 				}
 				
-				double defense = 1.0 - (rawDefense / 100);
+				double defense = 1.0 - (rawDefense / 100.);
 				event.setDamage(event.getDamage() * defense);
 			}
 		}
@@ -384,13 +371,10 @@ public class WerewolfHuntingListener implements Listener
 	{
 		if (werewolves.isWerewolf(target))
 		{
-			if ((config.getBoolean("hunting.target.werewolf.wolf-form") && werewolves.getWerewolf(target).inWolfForm())
-			 | (config.getBoolean("hunting.target.werewolf.human-form") && !werewolves.getWerewolf(target).inWolfForm())
-			&& (config.getBoolean("hunting.target.werewolf.daytime") && moons.isDayTime(hunter.getWorld()))
-			 | (config.getBoolean("hunting.target.werewolf.nighttime") && moons.isNightTime(hunter.getWorld())))
-			{
-				return true;
-			}
+			return (config.getBoolean("hunting.target.werewolf.wolf-form") && werewolves.getWerewolf(target).inWolfForm())
+					| (config.getBoolean("hunting.target.werewolf.human-form") && !werewolves.getWerewolf(target).inWolfForm())
+					&& (config.getBoolean("hunting.target.werewolf.daytime") && moons.isDayTime(hunter.getWorld()))
+					| (config.getBoolean("hunting.target.werewolf.nighttime") && moons.isNightTime(hunter.getWorld()));
 		}
 		
 		return false;

@@ -1,6 +1,6 @@
 package us.rfsmassacre.Werewolf.Commands;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -28,11 +28,11 @@ import us.rfsmassacre.Werewolf.Origin.Moon.MoonPhase;
 
 public class WerewolfAdminCommand extends SpigotCommand
 {
-	private ConfigManager config;
-	private ClanManager clans;
-	private WerewolfManager werewolves;
-	private MessageManager messages;
-	private EventManager events;
+	private final ConfigManager config;
+	private final ClanManager clans;
+	private final WerewolfManager werewolves;
+	private final MessageManager messages;
+	private final EventManager events;
 	
 	public WerewolfAdminCommand() 
 	{
@@ -141,13 +141,11 @@ public class WerewolfAdminCommand extends SpigotCommand
 					
 					//Invalid arg error
 					messages.sendWolfLocale(sender, "admin.spawn.no-args");
-					return;
 				}
 				else
 				{
 					//Give console error
 					messages.sendWolfLocale(sender, "admin.spawn.console");
-					return;
 				}
 			}
 		}
@@ -169,13 +167,13 @@ public class WerewolfAdminCommand extends SpigotCommand
 			if (args.length == 2)
 			{
 				Player player = Bukkit.getPlayer(args[1]);
-				if (werewolves.isWerewolf(player))
+				// TODO: Send message if player could not be found by that name
+				if (player != null && werewolves.isWerewolf(player))
 				{
 					if (WerewolfPlugin.getMoonManager().isFullMoon(player.getWorld()))
 					{
 						//Send full moon cancels transform message
 						messages.sendWolfLocale(sender, "admin.transform.full-moon");
-						return;
 					}
 					else
 					{
@@ -193,16 +191,15 @@ public class WerewolfAdminCommand extends SpigotCommand
 						
 						messages.sendWolfLocale(sender, "admin.transform.success",
 								"{werewolf}", werewolf.getDisplayName());
-						
-						return;
+
 					}
 				}
-				else
+				else if (player != null)
 				{
 					messages.sendWolfLocale(sender, "admin.transform.not-infected",
 							"{player}", player.getDisplayName());
-					return;
 				}
+				return;
 			}
 			
 			//Give not Werewolf error
@@ -502,21 +499,19 @@ public class WerewolfAdminCommand extends SpigotCommand
 							
 							messages.sendWolfLocale(player, "admin.setphase.success",
 									"{phase}", phase.toString());
-							return;
 						}
 						else
 						{
 							//No moon in this world error
 							messages.sendWolfLocale(sender, "admin.setphase.no-moon");
-							return;
 						}
 					}
 					else
 					{
 						//World blacklisted
 						messages.sendWolfLocale(sender, "admin.setphase.blocked-world");
-						return;
 					}
+					return;
 				}
 				
 				//Invalid args
@@ -596,8 +591,8 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class ImportCommand extends SubCommand
 	{
-		private LegacyWerewolfDataManager legacyWerewolfData;
-		private LegacyAlphaDataManager legacyAlphaData;
+		private final LegacyWerewolfDataManager legacyWerewolfData;
+		private final LegacyAlphaDataManager legacyAlphaData;
 		
 		public ImportCommand(SpigotCommand command) 
 		{
@@ -607,13 +602,12 @@ public class WerewolfAdminCommand extends SpigotCommand
 			legacyAlphaData = WerewolfPlugin.getLegacyAlphaDataManager();
 		}
 
-		//We already know this will always spit back these kind of arraylists
-		@SuppressWarnings("unchecked")
+		//We already know this will always spit back these kind of lists
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			ArrayList<Werewolf> oldWerewolves = (ArrayList<Werewolf>)legacyWerewolfData.loadFromFile("werewolves");
-			ArrayList<UUID> alphaIds = (ArrayList<UUID>)legacyAlphaData.loadFromFile("clans");
+			List<Werewolf> oldWerewolves = legacyWerewolfData.loadFromFile("werewolves");
+			List<UUID> alphaIds = legacyAlphaData.loadFromFile("clans");
 			
 			//Cycle through all the old data and import them.
 			//Give back the Alpha status to the old Alpha

@@ -1,6 +1,7 @@
 package us.rfsmassacre.Werewolf.Origin;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.*;
@@ -37,7 +38,7 @@ public class Werewolf implements Comparable<Werewolf>
 	private boolean tracking; //Wether Werewolf is tracking a scent
 	private UUID targetId; //Target being tracked by this werewolf
 	private boolean wolfForm; //Wether transformed or not
-	private ArrayList<Wolf> wolfPack; //Current wolves following this werewolf
+	private List<Wolf> wolfPack; //Current wolves following this werewolf
 	
 	private long lastTransform; //Last time transformed
 	private long lastHowl; //Last time howled
@@ -58,7 +59,7 @@ public class Werewolf implements Comparable<Werewolf>
 		setTargetId(null);
 		setTracking(false);
 		setWolfForm(false);
-		setWolfPack(new ArrayList<Wolf>());
+		setWolfPack(new ArrayList<>());
 		setLastTransform(System.currentTimeMillis());
 		setLastHowl(0);
 		setLastGrowl(0);
@@ -209,11 +210,11 @@ public class Werewolf implements Comparable<Werewolf>
 		this.lastSniff = lastSniff;
 	}
 	
-	public ArrayList<Wolf> getWolfPack() 
+	public List<Wolf> getWolfPack()
 	{
 		return this.wolfPack;
 	}
-	public void setWolfPack(ArrayList<Wolf> wolfPack) 
+	public void setWolfPack(List<Wolf> wolfPack)
 	{
 		this.wolfPack = wolfPack;
 	}

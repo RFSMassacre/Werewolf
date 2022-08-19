@@ -1,15 +1,11 @@
 package us.rfsmassacre.Werewolf.Managers;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
+import java.io.Serializable;
+import java.util.*;
 
 import com.clanjhoo.vampire.VampireAPI;
-import com.clanjhoo.vampire.entity.UPlayer;
-import com.clanjhoo.vampire.entity.UPlayerColl;
+import com.clanjhoo.vampire.VampireRevamp;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -299,24 +295,22 @@ public class WerewolfManager
 	
 	public void startVampirismChecker()
 	{
-		if (dependency.hasPlugin("Vampire"))
+		if (dependency.hasPlugin("VampireRevamp"))
 		{
 			//Only run if the Vampire plugin is running
 			BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-			vampireTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-	        {
-	            public void run() 
-	            {
-	    			for (Werewolf werewolf : getOnlineWerewolves())
-	    			{
-	    				if (isVampire(werewolf.getPlayer()))
-	    				{
-	    					UPlayer uPlayer = UPlayerColl.get(werewolf.getUUID());
-	    					uPlayer.setVampire(false);
-	    				}
-	    			}
-	            }
-	        }, 0L, config.getInt("intervals.hybrid-check"));
+			vampireTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () -> {
+				for (Werewolf werewolf : getOnlineWerewolves())
+				{
+					if (isVampire(werewolf.getPlayer()))
+					{
+						VampireRevamp.getPlayerCollection().getDataAsynchronous(
+							new Serializable[]{werewolf.getUUID()},
+							(uPlayer) -> uPlayer.setVampire(false),
+							() -> {});
+					}
+				}
+			}, 0L, config.getInt("intervals.hybrid-check"));
 		}
 	}
 	
@@ -395,15 +389,15 @@ public class WerewolfManager
 	}
 	
 	//Returns all offline werewolves
-	public ArrayList<Werewolf> getOfflineWerewolves()
+	public List<Werewolf> getOfflineWerewolves()
 	{
-		ArrayList<Werewolf> offlineWerewolves = new ArrayList<Werewolf>();
+		List<Werewolf> offlineWerewolves = new ArrayList<>();
 		
 		if (getWerewolfAmount() > 0)
 		{
 			for (File file : werewolfData.listFiles())
 			{
-				Werewolf werewolf = (Werewolf)werewolfData.loadFromFile(file);
+				Werewolf werewolf = (Werewolf) werewolfData.loadFromFile(file);
 				try
 				{
 					if (Bukkit.getPlayer(werewolf.getUUID()) == null)
@@ -420,9 +414,9 @@ public class WerewolfManager
 	}
 	
 	//Returns every single werewolf, if online gets the loaded info
-	public ArrayList<Werewolf> getAllWerewolves()
+	public List<Werewolf> getAllWerewolves()
 	{
-		ArrayList<Werewolf> allWerewolves = new ArrayList<Werewolf>();
+		List<Werewolf> allWerewolves = new ArrayList<>();
 		for (File file : werewolfData.listFiles())
 		{
 			Werewolf werewolf = (Werewolf)werewolfData.loadFromFile(file);

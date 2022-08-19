@@ -14,7 +14,7 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 public class PlayerListener implements Listener
 {
-	private WerewolfManager werewolves;
+	private final WerewolfManager werewolves;
 	
 	public PlayerListener()
 	{
