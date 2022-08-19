@@ -17,9 +17,9 @@ import us.rfsmassacre.Werewolf.Managers.MessageManager;
 
 public class PvPListener implements Listener
 {
-	private ConfigManager config;
-	private DependencyManager dependency;
-	private MessageManager messages;
+	private final ConfigManager config;
+	private final DependencyManager dependency;
+	private final MessageManager messages;
 	
 	public PvPListener()
 	{
