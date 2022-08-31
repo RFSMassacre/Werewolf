@@ -2,7 +2,7 @@ package us.rfsmassacre.Werewolf.Listeners;
 
 import java.util.Random;
 
-import com.clanjhoo.vampire.entity.UPlayer;
+import com.clanjhoo.vampire.entity.VPlayer;
 import com.clanjhoo.vampire.event.InfectionChangeEvent;
 import com.clanjhoo.vampire.event.VampireTypeChangeEvent;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public class VampireInfectionListener implements Listener
 		if (event.isCancelled())
 			return;
 		
-		UPlayer uPlayer = event.getUplayer();
+		VPlayer uPlayer = event.getUplayer();
 		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()))
 		{
 			event.setInfection(0);
@@ -62,7 +62,7 @@ public class VampireInfectionListener implements Listener
 		if (event.isCancelled())
 			return;
 		
-		UPlayer uPlayer = event.getUplayer();
+		VPlayer uPlayer = event.getUplayer();
 		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()) && event.isVampire())
 		{
 			event.setCancelled(true);
