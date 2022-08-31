@@ -23,7 +23,8 @@ public class SkinManager
 	private final WerewolfManager werewolves;
 
 	private final Map<String, IProperty> skins;
-	private final Map<String, String> oldSkins;
+	private final Map<String, String> oldSkinNames;
+	private final Map<String, IProperty> oldSkinData;
 	
 	public SkinManager()
 	{
@@ -33,7 +34,8 @@ public class SkinManager
 
 		this.api = SkinsRestorerAPI.getApi();
 		this.skins = new HashMap<>();
-		this.oldSkins = new HashMap<>();
+		this.oldSkinNames = new HashMap<>();
+		this.oldSkinData = new HashMap<>();
 		generateSkins(true);
 	}
 
@@ -47,6 +49,7 @@ public class SkinManager
 			try
 			{
 				String oldSkin = api.getSkinName(player.getName());
+				IProperty skinData = api.getSkinData(oldSkin);
 				if (config.getBoolean("use-urls"))
 				{
 					api.applySkin(new PlayerWrapper(player), skins.get(type));
@@ -56,7 +59,10 @@ public class SkinManager
 					api.applySkin(new PlayerWrapper(player), getSkinName(werewolf));
 				}
 				if (oldSkin != null) {
-					oldSkins.put(player.getName(), oldSkin);
+					oldSkinNames.put(player.getName(), oldSkin);
+					if (skinData != null) {
+						oldSkinData.put(oldSkin, skinData);
+					}
 				}
 			}
 			catch (Exception exception)
@@ -75,13 +81,20 @@ public class SkinManager
 			{
 				Player player = werewolf.getPlayer();
 				api.removeSkin(player.getName());
-				String oldSkin = oldSkins.get(player.getName());
+				String oldSkin = oldSkinNames.get(player.getName());
 				if (oldSkin == null) {
 					IProperty emptySkin = api.createProperty("textures", "", "");
 					api.applySkin(new PlayerWrapper(player), emptySkin);
 				}
 				else {
-					api.applySkin(new PlayerWrapper(player), oldSkin);
+					if (config.getBoolean("use-urls"))
+					{
+						IProperty skinData = oldSkinData.get(oldSkin);
+						api.applySkin(new PlayerWrapper(player), skinData);
+					}
+					else {
+						api.applySkin(new PlayerWrapper(player), oldSkin);
+					}
 				}
 			}
 			catch (Exception exception)
