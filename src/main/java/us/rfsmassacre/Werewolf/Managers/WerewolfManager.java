@@ -1,7 +1,6 @@
 package us.rfsmassacre.Werewolf.Managers;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.*;
 
 import com.clanjhoo.vampire.VampireAPI;
@@ -304,10 +303,10 @@ public class WerewolfManager
 				{
 					if (isVampire(werewolf.getPlayer()))
 					{
-						VampireRevamp.getPlayerCollection().getDataAsynchronous(
-							new Serializable[]{werewolf.getUUID()},
+						VampireRevamp.getVPlayerManager().getDataAsynchronous(
 							(uPlayer) -> uPlayer.setVampire(false),
-							() -> {});
+							() -> {},
+							werewolf.getUUID());
 					}
 				}
 			}, 0L, config.getInt("intervals.hybrid-check"));
