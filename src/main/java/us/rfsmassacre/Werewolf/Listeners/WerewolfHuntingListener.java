@@ -353,7 +353,7 @@ public class WerewolfHuntingListener implements Listener
 				for (ItemStack armor : defender.getInventory().getArmorContents())
 				{
 					WerewolfItem item = items.getWerewolfItem(armor);
-					if (item != null && item instanceof WerewolfArmor)
+					if (item instanceof WerewolfArmor)
 					{
 						WerewolfArmor werewolfArmor = (WerewolfArmor) item;
 						rawDefense += werewolfArmor.getDefense();

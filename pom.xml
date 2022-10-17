@@ -147,7 +147,7 @@
         <dependency>
             <groupId>net.skinsrestorer</groupId>
             <artifactId>skinsrestorer-api</artifactId>
-            <version>14.1.11</version>
+            <version>14.2.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -183,7 +183,7 @@
         <dependency>
             <groupId>com.clanjhoo</groupId>
             <artifactId>vampire</artifactId>
-            <version>1.0.BETA-17</version>
+            <version>1.0.BETA-17-FORCE</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

@@ -2,9 +2,12 @@ package us.rfsmassacre.HeavenLib.BaseManagers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 public abstract class DataManager<T> extends Manager
 {
@@ -44,6 +47,11 @@ public abstract class DataManager<T> extends Manager
 		
 		return false;
 	}
+	protected void createFile(String fileName, Consumer<Boolean> task)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(),
+				() -> task.accept(createFile(fileName)));
+	}
 	
 	public void saveToFile(T object, String fileName)
 	{
@@ -65,6 +73,17 @@ public abstract class DataManager<T> extends Manager
 			exception.printStackTrace();
 		}
 	}
+	public void saveToFile(T object, String fileName, boolean async)
+	{
+		if (async)
+		{
+			Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () -> saveToFile(object, fileName));
+		}
+		else
+		{
+			saveToFile(object, fileName);
+		}
+	}
 	
 	public T loadFromFile(File file)
 	{
@@ -84,21 +103,47 @@ public abstract class DataManager<T> extends Manager
 		
 		return null;
 	}
+	public void loadFromFile(File file, Consumer<T> task)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () -> task.accept(loadFromFile(file)));
+	}
+
 	public T loadFromFile(String fileName)
 	{
 		return loadFromFile(getFile(fileName));
+	}
+	public void loadFromFile(String fileName, Consumer<T> task)
+	{
+		loadFromFile(getFile(fileName), task);
 	}
 	
 	public void deleteFile(String fileName)
 	{
 		File file = getFile(fileName);
 		if (file.exists())
+		{
 			file.delete();
+		}
+	}
+	public void deleteFile(String fileName, boolean async)
+	{
+		if (async)
+		{
+			Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () -> deleteFile(fileName));
+		}
+		else
+		{
+			deleteFile(fileName);
+		}
 	}
 	
 	public File[] listFiles()
 	{
 		return folder.listFiles();
+	}
+	public void listFiles(Consumer<File[]> task)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () -> task.accept(listFiles()));
 	}
 	
 	/*
