@@ -239,7 +239,7 @@ public class ItemManager
 		if (version.startsWith("1.13") || version.startsWith("1.14")
 		|| version.startsWith("1.15") || version.startsWith("1.16")
 		|| version.startsWith("1.17") || version.startsWith("1.18")
-		|| version.startsWith("1.19"))
+		|| version.startsWith("1.19") || version.startsWith("1.20"))
 		{
 			if (material == null)
 				material = Material.getMaterial(name, true);

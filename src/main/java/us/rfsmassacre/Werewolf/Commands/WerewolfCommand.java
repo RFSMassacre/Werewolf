@@ -9,35 +9,42 @@ import us.rfsmassacre.HeavenLib.Managers.ChatManager;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
+import us.rfsmassacre.Werewolf.Managers.ClanManager;
 import us.rfsmassacre.Werewolf.Managers.MessageManager;
 import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 import us.rfsmassacre.Werewolf.Origin.Clan;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Moon.MoonPhase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class WerewolfCommand extends SpigotCommand
 {
 	private final ConfigManager config;
 	private final WerewolfManager werewolves;
+	private final ClanManager clans;
 	private final MessageManager messages;
 	
 	public WerewolfCommand() 
 	{
-		super("werewolf");
+		super(WerewolfPlugin.getMessageManager(), "werewolf");
 		
 		this.config = WerewolfPlugin.getConfigManager();
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
+		this.clans = WerewolfPlugin.getClanManager();
 		this.messages = WerewolfPlugin.getMessageManager();
 		
-		this.mainCommand = this.new MainCommand(this);
-		this.subCommands.add(new ListCommand(this));
-		this.subCommands.add(this.new ClanCommand(this));
-		this.subCommands.add(this.new TransformCommand(this));
-		this.subCommands.add(this.new TrackCommand(this));
-		this.subCommands.add(this.new IntentCommand(this));
-		this.subCommands.add(this.new HowlCommand(this));
-		this.subCommands.add(this.new GrowlCommand(this));
-		this.subCommands.add(new HelpCommand(this));
+		addSubCommand(new MainCommand());
+		addSubCommand(new ListCommand());
+		addSubCommand(new ClanCommand());
+		addSubCommand(new TransformCommand());
+		addSubCommand(new TrackCommand());
+		addSubCommand(new IntentCommand());
+		addSubCommand(new HowlCommand());
+		addSubCommand(new GrowlCommand());
+		addSubCommand(new HelpCommand());
 	}
 
 	@Override
@@ -56,11 +63,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class MainCommand extends SubCommand
 	{
-		public MainCommand(SpigotCommand command)
+		public MainCommand()
 		{
-			super(command, "");
-			
-			this.permission = "werewolf.werewolf";
+			super("werewolf");
 		}
 
 		@Override
@@ -108,19 +113,16 @@ public class WerewolfCommand extends SpigotCommand
 					
 					if (MoonPhase.FULL_MOON.inCycle(player.getWorld()))
 						menu = menu.replace("{days}", config.getString("menu.days.now"));
-					
+
 					switch (daysLeft)
 					{
-						default:
+						default ->
+						{
 							menu = menu.replace("{days}", config.getString("menu.days.later"));
 							menu = menu.replace("{time}", Integer.toString(daysLeft));
-							break;
-						case 8:
-							menu = menu.replace("{days}", config.getString("menu.days.tonight"));
-							break;
-						case 1:
-							menu = menu.replace("{days}", config.getString("menu.days.tomorrow"));
-							break;
+						}
+						case 8 -> menu = menu.replace("{days}", config.getString("menu.days.tonight"));
+						case 1 -> menu = menu.replace("{days}", config.getString("menu.days.tomorrow"));
 					}
 				}
 			}
@@ -134,16 +136,22 @@ public class WerewolfCommand extends SpigotCommand
 			
 			sender.sendMessage(ChatManager.format(menu));
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
 	 * List Command
 	 */
-	private static class ListCommand extends SubCommand
+	private class ListCommand extends SubCommand
 	{
-		public ListCommand(SpigotCommand command) 
+		public ListCommand()
 		{
-			super(command, "list");
+			super("list");
 		}
 
 		@Override
@@ -159,16 +167,13 @@ public class WerewolfCommand extends SpigotCommand
 				{
 					Werewolf werewolf = werewolves.getWerewolf(player);
 					Clan clan = WerewolfPlugin.getClanManager().getClan(werewolf);
-					String clanList = messages.getMembersList(clan, 0);
 					if (args.length >= 2)
 					{
 						try
 						{
 							int pageNum = Integer.parseInt(args[1]);
-							clanList = messages.getMembersList(clan, pageNum - 1);
-							
-							//Show specified page
-							messages.sendMessage(player, clanList);
+							messages.sendWolfLocale(sender, "processing");
+							messages.sendMembersList(player, clan, pageNum - 1);
 							return;
 						}
 						catch (NumberFormatException exception)
@@ -179,7 +184,8 @@ public class WerewolfCommand extends SpigotCommand
 					else
 					{
 						//Default to showing first page of list
-						messages.sendMessage(player, clanList);
+						messages.sendWolfLocale(sender, "processing");
+						messages.sendMembersList(player, clan, 0);
 						return;
 					}
 					
@@ -191,6 +197,34 @@ public class WerewolfCommand extends SpigotCommand
 			//Send error
 			messages.sendWolfLocale(sender, "clan.no-clan");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			if (!(sender instanceof Player player))
+			{
+				return Collections.emptyList();
+			}
+
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				Werewolf werewolf = werewolves.getWerewolf(player);
+				if (werewolf == null)
+				{
+					return Collections.emptyList();
+				}
+
+				int amount = clans.getClan(werewolf).getSize();
+				int pages = amount % 6;
+				for (int page = 1; page <= pages; page++)
+				{
+					suggestions.add(Integer.toString(page));
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -198,9 +232,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class ClanCommand extends SubCommand
 	{
-		public ClanCommand(SpigotCommand command) 
+		public ClanCommand()
 		{
-			super(command, "clan");
+			super("clan");
 		}
 
 		@Override
@@ -228,6 +262,12 @@ public class WerewolfCommand extends SpigotCommand
 			//Send error
 			messages.sendWolfLocale(sender, "clan.no-clan");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -235,9 +275,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class TransformCommand extends SubCommand
 	{
-		public TransformCommand(SpigotCommand command) 
+		public TransformCommand()
 		{
-			super(command, "transform");
+			super("transform");
 		}
 
 		@Override
@@ -304,6 +344,12 @@ public class WerewolfCommand extends SpigotCommand
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "transform.not-infected");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -311,9 +357,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class TrackCommand extends SubCommand
 	{
-		public TrackCommand(SpigotCommand command) 
+		public TrackCommand()
 		{
-			super(command, "track");
+			super("track");
 		}
 
 		@Override
@@ -392,6 +438,12 @@ public class WerewolfCommand extends SpigotCommand
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "track.not-infected");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -399,9 +451,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class IntentCommand extends SubCommand
 	{
-		public IntentCommand(SpigotCommand command) 
+		public IntentCommand()
 		{
-			super(command, "intent");
+			super("intent");
 		}
 
 		@Override
@@ -438,7 +490,13 @@ public class WerewolfCommand extends SpigotCommand
 			
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "intent.not-infected");
-		}	
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -446,9 +504,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class HowlCommand extends SubCommand
 	{
-		public HowlCommand(SpigotCommand command) 
+		public HowlCommand()
 		{
-			super(command, "howl");
+			super("howl");
 		}
 
 		@Override
@@ -484,6 +542,12 @@ public class WerewolfCommand extends SpigotCommand
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "howl.not-infected");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -491,9 +555,9 @@ public class WerewolfCommand extends SpigotCommand
 	 */
 	private class GrowlCommand extends SubCommand
 	{
-		public GrowlCommand(SpigotCommand command) 
+		public GrowlCommand()
 		{
-			super(command, "growl");
+			super("growl");
 		}
 
 		@Override
@@ -529,16 +593,22 @@ public class WerewolfCommand extends SpigotCommand
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "growl.not-infected");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
 	 * Help Command
 	 */
-	private static class HelpCommand extends SubCommand
+	private class HelpCommand extends SubCommand
 	{
-		public HelpCommand(SpigotCommand command) 
+		public HelpCommand()
 		{
-			super(command, "help");
+			super("help");
 		}
 
 		@Override
@@ -553,6 +623,19 @@ public class WerewolfCommand extends SpigotCommand
 			
 			//Send help menu
 			messages.sendMessage(sender, help);
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				suggestions.add("1");
+				suggestions.add("2");
+			}
+
+			return suggestions;
 		}
 	}
 }

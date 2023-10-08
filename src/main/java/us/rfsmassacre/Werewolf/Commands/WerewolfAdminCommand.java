@@ -1,7 +1,6 @@
 package us.rfsmassacre.Werewolf.Commands;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -33,30 +32,32 @@ public class WerewolfAdminCommand extends SpigotCommand
 	private final WerewolfManager werewolves;
 	private final MessageManager messages;
 	private final EventManager events;
+	private final ItemManager items;
 	
 	public WerewolfAdminCommand() 
 	{
-		super("werewolfadmin");
+		super(WerewolfPlugin.getMessageManager(), "werewolfadmin");
 		
 		this.config = WerewolfPlugin.getConfigManager();
 		this.clans = WerewolfPlugin.getClanManager();
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
 		this.messages = WerewolfPlugin.getMessageManager();
 		this.events = WerewolfPlugin.getEventManager();
-		
-		this.mainCommand = this.new MainCommand(this);
-		this.subCommands.add(this.new SpawnCommand(this));
-		this.subCommands.add(this.new TransformCommand(this));
-		this.subCommands.add(this.new InfectCommand(this));
-		this.subCommands.add(this.new CureCommand(this));
-		this.subCommands.add(this.new SetAlphaCommand(this));
-		this.subCommands.add(this.new SetLevelCommand(this));
-		this.subCommands.add(this.new AddLevelCommand(this));
-		this.subCommands.add(this.new SetPhaseCommand(this));
-		this.subCommands.add(this.new PurgeCommand(this));
-		this.subCommands.add(this.new ReloadCommand(this));
-		this.subCommands.add(this.new ImportCommand(this));
-		this.subCommands.add(this.new HelpCommand(this));
+		this.items = WerewolfPlugin.getItemManager();
+
+		addSubCommand(new MainCommand());
+		addSubCommand(new SpawnCommand());
+		addSubCommand(new TransformCommand());
+		addSubCommand(new InfectCommand());
+		addSubCommand(new CureCommand());
+		addSubCommand(new SetAlphaCommand());
+		addSubCommand(new SetLevelCommand());
+		addSubCommand(new AddLevelCommand());
+		addSubCommand(new SetPhaseCommand());
+		addSubCommand(new PurgeCommand());
+		addSubCommand(new ReloadCommand());
+		addSubCommand(new ImportCommand());
+		addSubCommand(new HelpCommand());
 	}
 
 	@Override
@@ -75,11 +76,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class MainCommand extends SubCommand
 	{
-		public MainCommand(SpigotCommand command) 
+		public MainCommand()
 		{
-			super(command, "");
-			
-			this.permission = "werewolf.admin";
+			super("werewolf");
 		}
 
 		@Override
@@ -101,6 +100,12 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			sender.sendMessage(ChatManager.format(menu));
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -108,16 +113,14 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class SpawnCommand extends SubCommand
 	{
-		public SpawnCommand(SpigotCommand command) 
+		public SpawnCommand()
 		{
-			super(command, "spawn");
+			super("spawn");
 		}
 
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			ItemManager items = WerewolfPlugin.getItemManager();
-			
 			if (!isConsole(sender))
 			{
 				Player player = (Player)sender;
@@ -149,6 +152,22 @@ public class WerewolfAdminCommand extends SpigotCommand
 				}
 			}
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				Collection<WerewolfItem> werewolfItems = items.getWerewolfItems();
+				for (WerewolfItem item : werewolfItems)
+				{
+					suggestions.add(item.getName());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -156,9 +175,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class TransformCommand extends SubCommand
 	{
-		public TransformCommand(SpigotCommand command) 
+		public TransformCommand()
 		{
-			super(command, "transform");
+			super("transform");
 		}
 
 		@Override
@@ -205,6 +224,21 @@ public class WerewolfAdminCommand extends SpigotCommand
 			//Give not Werewolf error
 			messages.sendWolfLocale(sender, "admin.transform.no-args");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -212,9 +246,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class InfectCommand extends SubCommand
 	{
-		public InfectCommand(SpigotCommand command) 
+		public InfectCommand()
 		{
-			super(command, "infect");
+			super("infect");
 		}
 
 		@Override
@@ -258,6 +292,28 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			messages.sendWolfLocale(sender, "admin.infect.no-args");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+			else if (args.length == 3)
+			{
+				for (ClanType type : ClanType.values())
+				{
+					suggestions.add(type.toString());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -265,9 +321,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class CureCommand extends SubCommand
 	{
-		public CureCommand(SpigotCommand command) 
+		public CureCommand()
 		{
-			super(command, "cure");
+			super("cure");
 		}
 
 		@Override
@@ -316,6 +372,21 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			messages.sendWolfLocale(sender, "admin.cure.no-args");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -323,9 +394,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class SetAlphaCommand extends SubCommand
 	{
-		public SetAlphaCommand(SpigotCommand command) 
+		public SetAlphaCommand()
 		{
-			super(command, "setalpha");
+			super("setalpha");
 		}
 
 		@Override
@@ -366,6 +437,21 @@ public class WerewolfAdminCommand extends SpigotCommand
 			//Send invalid arg error
 			messages.sendWolfLocale(sender, "admin.setalpha.no-args");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -373,9 +459,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class SetLevelCommand extends SubCommand
 	{
-		public SetLevelCommand(SpigotCommand command) 
+		public SetLevelCommand()
 		{
-			super(command, "setlevel");
+			super("setlevel");
 		}
 
 		@Override
@@ -416,7 +502,29 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			//Send invalid arg error
 			messages.sendWolfLocale(sender, "admin.level.no-args");
-		}		
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+			if (args.length == 3)
+			{
+				for (int number = 0; number <= 100; number++)
+				{
+					suggestions.add(Integer.toString(number));
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -424,9 +532,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class AddLevelCommand extends SubCommand
 	{
-		public AddLevelCommand(SpigotCommand command) 
+		public AddLevelCommand()
 		{
-			super(command, "addlevel");
+			super("addlevel");
 		}
 
 		@Override
@@ -467,7 +575,29 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			//Send invalid arg error
 			messages.sendWolfLocale(sender, "admin.level.no-args");
-		}		
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				for (Player player : Bukkit.getOnlinePlayers())
+				{
+					suggestions.add(player.getName());
+				}
+			}
+			if (args.length == 3)
+			{
+				for (int number = 0; number <= 100; number++)
+				{
+					suggestions.add(Integer.toString(number));
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -475,9 +605,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class SetPhaseCommand extends SubCommand
 	{
-		public SetPhaseCommand(SpigotCommand command) 
+		public SetPhaseCommand()
 		{
-			super(command, "setphase");
+			super("setphase");
 		}
 
 		@Override
@@ -523,6 +653,22 @@ public class WerewolfAdminCommand extends SpigotCommand
 				messages.sendWolfLocale(sender, "admin.setphase.console");
 			}
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+
+				for (MoonPhase phase : MoonPhase.values())
+				{
+					suggestions.add(phase.toString());
+				}
+			}
+
+			return suggestions;
+		}
 	}
 	
 	/*
@@ -530,9 +676,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class PurgeCommand extends SubCommand
 	{
-		public PurgeCommand(SpigotCommand command) 
+		public PurgeCommand()
 		{
-			super(command, "purge");
+			super("purge");
 		}
 
 		@Override
@@ -542,6 +688,12 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			messages.sendWolfLocale(sender, "admin.purge");
 		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -549,9 +701,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class ReloadCommand extends SubCommand
 	{
-		public ReloadCommand(SpigotCommand command) 
+		public ReloadCommand()
 		{
-			super(command, "reload");
+			super("reload");
 		}
 
 		@Override
@@ -583,7 +735,13 @@ public class WerewolfAdminCommand extends SpigotCommand
 			WerewolfPlugin.getItemManager().startArmorChecker();
 
 			messages.sendWolfLocale(sender, "admin.reload");
-		}	
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -594,46 +752,59 @@ public class WerewolfAdminCommand extends SpigotCommand
 		private final LegacyWerewolfDataManager legacyWerewolfData;
 		private final LegacyAlphaDataManager legacyAlphaData;
 		
-		public ImportCommand(SpigotCommand command) 
+		public ImportCommand()
 		{
-			super(command, "import");
+			super("import");
 			
 			legacyWerewolfData = WerewolfPlugin.getLegacyDataManager();
 			legacyAlphaData = WerewolfPlugin.getLegacyAlphaDataManager();
 		}
 
 		//We already know this will always spit back these kind of lists
+		//ONLY RUN WHEN NO PLAYERS ARE ONLINE!!
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			List<Werewolf> oldWerewolves = legacyWerewolfData.loadFromFile("werewolves");
-			List<UUID> alphaIds = legacyAlphaData.loadFromFile("clans");
-			
-			//Cycle through all the old data and import them.
-			//Give back the Alpha status to the old Alpha
-			//This overrides current Alphas
-			if (oldWerewolves.size() > 0)
+			messages.sendWolfLocale(sender, "processing");
+			Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
 			{
-				for (Werewolf werewolf : oldWerewolves)
+				List<Werewolf> oldWerewolves = legacyWerewolfData.loadFromFile("werewolves");
+				List<UUID> alphaIds = legacyAlphaData.loadFromFile("clans");
+
+				//Cycle through all the old data and import them.
+				//Give back the Alpha status to the old Alpha
+				//This overrides current Alphas
+				if (oldWerewolves.size() > 0)
 				{
-					werewolves.storeWerewolf(werewolf);
-					Clan clan = clans.getClan(werewolf);
-					
-					if (alphaIds.contains(werewolf.getUUID()))
-						clan.makeAlpha(werewolf);
-					
-					//Load up Werewolf data if the werewolf is online
-					Player player = Bukkit.getPlayer(werewolf.getUUID());
-					if (player != null)
-						werewolves.loadWerewolf(player);
+					for (Werewolf werewolf : oldWerewolves)
+					{
+						werewolves.storeWerewolf(werewolf);
+						Clan clan = clans.getClan(werewolf);
+
+						if (alphaIds.contains(werewolf.getUUID()))
+							clan.makeAlpha(werewolf);
+
+						//Load up Werewolf data if the werewolf is online
+						Player player = Bukkit.getPlayer(werewolf.getUUID());
+						if (player != null)
+						{
+							werewolves.getOfflineWerewolf(player.getUniqueId());
+						}
+					}
+
+					messages.sendWolfLocale(sender, "admin.import.complete");
+					return;
 				}
-				
-				messages.sendWolfLocale(sender, "admin.import.complete");
-				return;
-			}
-			
-			messages.sendWolfLocale(sender, "admin.import.no-files");
-		}	
+
+				messages.sendWolfLocale(sender, "admin.import.no-files");
+			});
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			return Collections.emptyList();
+		}
 	}
 	
 	/*
@@ -641,9 +812,9 @@ public class WerewolfAdminCommand extends SpigotCommand
 	 */
 	private class HelpCommand extends SubCommand
 	{
-		public HelpCommand(SpigotCommand command) 
+		public HelpCommand()
 		{
-			super(command, "help");
+			super("help");
 		}
 
 		@Override
@@ -657,6 +828,19 @@ public class WerewolfAdminCommand extends SpigotCommand
 			
 			//Send help menu
 			messages.sendMessage(sender, help);
-		}	
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			List<String> suggestions = new ArrayList<>();
+			if (args.length == 2)
+			{
+				suggestions.add("1");
+				suggestions.add("2");
+			}
+
+			return suggestions;
+		}
 	}
 }

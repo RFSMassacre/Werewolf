@@ -28,27 +28,23 @@ public class PlayerListener implements Listener
 	public void onPlayerJoin(PlayerLoginEvent event)
 	{
 		Player player = event.getPlayer();
-		
-		//Load data if werewolf
-		if (werewolves.isWerewolf(player))
+		werewolves.getOfflineWerewolf(player.getUniqueId(), (werewolf) ->
 		{
-			//And untransform them to avoid bugs
-			//Done here in case they may still have a skin on
-			final Werewolf werewolf = werewolves.loadWerewolf(player);
-			
-			//Update skin and untransform a minute after to ensure
-			//no errors occur
-			new BukkitRunnable()
+			if (werewolf != null)
 			{
-				public void run()
+				werewolves.addWerewolf(werewolf);
+				new BukkitRunnable()
 				{
-					if (werewolf.inWolfForm())
-						werewolf.untransform();
-				}
-			}.runTaskLater(WerewolfPlugin.getInstance(), 20L);
-		}
+					public void run()
+					{
+						if (werewolf.inWolfForm())
+							werewolf.untransform();
+					}
+				}.runTaskLater(WerewolfPlugin.getInstance(), 20L);
 
-		WerewolfPlugin.updateGroup(player);
+				WerewolfPlugin.updateGroup(player);
+			}
+		});
 	}
 	
 	/*
@@ -58,14 +54,16 @@ public class PlayerListener implements Listener
 	public void onPlayerLeave(PlayerQuitEvent event)
 	{
 		Player player = event.getPlayer();
-		
+
 		//Unload data if werewolf
-		if (werewolves.isWerewolf(player))
+		Werewolf werewolf = werewolves.getWerewolf(player);
+		if (werewolf == null)
 		{
-			Werewolf werewolf = werewolves.getWerewolf(player);
-			werewolves.storeWerewolf(werewolf);
-			werewolves.removeWerewolf(werewolf);
+			return;
 		}
+
+		werewolves.storeWerewolf(werewolf);
+		werewolves.removeWerewolf(werewolf);
 	}
 	
 	/*
@@ -77,11 +75,15 @@ public class PlayerListener implements Listener
 		Player player = event.getEntity();
 		
 		//Untransform if werewolf
-		if (werewolves.isWerewolf(player))
+		Werewolf werewolf = werewolves.getWerewolf(player);
+		if (werewolf == null)
 		{
-			Werewolf werewolf = werewolves.getWerewolf(player);
-			if (werewolf.inWolfForm())
-				werewolf.untransform();
+			return;
+		}
+
+		if (werewolf.inWolfForm())
+		{
+			werewolf.untransform();
 		}
 	}
 }

@@ -2,6 +2,7 @@ package us.rfsmassacre.Werewolf.Managers;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
 
 import com.clanjhoo.vampire.VampireAPI;
 import com.clanjhoo.vampire.VampireRevamp;
@@ -10,7 +11,8 @@ import org.bukkit.Effect;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import me.NoChance.PvPManager.PvPlayer;
@@ -31,20 +33,16 @@ public class WerewolfManager
 {
 	private final long MILLIS_IN_DAY = 86400000;
 	
-	private WerewolfDataManager werewolfData;
-	private ConfigManager config;
-	private DependencyManager dependency;
-	private MessageManager messages;
+	private final WerewolfDataManager werewolfData;
+	private final ConfigManager config;
+	private final DependencyManager dependency;
+	private final MessageManager messages;
 	
-	private EventManager events;
+	private final EventManager events;
 	
-	private HashMap<Player, Werewolf> werewolves;
-	private int formTaskId;
-	private int armorTaskId;
-	private int weaponTaskId;
-	private int scentTaskId;
-	private int cureTaskId;
-	private int vampireTaskId;
+	private final Map<UUID, Werewolf> werewolves;
+
+	private final Set<BukkitTask> tasks;
 	
 	public WerewolfManager()
 	{
@@ -53,6 +51,7 @@ public class WerewolfManager
 		dependency = WerewolfPlugin.getDependencyManager();
 		messages = WerewolfPlugin.getMessageManager();
 		werewolves = new HashMap<>();
+		tasks = new HashSet<>();
 		
 		events = WerewolfPlugin.getEventManager();
 		
@@ -70,24 +69,30 @@ public class WerewolfManager
 	
 	public void purgeBrokenFiles()
 	{
-		for (File file : werewolfData.listFiles())
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
 		{
-			try
+			for (File file : werewolfData.getFiles())
 			{
-				getOfflineWerewolf(file);
+				try
+				{
+					Werewolf werewolf = werewolfData.read(file);
+					if (werewolf == null)
+					{
+						file.delete();
+					}
+				}
+				catch (Exception exception)
+				{
+					file.delete();
+				}
 			}
-			catch (Exception exception)
-			{
-				file.delete();
-			}
-		}
+		});
 	}
-	
+
 	public void startFormChecker()
 	{
 		//Continuously give back the buffs in they were missing
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		formTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		tasks.add(new BukkitRunnable()
         {
             public void run() 
             {
@@ -112,11 +117,11 @@ public class WerewolfManager
         					long lastTransform = werewolf.getLastTransform();
         					long now = System.currentTimeMillis();
         					
-        					double secondsPassed = (now - lastTransform) / 1000;
+        					double secondsPassed = (double)(now - lastTransform) / 1000;
         					double base = config.getDouble("transformation.base");
         					double modifier = config.getDouble("transformation.modifier");
         					
-        					double expiration = 0.0;
+        					double expiration;
         					
         					if (config.getString("transformation.equation").toUpperCase().equals("LINEAR"))
         					{
@@ -145,7 +150,7 @@ public class WerewolfManager
         				 * Keep Transformation Up
         				 */
         				Clan clan = WerewolfPlugin.getClanManager().getClan(werewolf);
-        				Long clanSpeed = config.getLong("werewolf-stats." + werewolf.getType().toKey() + ".speed");
+        				long clanSpeed = config.getLong("werewolf-stats." + werewolf.getType().toKey() + ".speed");
         				
     					//Return their speed to their normal forms
     					if (werewolf.getPlayer().getWalkSpeed() < clanSpeed)
@@ -182,14 +187,13 @@ public class WerewolfManager
        				}
         		}
             }
-        }, 0L, config.getInt("intervals.werewolf-buffs"));
+        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-buffs")));
 	}
 	
 	public void startArmorChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		armorTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		tasks.add(new BukkitRunnable()
         {
             public void run() 
             {
@@ -201,14 +205,13 @@ public class WerewolfManager
         			}
         		}
             }
-        }, 0L, config.getInt("intervals.werewolf-drops"));
+        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-drops")));
 	}
 	
 	public void startWeaponChecker()
 	{
 		//Continuously cause werewolves to get hurt if touching silver
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		weaponTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		tasks.add(new BukkitRunnable()
         {
 			public void run() 
             {
@@ -221,24 +224,31 @@ public class WerewolfManager
         				player.damage(config.getInt("silver-penalty"));
         		}
             }
-        }, 0L, config.getInt("intervals.werewolf-silver"));
+        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-silver")));
 	}
 	
 	public void startCureChecker()
 	{
 		if (!WerewolfPlugin.getConfigManager().getBoolean("auto-cure.enabled"))
-			return; 
+		{
+			return;
+		}
 		
 		//Continuously cure werewolves who haven't transformed in a long time
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		cureTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
-        {
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
             public void run() 
             {
         		for (Werewolf werewolf : getAllWerewolves())
         		{
+					if (werewolf == null)
+					{
+						continue;
+					}
+
         			boolean alphaOnly = WerewolfPlugin.getConfigManager().getBoolean("auto-cure.alpha-only");
-        			if (alphaOnly && !isAlpha(werewolf.getPlayer()))
+        			if (alphaOnly && !isAlpha(werewolf.getUUID()))
 					{
 						continue;
 					}
@@ -251,23 +261,22 @@ public class WerewolfManager
         				if (events != null)
         					events.callEvent(cureEvent);
         				if (!cureEvent.isCancelled())
-        				{	
+        				{
             				messages.broadcastLocale("cure.auto-cure",
             						"{werewolf}", werewolf.getDisplayName());
-            				
+
             				cureWerewolf(werewolf);
         				}
         			}
             	}
             }
-        }, 0L, config.getInt("intervals.cure-check"));
+        }.runTaskTimerAsynchronously(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.cure-check")));
 	}
 	
 	public void startScentChecker()
 	{
 		//Continuously drop any armor the werewolf might have on
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		scentTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), new Runnable() 
+		tasks.add(new BukkitRunnable()
         {
             public void run() 
             {
@@ -289,68 +298,66 @@ public class WerewolfManager
         			}
         		}
             }
-        }, 0L, config.getInt("intervals.werewolf-scent"));
+        }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-scent")));
 	}
 	
 	public void startVampirismChecker()
 	{
-		if (dependency.hasPlugin("VampireRevamp"))
+		if (!dependency.hasPlugin("VampireRevamp"))
 		{
-			//Only run if the Vampire plugin is running
-			BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-			vampireTaskId = scheduler.scheduleSyncRepeatingTask(WerewolfPlugin.getInstance(), () -> {
+			return;
+		}
+
+		//Only run if the Vampire plugin is running
+		tasks.add(new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
 				for (Werewolf werewolf : getOnlineWerewolves())
 				{
 					if (isVampire(werewolf.getPlayer()))
 					{
-						VampireRevamp.getVPlayerManager().getDataAsynchronous(
-							(uPlayer) -> uPlayer.setVampire(false),
-							() -> {},
-							werewolf.getUUID());
+						VampireRevamp.getVPlayerManager().getDataAsynchronous((uPlayer) -> uPlayer.setVampire(false),
+								() -> {}, werewolf.getUUID());
 					}
 				}
-			}, 0L, config.getInt("intervals.hybrid-check"));
-		}
+			}
+		}.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.hybrid-check")));
 	}
 	
 	public void endCycles()
 	{
 		//In case we need to stop the buff cycle for a reload
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		scheduler.cancelTask(formTaskId);
-		scheduler.cancelTask(armorTaskId);
-		scheduler.cancelTask(cureTaskId);
-		scheduler.cancelTask(scentTaskId);
-		scheduler.cancelTask(weaponTaskId);
-		scheduler.cancelTask(vampireTaskId);
+		for (BukkitTask task : tasks)
+		{
+			task.cancel();
+		}
 	}
 	
 	public Werewolf getWerewolf(Player player)
 	{
-		 return werewolves.get(player);
+		return getWerewolf(player.getUniqueId());
 	}
 	public Werewolf getWerewolf(UUID playerId)
 	{
-		Player player = Bukkit.getPlayer(playerId);
-		if (player != null)
-			return getWerewolf(player);
-		else
-			return null;
-	}
-	public Werewolf getOfflineWerewolf(File file)
-	{
-		return (Werewolf)werewolfData.loadFromFile(file);
+		return werewolves.get(playerId);
 	}
 	public Werewolf getOfflineWerewolf(UUID playerId)
 	{
-		return (Werewolf)werewolfData.loadFromFile(playerId.toString());
+		return werewolfData.read(playerId.toString());
 	}
-	public Werewolf loadWerewolf(Player player)
+	public void getOfflineWerewolf(File file, Consumer<Werewolf> callback)
 	{
-		Werewolf werewolf = getOfflineWerewolf(player.getUniqueId());
-		werewolf.setPlayer(player);
-		addWerewolf(werewolf);
-		return werewolf;
+		werewolfData.readAsync(file, callback);
+	}
+	public void getOfflineWerewolf(UUID playerId, Consumer<Werewolf> callback)
+	{
+		werewolfData.readAsync(playerId.toString(), callback);
+	}
+	public void loadWerewolf(Player player, Consumer<Werewolf> callback)
+	{
+		getOfflineWerewolf(player.getUniqueId(), callback);
 	}
 	
 	public Collection<Werewolf> getOnlineWerewolves()
@@ -359,7 +366,7 @@ public class WerewolfManager
 	}
 	public void addWerewolf(Werewolf werewolf)
 	{
-		werewolves.put(werewolf.getPlayer(), werewolf);
+		werewolves.put(werewolf.getUUID(), werewolf);
 	}
 	public void removeWerewolf(Werewolf werewolf)
 	{
@@ -367,24 +374,21 @@ public class WerewolfManager
 	}
 	public void removeWerewolf(Player player)
 	{
-		werewolves.remove(player);
+		werewolves.remove(player.getUniqueId());
 	}
 	
 	public void storeWerewolves()
 	{
-		if (!werewolves.isEmpty())
+		//Stores ever werewolf based on UUID
+		for (Werewolf werewolf : werewolves.values())
 		{
-			//Stores ever werewolf based on UUID
-			for (Werewolf werewolf : werewolves.values())
-			{
-				werewolfData.saveToFile(werewolf, werewolf.getUUID().toString());
-			}
+			storeWerewolf(werewolf);
 		}
 	}
 	
 	public void storeWerewolf(Werewolf werewolf)
 	{
-		werewolfData.saveToFile(werewolf, werewolf.getUUID().toString());
+		werewolfData.write(werewolf.getUUID().toString(), werewolf);
 	}
 	
 	//Returns all offline werewolves
@@ -394,13 +398,15 @@ public class WerewolfManager
 		
 		if (getWerewolfAmount() > 0)
 		{
-			for (File file : werewolfData.listFiles())
+			for (File file : werewolfData.getFiles())
 			{
-				Werewolf werewolf = (Werewolf) werewolfData.loadFromFile(file);
+				Werewolf werewolf = werewolfData.read(file);
 				try
 				{
-					if (Bukkit.getPlayer(werewolf.getUUID()) == null)
+					if (werewolf.getPlayer() == null)
+					{
 						offlineWerewolves.add(werewolf);
+					}
 				}
 				catch (Exception exception)
 				{
@@ -411,35 +417,48 @@ public class WerewolfManager
 		
 		return offlineWerewolves;
 	}
-	
-	//Returns every single werewolf, if online gets the loaded info
+
+	public void getOfflineWerewolves(Consumer<List<Werewolf>> callback)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
+		{
+			callback.accept(getOfflineWerewolves());
+		});
+	}
+
 	public List<Werewolf> getAllWerewolves()
 	{
 		List<Werewolf> allWerewolves = new ArrayList<>();
-		for (File file : werewolfData.listFiles())
+		for (File file : werewolfData.getFiles())
 		{
-			Werewolf werewolf = (Werewolf)werewolfData.loadFromFile(file);
-			try
+			Werewolf werewolf = werewolfData.read(file);
+			Player player = werewolf.getPlayer();
+			if (player == null)
 			{
-				Player player = Bukkit.getPlayer(werewolf.getUUID());
-				if (player == null)
-					allWerewolves.add(werewolf);
-				else
-					allWerewolves.add(getWerewolf(player));
+				allWerewolves.add(werewolf);
 			}
-			catch (Exception exception)
+			else
 			{
-				file.delete();
+				allWerewolves.add(getWerewolf(player));
 			}
 		}
-		
+
 		return allWerewolves;
+	}
+	
+	//Returns every single werewolf, if online gets the loaded info
+	public void getAllWerewolves(Consumer<List<Werewolf>> callback)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
+		{
+			callback.accept(getAllWerewolves());
+		});
 	}
 	
 	//Returns number of Werewolves on the server
 	public int getWerewolfAmount()
 	{
-		return werewolfData.listFiles().length;
+		return werewolfData.getFiles().length;
 	}
 	
 	/*
@@ -450,7 +469,7 @@ public class WerewolfManager
 	{
 		Werewolf werewolf = new Werewolf(player, type);
 		addWerewolf(werewolf);
-		werewolfData.saveToFile(werewolf, werewolf.getUUID().toString());
+		werewolfData.writeAsync(werewolf.getUUID().toString(), werewolf);
 		
 		player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 		player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
@@ -465,7 +484,7 @@ public class WerewolfManager
 			werewolf.getClan().setAlphaId(null);
 		
 		removeWerewolf(werewolf);
-		werewolfData.deleteFile(werewolf.getUUID().toString());
+		werewolfData.deleteAsync(werewolf.getUUID().toString());
 		
 		if (werewolf.getPlayer() != null)
 		{
@@ -477,26 +496,39 @@ public class WerewolfManager
 	//Checks if they're a werewolf
 	public boolean isWerewolf(UUID playerId)
 	{
-		return werewolfData.loadFromFile(playerId.toString()) != null;
+		if (werewolves.containsKey(playerId))
+		{
+			return true;
+		}
+
+		for (File file : werewolfData.getFiles())
+		{
+			if (file.getName().equals(playerId.toString()))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
+
 	public boolean isWerewolf(Player player)
 	{
 		return isWerewolf(player.getUniqueId());
 	}
+
 	//Check if they're an alpha
 	public boolean isAlpha(UUID playerId)
 	{
 		if (config.getBoolean("alphas"))
 		{
-			if (isWerewolf(playerId))
+			for (ClanType type : ClanType.values())
 			{
-				Werewolf werewolf = getWerewolf(Bukkit.getPlayer(playerId));
-				if (werewolf == null)
-					werewolf = getOfflineWerewolf(playerId);
-
-				Clan clan = WerewolfPlugin.getClanManager().getClan(werewolf.getType());
-				if (clan.isAlpha(werewolf))
+				Clan clan = WerewolfPlugin.getClanManager().getClan(type);
+				if (clan.isAlpha(playerId))
+				{
 					return true;
+				}
 			}
 		}
 
@@ -504,6 +536,11 @@ public class WerewolfManager
 	}
 	public boolean isAlpha(Player player)
 	{
+		if (player == null)
+		{
+			return false;
+		}
+
 		return isAlpha(player.getUniqueId());
 	}
 	//Checks if player is a vampire

@@ -68,23 +68,26 @@ public class WerewolfPlugin extends JavaPlugin
 		legacyAlphaData = new LegacyAlphaDataManager();
 
 		//Prepare vault permission stuff
-		RegisteredServiceProvider<Permission> provider =
-				getServer().getServicesManager().getRegistration(Permission.class);
-		if (provider != null)
+		if (dependency.hasPlugin("Vault"))
 		{
-			if (config.getBoolean("group-permissions.enabled"))
+			RegisteredServiceProvider<Permission> provider =
+					getServer().getServicesManager().getRegistration(Permission.class);
+			if (provider != null)
 			{
-				permissions = provider.getProvider();
-				if (!permissions.hasGroupSupport())
+				if (config.getBoolean("group-permissions.enabled"))
 				{
-					messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-groups");
-					permissions = null;
+					permissions = provider.getProvider();
+					if (!permissions.hasGroupSupport())
+					{
+						messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-groups");
+						permissions = null;
+					}
 				}
 			}
-		}
-		else
-		{
-			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vault");
+			else
+			{
+				messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vault");
+			}
 		}
 
 		//Initialize listeners

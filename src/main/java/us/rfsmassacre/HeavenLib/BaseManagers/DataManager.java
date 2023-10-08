@@ -25,7 +25,9 @@ public abstract class DataManager<T> extends Manager
 		
 		//Create folder if not found
 		if (!folder.exists())
+		{
 			folder.mkdir();
+		}
 	}
 	
 	protected File getFile(String fileName)
@@ -58,8 +60,10 @@ public abstract class DataManager<T> extends Manager
 		//Delete and create a new file to save data.
 		//Avoids failure to remove previous unwanted data.
 		File file = getFile(fileName);
-		deleteFile(fileName);
-		createFile(fileName);
+		if (!file.exists())
+		{
+			createFile(fileName);
+		}
 		
 		try
 		{
@@ -147,7 +151,7 @@ public abstract class DataManager<T> extends Manager
 	}
 	
 	/*
-	 * BREAK DOWN YOUR OBJECT INTO PRIMITIE DATA TYPES TO BE
+	 * BREAK DOWN YOUR OBJECT INTO PRIMITIVE DATA TYPES TO BE
 	 * STORED IN THE YML FILE.
 	 * 
 	 * To be casted if loading from this.

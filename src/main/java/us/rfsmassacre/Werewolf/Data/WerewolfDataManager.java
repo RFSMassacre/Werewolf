@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import us.rfsmassacre.HeavenLib.BaseManagers.DataManager;
+import us.rfsmassacre.HeavenLib.BaseManagers.YamlStorage;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.Origin.Clan.ClanType;
 
-public class WerewolfDataManager extends DataManager<Werewolf>
+public class WerewolfDataManager extends YamlStorage<Werewolf>
 {
 	public WerewolfDataManager(WerewolfPlugin instance) 
 	{
@@ -17,11 +17,16 @@ public class WerewolfDataManager extends DataManager<Werewolf>
 	}
 
 	@Override
-	protected Werewolf loadData(YamlConfiguration data)
+	public Werewolf load(YamlConfiguration data)
 	{
-		Werewolf werewolf = new Werewolf();
-		werewolf.setPlayer(null);
-		werewolf.setUUID(UUID.fromString(data.getString("uuid")));
+		String id = data.getString("uuid");
+		if (id == null)
+		{
+			return null;
+		}
+
+		UUID playerId = UUID.fromString(id);
+		Werewolf werewolf = new Werewolf(playerId);
 		werewolf.setDisplayName(data.getString("display-name"));
 		werewolf.setType(ClanType.fromString(data.getString("clan")));
 		werewolf.setLevel(data.getInt("level"));
@@ -33,8 +38,9 @@ public class WerewolfDataManager extends DataManager<Werewolf>
 	}
 	
 	@Override
-	protected void storeData(Werewolf werewolf, YamlConfiguration data)
+	public YamlConfiguration save(Werewolf werewolf)
 	{
+		YamlConfiguration data = new YamlConfiguration();
 		data.set("uuid", werewolf.getUUID().toString());
 		data.set("display-name", werewolf.getDisplayName());
 		data.set("clan", werewolf.getType().toString());
@@ -42,5 +48,6 @@ public class WerewolfDataManager extends DataManager<Werewolf>
 		data.set("intent", werewolf.hasIntent());
 		data.set("wolf-form", werewolf.inWolfForm());
 		data.set("last-transform", werewolf.getLastTransform());
+		return data;
 	}
 }

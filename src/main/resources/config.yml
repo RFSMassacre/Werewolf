@@ -1,7 +1,7 @@
 ################################################################
 ###            Werewolf (Recoded) by RFSMassacre             ###
 ###                                                          ###
-###   Discord Contact: RFSMassacre#8365                      ###
+###   Discord Support: https://discord.gg/GzrSfKf            ###
 ###                                                          ###
 ### Feel free to contact me for support, but be courteous    ###
 ### and don't freak out and scream vaguely like I'm some     ###
@@ -123,9 +123,9 @@ infection:
  
 #Auto-Cure Setting
 auto-cure:
-    enabled: true
-    days: 14
-    alpha-only: false
+    enabled: false
+    days: 31
+    alpha-only: true
 
 #Scent Tracking
 track:
@@ -221,12 +221,12 @@ blocked-worlds:
     
 #List of commands that are blocked while in werewolf form.
 blocked-commands:
-    alpha:
+    alpha: #When being alpha.
         - /pvp
-    werewolf:
+    werewolf: #When in wolf form.
         - /skin
         - /myskin
-    all:
+    all: #When being a werewolf in general.
         - /v o
         - /v offer
         - /vampire o
@@ -352,5 +352,5 @@ bonus:
         
 #Plugin support
 support:
-    PvPManager: true
+    PvPManager: false
     WorldGuard: false

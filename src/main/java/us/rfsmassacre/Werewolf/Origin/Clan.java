@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
@@ -24,7 +26,7 @@ public class Clan
 		SILVERMANE("Silvermane"),
 		BLOODMOON("Bloodmoon");
 		
-		private String title;
+		private final String title;
 		
 		ClanType(String title)
 		{
@@ -47,7 +49,14 @@ public class Clan
 			for (ClanType type : ClanType.values())
 			{
 				if (type.toString().equalsIgnoreCase(title))
+				{
 					return type;
+				}
+
+				if (type.name().equalsIgnoreCase(title))
+				{
+					return type;
+				}
 			}
 			
 			return null;
@@ -169,7 +178,11 @@ public class Clan
 	}
 	public boolean isAlpha(Werewolf werewolf)
 	{
-		return werewolf.getUUID().equals(this.alphaId);
+		return isAlpha(werewolf.getUUID());
+	}
+	public boolean isAlpha(UUID playerId)
+	{
+		return playerId.equals(alphaId);
 	}
 	public int getSize()
 	{
@@ -191,7 +204,7 @@ public class Clan
 		
 		return false;
 	}
-		
+
 	public List<Werewolf> getMembers()
 	{
 		WerewolfManager werewolves = WerewolfPlugin.getWerewolfManager();
@@ -201,17 +214,25 @@ public class Clan
 			//Load online data and if not found load offline data
 			Werewolf member = werewolves.getWerewolf(memberId);
 			if (member == null)
+			{
 				member = werewolves.getOfflineWerewolf(memberId);
-			
+			}
+
 			//Add only if data was found
 			if (member != null)
+			{
 				members.add(member);
+			}
 		}
-		
+
 		//Sort from highest level to lowest level
 		members.sort(Collections.reverseOrder());
-		
 		return members;
+	}
+		
+	public void getMembers(Consumer<List<Werewolf>> callback)
+	{
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () -> callback.accept(getMembers()));
 	}
 	
 	//Makes this werewolf the new alpha

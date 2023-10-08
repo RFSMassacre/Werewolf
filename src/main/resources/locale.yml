@@ -1,5 +1,5 @@
 ################################################################
-###              Werewolf (Recorded) Locale                  ###
+###              Werewolf (Recoded) Locale                   ###
 ################################################################
 
 prefix:
@@ -106,8 +106,7 @@ hunting:
         no-target: "&cYour &f{item} &ccurrently has no target."
     claims:
         trespassing: "&cYou're trespassing in &f{owner}&c's land. Your PVP has been forced on!"
-        
-    
+
 admin:
     level:
         no-args: "&cYou must specify the Werewolf and what to level them to."
@@ -148,3 +147,5 @@ admin:
     reload: "&aWerewolf has been reloaded."
     purge: "&7All broken player files have been cleared."
     skins-loaded: "&7Skins have been downloaded."
+
+processing: "&7Your request is processing..."

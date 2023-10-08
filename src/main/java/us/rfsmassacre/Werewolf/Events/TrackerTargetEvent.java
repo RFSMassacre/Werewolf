@@ -21,9 +21,10 @@ public class TrackerTargetEvent extends Event implements Cancellable
 	}
 	
 	//Event Type
-	public static enum TargetType
+	public enum TargetType
 	{
-		WEREWOLF_TARGET, VAMPIRE_TARGET;
+		WEREWOLF_TARGET,
+		VAMPIRE_TARGET
 	}
 	
 	//Tracker Target Event Data

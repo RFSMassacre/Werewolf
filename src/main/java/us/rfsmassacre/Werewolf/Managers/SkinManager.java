@@ -13,6 +13,7 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class SkinManager
 {
@@ -23,8 +24,7 @@ public class SkinManager
 	private final WerewolfManager werewolves;
 
 	private final Map<String, IProperty> skins;
-	private final Map<String, String> oldSkinNames;
-	private final Map<String, IProperty> oldSkinData;
+	private final Map<UUID, String> oldSkinNames;
 	
 	public SkinManager()
 	{
@@ -35,7 +35,6 @@ public class SkinManager
 		this.api = SkinsRestorerAPI.getApi();
 		this.skins = new HashMap<>();
 		this.oldSkinNames = new HashMap<>();
-		this.oldSkinData = new HashMap<>();
 		generateSkins(true);
 	}
 
@@ -45,11 +44,15 @@ public class SkinManager
 		{
 			Player player = werewolf.getPlayer();
 			String type = getType(werewolf);
-
 			try
 			{
-				String oldSkin = api.getSkinName(player.getName());
-				IProperty skinData = api.getSkinData(oldSkin);
+				String skinName = api.getSkinName(player.getName());
+				if (skinName != null && !skinName.isEmpty())
+				{
+					oldSkinNames.put(player.getUniqueId(), skinName);
+					api.removeSkin(player.getName());
+				}
+
 				if (config.getBoolean("use-urls"))
 				{
 					api.applySkin(new PlayerWrapper(player), skins.get(type));
@@ -58,19 +61,11 @@ public class SkinManager
 				{
 					api.applySkin(new PlayerWrapper(player), getSkinName(werewolf));
 				}
-				if (oldSkin != null)
-				{
-					oldSkinNames.put(player.getName(), oldSkin);
-					if (skinData != null)
-					{
-						oldSkinData.put(oldSkin, skinData);
-					}
-				}
 			}
 			catch (Exception exception)
 			{
 				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &c" + type +
-						" skin cannot be set.");
+						" skin cannot be set on &f" + player.getName() + "&c.");
 			}
 		});
 	}
@@ -82,30 +77,22 @@ public class SkinManager
 			try
 			{
 				Player player = werewolf.getPlayer();
-				api.removeSkin(player.getName());
-				String oldSkin = oldSkinNames.get(player.getName());
-				if (oldSkin == null)
+				String skinName = oldSkinNames.get(player.getUniqueId());
+				if (skinName == null)
 				{
 					IProperty emptySkin = api.createPlatformProperty("textures", "", "");
 					api.applySkin(new PlayerWrapper(player), emptySkin);
 				}
 				else
 				{
-					if (config.getBoolean("use-urls"))
-					{
-						IProperty skinData = oldSkinData.get(oldSkin);
-						api.applySkin(new PlayerWrapper(player), skinData);
-					}
-					else
-					{
-						api.applySkin(new PlayerWrapper(player), oldSkin);
-					}
+					api.setSkin(player.getName(), skinName);
+					api.applySkin(new PlayerWrapper(player));
 				}
 			}
 			catch (Exception exception)
 			{
-				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &c" +
-						werewolf.getPlayer().getName() + "'s skin cannot be cleared.");
+				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &f" +
+						werewolf.getPlayer().getName() + "&c's skin cannot be cleared.");
 			}
 		});
 	}

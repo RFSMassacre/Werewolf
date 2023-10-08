@@ -20,15 +20,15 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 public class MessageManager
 {
-	private ConfigManager config;
-	private LocaleManager locale;
+	private final ConfigManager config;
+	private final LocaleManager locale;
 	
-	private MenuManager mainText;
-	private MenuManager adminText;
-	private MenuManager helpText1;
-	private MenuManager helpText2;
-	private MenuManager helpAdmin1;
-	private MenuManager helpAdmin2;
+	private final MenuManager mainText;
+	private final MenuManager adminText;
+	private final MenuManager helpText1;
+	private final MenuManager helpText2;
+	private final MenuManager helpAdmin1;
+	private final MenuManager helpAdmin2;
 	
 	public MessageManager()
 	{
@@ -127,73 +127,81 @@ public class MessageManager
 	}
 	
 	//Formats the member list for this clan
-	public String getMembersList(Clan clan, int number)
+	public void sendMembersList(CommandSender sender, Clan clan, int pageNumber)
 	{
-		List<String> pages = new ArrayList<>();
-		final int MEMBERS_PER_PAGE = 6;
-		
-		//Top border
-		int maxPages = (clan.getSize() / MEMBERS_PER_PAGE) + 1;
-		
-		//Cap the highest number and lowest number
-		if (number + 1 > maxPages)
-			number = maxPages - 1;
-		else if (number + 1 < 0)
-			number = 0;
+		Bukkit.getScheduler().runTaskAsynchronously(WerewolfPlugin.getInstance(), () ->
+		{
+			int number = pageNumber;
+			List<String> pages = new ArrayList<>();
+			final int MEMBERS_PER_PAGE = 6;
 
-		String clanDisplay = config.getString("menu.clan." + clan.getType().name());
-		String border = "&6&l  «&e&l&m*-------------------------------------*&6&l»";
-		String header = border + "\n &6&l" + clanDisplay + " &7Member List                   &7Page &8[&7" + (number + 1) + "&8/&7" + maxPages + "&8]";
-		header += "\n      ";
-		
-		if (clan.getSize() > 0)
-		{
-			int slot = 0;
-			String page = header;
-			for (Werewolf member : clan.getMembers())
+			//Top border
+			int maxPages = (clan.getSize() / MEMBERS_PER_PAGE) + 1;
+
+			//Cap the highest number and lowest number
+			if (number + 1 > maxPages)
+				number = maxPages - 1;
+			else if (number + 1 < 0)
+				number = 0;
+
+			String clanDisplay = config.getString("menu.clan." + clan.getType().name());
+			String border = "&6&l  «&e&l&m*-------------------------------------*&6&l»";
+			String header = border + "\n &6&l" + clanDisplay + " &7Member List                   &7Page &8[&7" + (number + 1) + "&8/&7" + maxPages + "&8]";
+			header += "\n      ";
+
+			if (clan.getSize() > 0)
 			{
-				//If this is last in the page
-				if (slot % (MEMBERS_PER_PAGE - 1) == 0 && slot > 0)
+				int slot = 0;
+				StringBuilder page = new StringBuilder(header);
+				for (Werewolf member : clan.getMembers())
 				{
-					if (!WerewolfPlugin.getWerewolfManager().isAlpha(member.getUUID()))
-						page += "\n &8[&7" + (slot + 1) + "&8] &8[&6&lLvl " + member.getLevel() + "&8] &r" + member.getDisplayName();
-					else
-						page += "\n &8[&7" + (slot + 1) + "&8] &8[&6&lLvl " + member.getLevel() + "&8] &2&lAlpha&r " + member.getDisplayName();
-					
-					page += "\n" + border;
-					pages.add(page);
-					page = new String(header);
-				}
-				
-				if (!WerewolfPlugin.getWerewolfManager().isAlpha(member.getUUID()))
-					page += "\n &8[&7" + (slot + 1) + "&8] &8[&6&lLvl " + member.getLevel() + "&8] &r" + member.getDisplayName();
-				else
-					page += "\n &8[&7" + (slot + 1) + "&8] &8[&6&lLvl " + member.getLevel() + "&8] &2&lAlpha&r " + member.getDisplayName();
-				
-				//If this is the last in the list
-				if (slot == clan.getSize() - 1)
-				{
-					for (int spacer = slot % (MEMBERS_PER_PAGE - 1); spacer < (MEMBERS_PER_PAGE - 1); spacer++)
+					//If this is last in the page
+					if (slot % (MEMBERS_PER_PAGE - 1) == 0 && slot > 0)
 					{
-						page += "\n      ";
+						if (!WerewolfPlugin.getWerewolfManager().isAlpha(member.getUUID()))
+							page.append("\n &8[&7").append(slot + 1).append("&8] &8[&6&lLvl ").append(member.getLevel())
+									.append("&8] &r").append(member.getDisplayName());
+						else
+							page.append("\n &8[&7").append(slot + 1).append("&8] &8[&6&lLvl ").append(member.getLevel())
+									.append("&8] &2&lAlpha&r ").append(member.getDisplayName());
+
+						page.append("\n").append(border);
+						pages.add(page.toString());
+						page = new StringBuilder(header);
 					}
-					
-					page += "\n" + border;
-					pages.add(page);
+
+					if (!WerewolfPlugin.getWerewolfManager().isAlpha(member.getUUID()))
+						page.append("\n &8[&7").append(slot + 1).append("&8] &8[&6&lLvl ").append(member.getLevel())
+								.append("&8] &r").append(member.getDisplayName());
+					else
+						page.append("\n &8[&7").append(slot + 1).append("&8] &8[&6&lLvl ").append(member.getLevel())
+								.append("&8] &2&lAlpha&r ").append(member.getDisplayName());
+
+					//If this is the last in the list
+					if (slot == clan.getSize() - 1)
+					{
+						for (int spacer = slot % (MEMBERS_PER_PAGE - 1); spacer < (MEMBERS_PER_PAGE - 1); spacer++)
+						{
+							page.append("\n      ");
+						}
+
+						page.append("\n").append(border);
+						pages.add(page.toString());
+					}
+
+					slot++;
 				}
-				
-				slot++;
+
+				sendMessage(sender, pages.get(number));
 			}
-			
-			return pages.get(number);
-		}
-		else
-		{
-			String page = header;
-			page += "\n &cNo members yet.";
-			page += "\n \n \n \n \n \n" + border;
-			pages.add(page);
-			return pages.get(0);
-		}
+			else
+			{
+				String page = header;
+				page += "\n &cNo members yet.";
+				page += "\n \n \n \n \n \n" + border;
+				pages.add(page);
+				sendMessage(sender, pages.get(0));
+			}
+		});
 	}
 }

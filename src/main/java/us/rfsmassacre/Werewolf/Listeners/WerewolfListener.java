@@ -187,20 +187,22 @@ public class WerewolfListener implements Listener
 				}
 				else if (config.getBoolean("hunting.enabled") && werewolves.isHuman(killer) && clan.getSize() > 1)
 				{
-					List<Werewolf> clanMembers = clan.getMembers();
-					Werewolf runnerUp = !clanMembers.get(0).equals(alpha) ? clanMembers.get(0) : clanMembers.get(1);
-					NewAlphaEvent alphaEvent = new NewAlphaEvent(player, clan.getType());
-					events.callEvent(alphaEvent);
-					if (!alphaEvent.isCancelled())
+					clan.getMembers((clanMembers) ->
 					{
-						clan.makeAlpha(runnerUp);
-						//Throw alpha transfer event
-						
-						messages.broadcastLocale("clan.hunted-alpha",
-								"{killer}", killer.getDisplayName(),
-								"{clan}", config.getString("menu.clan." + clan.getType().name()),
-								"{alpha}", alpha.getDisplayName());
-					}
+						Werewolf runnerUp = !clanMembers.get(0).equals(alpha) ? clanMembers.get(0) : clanMembers.get(1);
+						NewAlphaEvent alphaEvent = new NewAlphaEvent(player, clan.getType());
+						events.callEvent(alphaEvent);
+						if (!alphaEvent.isCancelled())
+						{
+							clan.makeAlpha(runnerUp);
+							//Throw alpha transfer event
+
+							messages.broadcastLocale("clan.hunted-alpha",
+									"{killer}", killer.getDisplayName(),
+									"{clan}", config.getString("menu.clan." + clan.getType().name()),
+									"{alpha}", alpha.getDisplayName());
+						}
+					});
 				}
 			}
 		}
