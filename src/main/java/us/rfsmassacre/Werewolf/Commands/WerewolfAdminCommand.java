@@ -88,16 +88,16 @@ public class WerewolfAdminCommand extends SpigotCommand
 			int werewolfAmount = werewolves.getWerewolfAmount();
 			menu = menu.replace("{werewolves}", Integer.toString(werewolfAmount));
 			if (werewolfAmount == 1)
+			{
 				menu = menu.replace("Werewolves", "Werewolf");
+			}
 			
 			int witherfangs = clans.getClan(ClanType.WITHERFANG).getSize();
 			int silvermanes = clans.getClan(ClanType.SILVERMANE).getSize();
 			int bloodmoons = clans.getClan(ClanType.BLOODMOON).getSize();
-			
 			menu = menu.replace("{wf-members}", Integer.toString(witherfangs))
 					   .replace("{sm-members}", Integer.toString(silvermanes))
 					   .replace("{bm-members}", Integer.toString(bloodmoons));
-			
 			sender.sendMessage(ChatManager.format(menu));
 		}
 
@@ -127,7 +127,6 @@ public class WerewolfAdminCommand extends SpigotCommand
 				if (args.length >= 2)
 				{
 					String name = args[1];
-					
 					if (name != null)
 					{
 						WerewolfItem werewolfItem = items.getWerewolfItem(args[1].toUpperCase());
@@ -218,6 +217,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 					messages.sendWolfLocale(sender, "admin.transform.not-infected",
 							"{player}", player.getDisplayName());
 				}
+
 				return;
 			}
 			
@@ -259,7 +259,6 @@ public class WerewolfAdminCommand extends SpigotCommand
 				Player player = Bukkit.getPlayer(args[1]);
 				ClanType type = ClanType.fromString(args[2]);
 				Clan clan = clans.getClan(type);
-				
 				if (player != null && type != null)
 				{
 					if (werewolves.isHuman(player))
@@ -332,7 +331,6 @@ public class WerewolfAdminCommand extends SpigotCommand
 			if (args.length >= 2)
 			{
 				Player player = Bukkit.getPlayer(args[1]);
-				
 				if (player != null)
 				{
 					if (werewolves.isWerewolf(player))

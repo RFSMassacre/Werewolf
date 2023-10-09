@@ -215,11 +215,16 @@ public class WerewolfCommand extends SpigotCommand
 					return Collections.emptyList();
 				}
 
-				int amount = clans.getClan(werewolf).getSize();
-				int pages = amount % 6;
-				for (int page = 1; page <= pages; page++)
+				double amount = clans.getClan(werewolf).getSize();
+				double pages = amount / 6;
+				if (pages % 6 == 0)
 				{
-					suggestions.add(Integer.toString(page));
+					pages--;
+				}
+
+				for (int page = 0; page < pages; page++)
+				{
+					suggestions.add(Integer.toString(page + 1));
 				}
 			}
 
@@ -337,6 +342,7 @@ public class WerewolfCommand extends SpigotCommand
 							}
 						}
 					}
+
 					return;
 				}
 			}
@@ -484,6 +490,7 @@ public class WerewolfCommand extends SpigotCommand
 						messages.sendWolfLocale(player, "intent.not-leveled",
 								"{level}", Integer.toString(transformLvl));
 					}
+
 					return;
 				}
 			}
@@ -619,7 +626,9 @@ public class WerewolfCommand extends SpigotCommand
 			String help = messages.getHelpText1();
 			
 			if (args.length == 2 && args[1].equalsIgnoreCase("2"))
+			{
 				help = messages.getHelpText2();
+			}
 			
 			//Send help menu
 			messages.sendMessage(sender, help);
