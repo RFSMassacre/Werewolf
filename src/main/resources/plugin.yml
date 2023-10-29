@@ -1,4 +1,4 @@
-name: ${project.name}
+name: ${project.artifactId}
 main: ${project.groupId}.${project.artifactId}.${project.name}
 version: ${project.version}
 website: ${project.url}
