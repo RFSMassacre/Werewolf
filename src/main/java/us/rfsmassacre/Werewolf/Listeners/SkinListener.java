@@ -3,7 +3,6 @@ package us.rfsmassacre.Werewolf.Listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.Werewolf.Events.NewAlphaEvent;
 import us.rfsmassacre.Werewolf.Origin.Werewolf;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -13,13 +12,11 @@ import us.rfsmassacre.Werewolf.Managers.WerewolfManager;
 
 public class SkinListener implements Listener
 {
-	private final ConfigManager config;
 	private final WerewolfManager werewolves;
 	private final SkinManager skins;
 	
 	public SkinListener()
 	{
-		config = WerewolfPlugin.getConfigManager();
 		werewolves = WerewolfPlugin.getWerewolfManager();
 		skins = WerewolfPlugin.getSkinManager();
 	}

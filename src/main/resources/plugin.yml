@@ -1,5 +1,5 @@
 name: Werewolf
-version: '1.7-3'
+version: '1.7.1'
 api-version: 1.13
 main: us.rfsmassacre.Werewolf.WerewolfPlugin
 author: RFSMassacre
