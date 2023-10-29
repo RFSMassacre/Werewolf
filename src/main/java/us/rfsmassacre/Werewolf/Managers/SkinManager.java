@@ -1,10 +1,13 @@
 package us.rfsmassacre.Werewolf.Managers;
 
-import net.skinsrestorer.api.PlayerWrapper;
-import net.skinsrestorer.api.SkinVariant;
-import net.skinsrestorer.api.SkinsRestorerAPI;
-import net.skinsrestorer.api.exception.SkinRequestException;
-import net.skinsrestorer.api.property.IProperty;
+import net.skinsrestorer.api.connections.model.MineSkinResponse;
+import net.skinsrestorer.api.exception.MineSkinException;
+import net.skinsrestorer.api.property.SkinIdentifier;
+import net.skinsrestorer.api.property.SkinVariant;
+import net.skinsrestorer.api.SkinsRestorer;
+import net.skinsrestorer.api.SkinsRestorerProvider;
+import net.skinsrestorer.api.exception.DataRequestException;
+import net.skinsrestorer.api.property.SkinProperty;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
@@ -13,18 +16,19 @@ import us.rfsmassacre.Werewolf.Origin.Werewolf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SkinManager
 {
-	private final SkinsRestorerAPI api;
+	private final SkinsRestorer api;
 
 	private final ConfigManager config;
 	private final MessageManager messages;
 	private final WerewolfManager werewolves;
 
-	private final Map<String, IProperty> skins;
-	private final Map<UUID, String> oldSkinNames;
+	private final Map<String, SkinProperty> skins;
+	private final Map<UUID, SkinProperty> oldSkinProperty;
 	
 	public SkinManager()
 	{
@@ -32,9 +36,9 @@ public class SkinManager
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
 		this.messages = WerewolfPlugin.getMessageManager();
 
-		this.api = SkinsRestorerAPI.getApi();
+		this.api = SkinsRestorerProvider.get();
 		this.skins = new HashMap<>();
-		this.oldSkinNames = new HashMap<>();
+		this.oldSkinProperty = new HashMap<>();
 		generateSkins(true);
 	}
 
@@ -46,20 +50,20 @@ public class SkinManager
 			String type = getType(werewolf);
 			try
 			{
-				String skinName = api.getSkinName(player.getName());
-				if (skinName != null && !skinName.isEmpty())
+				Optional<SkinProperty> skinData = api.getPlayerStorage().getSkinOfPlayer(player.getUniqueId());
+				if (skinData.isPresent())
 				{
-					oldSkinNames.put(player.getUniqueId(), skinName);
-					api.removeSkin(player.getName());
+					oldSkinProperty.put(player.getUniqueId(), skinData.get());
+					api.getPlayerStorage().removeSkinIdOfPlayer(player.getUniqueId());
 				}
 
 				if (config.getBoolean("use-urls"))
 				{
-					api.applySkin(new PlayerWrapper(player), skins.get(type));
+					api.getSkinApplier(Player.class).applySkin(player, skins.get(type));
 				}
 				else
 				{
-					api.applySkin(new PlayerWrapper(player), getSkinName(werewolf));
+					api.getSkinApplier(Player.class).applySkin(player, SkinIdentifier.ofCustom(getSkinName(werewolf)));
 				}
 			}
 			catch (Exception exception)
@@ -77,16 +81,14 @@ public class SkinManager
 			try
 			{
 				Player player = werewolf.getPlayer();
-				String skinName = oldSkinNames.get(player.getUniqueId());
-				if (skinName == null)
+				SkinProperty skinProp = oldSkinProperty.get(player.getUniqueId());
+				if (skinProp == null)
 				{
-					IProperty emptySkin = api.createPlatformProperty("textures", "", "");
-					api.applySkin(new PlayerWrapper(player), emptySkin);
+					api.getPlayerStorage().removeSkinIdOfPlayer(player.getUniqueId());
 				}
 				else
 				{
-					api.setSkin(player.getName(), skinName);
-					api.applySkin(new PlayerWrapper(player));
+					api.getSkinApplier(Player.class).applySkin(player, skinProp);
 				}
 			}
 			catch (Exception exception)
@@ -149,25 +151,25 @@ public class SkinManager
 				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &7" +
 						"Loading skins... &cDo not use any skins until it is done loading!");
 
-				IProperty alphaSkin = api.genSkinUrl(alphaUrl, SkinVariant.valueOf(alphaType));
-				IProperty witherfangSkin = api.genSkinUrl(witherfangUrl, SkinVariant.valueOf(witherfangType));
-				IProperty silvermaneSkin = api.genSkinUrl(silvermaneUrl, SkinVariant.valueOf(silvermaneType));
-				IProperty bloodmoonSkin = api.genSkinUrl(bloodmoonUrl, SkinVariant.valueOf(bloodmoonType));
+				MineSkinResponse alphaSkin = api.getMineSkinAPI().genSkin(alphaUrl, SkinVariant.valueOf(alphaType));
+				MineSkinResponse witherfangSkin = api.getMineSkinAPI().genSkin(witherfangUrl, SkinVariant.valueOf(witherfangType));
+				MineSkinResponse silvermaneSkin = api.getMineSkinAPI().genSkin(silvermaneUrl, SkinVariant.valueOf(silvermaneType));
+				MineSkinResponse bloodmoonSkin = api.getMineSkinAPI().genSkin(bloodmoonUrl, SkinVariant.valueOf(bloodmoonType));
 
 				skins.clear();
-				skins.put("Alpha", alphaSkin);
-				skins.put("Witherfang", witherfangSkin);
-				skins.put("Silvermane", silvermaneSkin);
-				skins.put("Bloodmoon", bloodmoonSkin);
+				skins.put("Alpha", alphaSkin.getProperty());
+				skins.put("Witherfang", witherfangSkin.getProperty());
+				skins.put("Silvermane", silvermaneSkin.getProperty());
+				skins.put("Bloodmoon", bloodmoonSkin.getProperty());
 
 				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &7" +
 						"Skins have been loaded. You may now use skins.");
 			}
-			catch (SkinRequestException exception)
+			catch (MineSkinException | DataRequestException exception)
 			{
 				exception.printStackTrace();
-			}
-		}
+            }
+        }
 	}
 	public void generateSkins(boolean async)
 	{

@@ -1,8 +1,10 @@
-name: Werewolf
-version: '1.7-3'
-api-version: 1.13
-main: us.rfsmassacre.Werewolf.WerewolfPlugin
+name: ${project.name}
+main: ${project.groupId}.${project.artifactId}.${project.name}
+version: ${project.version}
+website: ${project.url}
+description: ${project.description}
 author: RFSMassacre
+api-version: 1.13
 softdepend: [SkinsRestorer, Vampire, VampireRevamp, Multiverse-Core, GriefPrevention, WorldGuard]
 commands:
   werewolf:
