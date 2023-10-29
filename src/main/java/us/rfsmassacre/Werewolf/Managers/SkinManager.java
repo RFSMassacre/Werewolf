@@ -173,8 +173,8 @@ public class SkinManager
 			catch (DataRequestException exception)
 			{
 				exception.printStackTrace();
-            }
-        }
+			}
+		}
 	}
 	public void generateSkins(boolean async)
 	{
