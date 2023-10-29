@@ -132,10 +132,10 @@ public class SkinManager
 						SkinVariant.valueOf(bloodmoonType)).getProperty();
 
 				skins.clear();
-				skins.put("Alpha", alphaSkin.getProperty());
-				skins.put("Witherfang", witherfangSkin.getProperty());
-				skins.put("Silvermane", silvermaneSkin.getProperty());
-				skins.put("Bloodmoon", bloodmoonSkin.getProperty());
+				skins.put("Alpha", alphaSkin);
+				skins.put("Witherfang", witherfangSkin);
+				skins.put("Silvermane", silvermaneSkin);
+				skins.put("Bloodmoon", bloodmoonSkin);
 
 				messages.sendMessage(Bukkit.getConsoleSender(), "&6&lWerewolf &7&l> &7" +
 						"Skins have been loaded. You may now use skins.");
