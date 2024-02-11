@@ -1,9 +1,10 @@
 package us.rfsmassacre.Werewolf.Events;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+
+import java.util.UUID;
 
 public class WerewolfCureEvent extends Event implements Cancellable
 {
@@ -27,22 +28,22 @@ public class WerewolfCureEvent extends Event implements Cancellable
 	}
 	
 	//Werewolf Cure Event Data
-	private Player player;
+	private UUID uuid;
 	private CureType type;
 	
 	private boolean cancel;
 	
-	public WerewolfCureEvent(Player player, CureType type)
+	public WerewolfCureEvent(UUID uuid, CureType type)
 	{
-		this.player = player;
+		this.uuid = uuid;
 		this.type = type;
 		
 		this.cancel = false;
 	}
 	
-	public Player getPlayer()
+	public UUID getUUID()
 	{
-		return player;
+		return uuid;
 	}
 	public CureType getType()
 	{
