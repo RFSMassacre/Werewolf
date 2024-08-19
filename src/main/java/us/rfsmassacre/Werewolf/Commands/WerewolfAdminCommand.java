@@ -338,7 +338,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 						Werewolf werewolf = werewolves.getWerewolf(player);
 						Clan clan = werewolf.getClan();
 
-						WerewolfCureEvent event = new WerewolfCureEvent(player, CureType.COMMAND);
+						WerewolfCureEvent event = new WerewolfCureEvent(player.getUniqueId(), CureType.COMMAND);
 						if (events != null)
 						{
 							events.callEvent(event);
