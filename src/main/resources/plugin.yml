@@ -1,10 +1,10 @@
-name: Werewolf
-main: us.rfsmassacre.Werewolf.WerewolfPlugin
-version: ${project.version}
-website: ${project.url}
-description: ${project.description}
+name: ${rootProject.name}
+main: ${group}.${rootProject.name}.${rootProject.name}Plugin
+api-version: "1.13"
+version: ${version}
+website: https://www.spigotmc.org/resources/werewolves.35778/
+description: ${description}
 author: RFSMassacre
-api-version: 1.13
 softdepend: [SkinsRestorer, Vampire, VampireRevamp, Multiverse-Core, GriefPrevention, WorldGuard]
 commands:
   werewolf:

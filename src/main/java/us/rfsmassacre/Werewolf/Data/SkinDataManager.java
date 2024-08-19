@@ -1,11 +1,9 @@
 package us.rfsmassacre.Werewolf.Data;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import us.rfsmassacre.HeavenLib.BaseManagers.DataManager;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
