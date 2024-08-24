@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.clanjhoo.vampire.VampireAPI;
 import com.clanjhoo.vampire.VampireRevamp;
+import com.clanjhoo.vampire.entity.VPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -300,10 +301,10 @@ public class WerewolfManager
 		tasks.add(Bukkit.getScheduler().runTaskTimer(WerewolfPlugin.getInstance(), () -> {
 			for (Werewolf werewolf : getOnlineWerewolves())
 			{
-				VampireRevamp.syncTaskVPlayer(
-						werewolf.getPlayer(),
-						(vPlayer) -> vPlayer.setVampire(false),
-						(ex) -> {});
+				VPlayer vPlayer = VampireRevamp.getVPlayer(werewolf.getPlayer());
+				if (vPlayer == null)
+					continue;
+				vPlayer.setVampire(false);
 			}
 		}, 0L, config.getInt("intervals.hybrid-check")));
 	}
