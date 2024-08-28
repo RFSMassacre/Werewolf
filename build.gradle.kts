@@ -18,7 +18,7 @@ val getGitHash: String by lazy {
 }
 
 group = "us.rfsmassacre"
-version = "1.7.2"
+version = "1.7.2".replace("SNAPSHOT", getGitHash)
 description = "WerewolfPlugin"
 
 ext.set("projectName", gradle.extra["projectName"].toString())
@@ -124,7 +124,6 @@ tasks {
     }
 
     shadowJar {
-        archiveFileName.set("${rootProject.name}-${version}.jar".replace("SNAPSHOT", getGitHash))
         relocate("de.tr7zw.changeme.nbtapi", "de.tr7zw.${rootProject.name.lowercase()}.nbtapi")
         exclude("META-INF/maven/de.tr7zw/**")
     }
