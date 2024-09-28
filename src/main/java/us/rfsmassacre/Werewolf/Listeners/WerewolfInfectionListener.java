@@ -2,6 +2,7 @@ package us.rfsmassacre.Werewolf.Listeners;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -186,7 +187,7 @@ public class WerewolfInfectionListener implements Listener
 			CureType type = CureType.CURE_POTION;
 			Clan clan = werewolf.getClan();
 			
-			WerewolfCureEvent cureEvent = new WerewolfCureEvent(player, type);
+			WerewolfCureEvent cureEvent = new WerewolfCureEvent(player.getUniqueId(), type);
 			events.callEvent(cureEvent);
 			if (!cureEvent.isCancelled())
 			{
@@ -240,6 +241,8 @@ public class WerewolfInfectionListener implements Listener
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onWerewolfGroupRemove(WerewolfCureEvent event)
 	{
-		WerewolfPlugin.setGroup(event.getPlayer(), false);
+		Player player = Bukkit.getPlayer(event.getUUID());
+		
+		if (player != null) WerewolfPlugin.setGroup(player, false);
 	}
 }

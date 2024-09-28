@@ -245,8 +245,9 @@ public abstract class SpigotCommand implements TabExecutor
 	 */
 	protected void playSound(CommandSender sender, Sound sound, float volume, float pitch)
 	{
-		if (sender instanceof Player player)
+		if (sender instanceof Player)
 		{
+			Player player = (Player) sender;
 			player.playSound(player.getLocation(), sound, volume, pitch);
 		}
 	}

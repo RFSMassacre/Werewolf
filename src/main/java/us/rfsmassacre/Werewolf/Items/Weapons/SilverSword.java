@@ -4,10 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 
-import us.rfsmassacre.HeavenLib.Items.HeavenItem;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
-
-import java.util.ArrayList;
 
 public class SilverSword extends WerewolfItem
 {

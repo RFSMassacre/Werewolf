@@ -41,12 +41,12 @@ public class VampireInfectionListener implements Listener
 		if (event.isCancelled())
 			return;
 		
-		VPlayer uPlayer = event.getUplayer();
-		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()))
+		VPlayer vPlayer = event.getVPlayer();
+		if (werewolves.isWerewolf(vPlayer.getPlayer().getUniqueId()))
 		{
 			event.setInfection(0);
-			if (uPlayer.isVampire())
-				uPlayer.setVampire(false);
+			if (vPlayer.isVampire())
+				vPlayer.setVampire(false);
 			event.setCancelled(true);
 		}
 	}
@@ -62,8 +62,8 @@ public class VampireInfectionListener implements Listener
 		if (event.isCancelled())
 			return;
 		
-		VPlayer uPlayer = event.getUplayer();
-		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()) && event.isVampire())
+		VPlayer vPlayer = event.getVPlayer();
+		if (werewolves.isWerewolf(vPlayer.getPlayer().getUniqueId()) && event.isVampire())
 		{
 			event.setCancelled(true);
 		}
@@ -75,7 +75,7 @@ public class VampireInfectionListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onPurifiedInfect(InfectionChangeEvent event)
 	{
-		Player hunter = event.getUplayer().getPlayer();
+		Player hunter = event.getVPlayer().getPlayer();
 		if (!event.isCancelled() && werewolves.isHuman(hunter))
 		{
 			double purity = 0;
