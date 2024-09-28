@@ -301,7 +301,7 @@ public class WerewolfManager
 		tasks.add(Bukkit.getScheduler().runTaskTimer(WerewolfPlugin.getInstance(), () -> {
 			for (Werewolf werewolf : getOnlineWerewolves())
 			{
-				VPlayer vPlayer = VampireRevamp.getVPlayer(werewolf.getPlayer());
+				VPlayer vPlayer = VampireRevamp.getInstance().getVPlayer(werewolf.getPlayer());
 				if (vPlayer == null)
 					continue;
 				vPlayer.setVampire(false);

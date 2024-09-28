@@ -1,5 +1,5 @@
 name: ${projectName}
-main: ${group}.${name}.${projectName}Plugin
+main: ${group}.${projectName}.${projectName}Plugin
 api-version: "1.13"
 version: ${version}
 website: https://www.spigotmc.org/resources/werewolves.35778/
