@@ -278,8 +278,15 @@ public class WerewolfManager
 							werewolf.showTrail();
 							if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.BLINDNESS))
 								werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 720000, 0));
-							if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.SLOW))
-								werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 720000, 5));
+							PotionEffectType slowEffect = null;
+							try {
+								slowEffect = PotionEffectType.SLOWNESS;
+							}
+							catch (NoSuchFieldError ex) {
+								slowEffect = PotionEffectType.getByName("SLOW");
+							}
+							if (!werewolf.getPlayer().hasPotionEffect(slowEffect))
+								werewolf.getPlayer().addPotionEffect(new PotionEffect(slowEffect, 720000, 5));
 
 							if (werewolf.canSniff())
 							{

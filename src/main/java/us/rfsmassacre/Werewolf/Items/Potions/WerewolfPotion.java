@@ -5,10 +5,13 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @SuppressWarnings("deprecation")
 public abstract class WerewolfPotion extends WerewolfItem
@@ -33,15 +36,24 @@ public abstract class WerewolfPotion extends WerewolfItem
 		{
 			//This means it's running 1.8 and requires the use of potion objects
 			//and convert it to an item stack in order to keep it all consistent
-			Potion potion = new Potion(this.potionType, 1, this.splash);
-			potion.setType(this.potionType);
-			ItemStack itemStack = potion.toItemStack(1);
-			itemStack.setItemMeta(itemStack.getItemMeta());
-			this.item = itemStack;
+			try {
+				Class<?> potionClazz = Class.forName("org.bukkit.potion.Potion");
+				Constructor<?> potionConstructor = potionClazz.getConstructor(PotionType.class, int.class, boolean.class);
+				Method setTypeMethod = potionClazz.getMethod("setType", PotionType.class);
+				Method toItemStackMethod = potionClazz.getMethod("toItemStack", int.class);
+				Object potion = potionConstructor.newInstance(this.potionType, 1, this.splash);
+				setTypeMethod.invoke(potion, this.potionType);
+				ItemStack itemStack = (ItemStack) toItemStackMethod.invoke(potion, 1);
+				itemStack.setItemMeta(itemStack.getItemMeta());
+				this.item = itemStack;
 
-			this.setDisplayName(data.getItemName(name));
-			this.setItemLore(data.getItemLore(name));
-		}
+				this.setDisplayName(data.getItemName(name));
+				this.setItemLore(data.getItemLore(name));
+			}
+			catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
+				ex.printStackTrace();
+			}
+        }
 		
 		try
 		{
@@ -62,14 +74,19 @@ public abstract class WerewolfPotion extends WerewolfItem
 	 */
 	public void setPotionColor(Color color)
 	{
-		PotionMeta meta = (PotionMeta)getItemStack().getItemMeta();
+		PotionMeta meta = (PotionMeta) getItemStack().getItemMeta();
 		meta.setColor(color);
-		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+		try {
+			meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+		}
+		catch (NoSuchFieldError ex) {
+			meta.addItemFlags(ItemFlag.valueOf("HIDE_POTION_EFFECTS"));
+		}
 		this.item.setItemMeta(meta);
 	}
 	public Color getPotionColor()
 	{
-		return ((PotionMeta)getItemStack().getItemMeta()).getColor();
+		return ((PotionMeta) getItemStack().getItemMeta()).getColor();
 	}
 	
 	/*

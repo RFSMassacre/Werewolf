@@ -246,7 +246,12 @@ public class Werewolf implements Comparable<Werewolf>
 					player.removePotionEffect(effect.getType());
 				}
 
-				player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
+				try {
+					player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
+				}
+				catch (NoSuchFieldError ex) {
+					player.addPotionEffect(new PotionEffect(PotionEffectType.getByName("CONFUSION"), 100, 1));
+				}
 				player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 2, 0)), Effect.SMOKE, 100);
@@ -595,7 +600,12 @@ public class Werewolf implements Comparable<Werewolf>
 			setTracking(false);
 
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-            player.removePotionEffect(PotionEffectType.SLOW);
+			try {
+				player.removePotionEffect(PotionEffectType.SLOWNESS);
+			}
+			catch (NoSuchFieldError ex) {
+				player.removePotionEffect(PotionEffectType.getByName("SLOW"));
+			}
 
 			return true;
 		}

@@ -13,7 +13,7 @@ public class WolfsbanePotion extends WerewolfPotion
 {
 	public WolfsbanePotion() 
 	{
-		super("WOLFSBANE_POTION", true, Color.RED, PotionType.INSTANT_HEAL);
+		super("WOLFSBANE_POTION", true, Color.RED, PotionType.HEALING);
 	}
 	
 	@Override

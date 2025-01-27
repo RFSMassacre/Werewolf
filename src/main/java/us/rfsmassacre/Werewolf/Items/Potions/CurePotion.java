@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
@@ -13,7 +14,7 @@ public class CurePotion extends WerewolfPotion
 {
 	public CurePotion() 
 	{
-		super("CURE_POTION", false, Color.WHITE, PotionType.SPEED);
+		super("CURE_POTION", false, Color.WHITE, PotionType.SWIFTNESS);
 	}
 
 	@Override
