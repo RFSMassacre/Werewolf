@@ -25,7 +25,7 @@ cooldowns:
     transform: 20
     howl: 3
     growl: 3
-    
+
 #Howl Sound
 sound:
     growl: "ENTITY_WOLF_GROWL"
@@ -39,7 +39,7 @@ maturity:
     scent-track: 20
     free-transform: 30
     gold-immunity: 35
-    
+
 #Transformation Time Period
 transformation:
     #Whether to limit transformation time or not
@@ -51,7 +51,7 @@ transformation:
     base: 0
     #How fast seconds are earned, does not affect FLAT equation.
     modifier: 15
-    
+
 #Damage Stats
 #Defense numbers lower than 1.0 increases defense.
 #Alpha werewolves are intended to have more defense and damage than normal werewolves.
@@ -61,31 +61,43 @@ werewolf-stats:
         werewolf:
             defense: 0.3
             fist-damage: 6.0
-            item-damage: 1.0
+            fist-factor: 2.0
+            item-damage: -2.0
+            item-factor: 0.25
         alpha:
             defense: 0.15
             fist-damage: 12.0
-            item-damage: 2.0
+            fist-factor: 2.0
+            item-damage: -1.0
+            item-factor: 0.5
     silvermane:
         speed: 0.4
         werewolf:
             defense: 0.4
             fist-damage: 5.0
-            item-damage: 1.0
+            fist-factor: 2.0
+            item-damage: -2.0
+            item-factor: 0.25
         alpha:
             defense: 0.2
             fist-damage: 10.0
-            item-damage: 2.0
+            fist-factor: 2.0
+            item-damage: -1.0
+            item-factor: 0.5
     bloodmoon:
         speed: 0.3
         werewolf:
             defense: 0.333
             fist-damage: 5.0
-            item-damage: 1.0
+            fist-factor: 2.0
+            item-damage: -2.0
+            item-factor: 0.25
         alpha:
             defense: 0.166
             fist-damage: 10.0
-            item-damage: 2.0
+            fist-factor: 2.0
+            item-damage: -1.0
+            item-factor: 0.5
 
 #Potion effects per Clan
 #It MUST be in <name>:<power>:<duration> format otherwise it will not read.
@@ -107,11 +119,11 @@ werewolf-effects:
         - "JUMP:1:72000"
         - "SPEED:0:72000"
         - "INCREASE_DAMAGE:2:72000"
-    
+
 #Silver Penalty
 #Damage per second when Werewolf holds a silver sword
 silver-penalty: 3    
-    
+
 #Werewolf Infection Rate
 #By chance out of 100
 infection:
@@ -120,7 +132,7 @@ infection:
     werewolf:
         chance: 1
         intent: 5
- 
+
 #Auto-Cure Setting
 auto-cure:
     enabled: false
@@ -140,7 +152,7 @@ track:
         close: 200
         very-close: 50
     safe-zones: false
-    
+
 #Recipes
 recipes:
     cure-potion: true
@@ -158,13 +170,13 @@ recipes:
     purified-leggings: true
     purified-boots: true
     salt: true
-    
+
 #What ingedient defines the tracker's recipe
 #This is so 1.8 and below can craft these items optionally    
 tracker-ingredient:
     vampire: GHAST_TEAR
     werewolf: RABBIT_FOOT
-    
+
 #Werewolf Clan Skins
 #You have the option to use URL or names below. Remember to specify whether you want CLASSIC or SLIM in each option.
 #Changing skin options will take effect on start up.
@@ -188,7 +200,7 @@ skin-urls:
     Bloodmoon:
         url: "https://i.imgur.com/M0qnxXh.png"
         skin-type: "SLIM"
- 
+
 #Check Intervals
 #Lower numbers may cause lag on low-end servers, but will respond in realtime on high-end servers.
 #If you lower silver check below 20, they will lose more than 1 HP per second.
@@ -206,19 +218,19 @@ intervals:
     item-update: 40
     hunting-armor-checker: 20
     hybrid-check: 20
- 
+
 #List of worlds were Werewolf powers will not work whatsoever.
 no-werewolf-worlds:
     - world_nether
     - world_the_end
- 
+
 #List of worlds where the moon cycle will not happen
 #Moon cycles will load moons to every world with a NORMAL enviornment.
 #If the name of that world is here, it will skip this.
 blocked-worlds:
     - world_nether
     - world_the_end
-    
+
 #List of commands that are blocked while in werewolf form.
 blocked-commands:
     alpha: #When being alpha.
@@ -239,7 +251,7 @@ blocked-commands:
         - /v f
         - /vampire flask
         - /vampire f
-        
+
 #List of potion effect that are cleared in werewolf form.
 blocked-potions:
     - ABSORPTION
@@ -249,7 +261,7 @@ blocked-potions:
     - INVISIBILITY
     - LUCK
     - WATER_BREATHING
-    
+
 #Display names of each moon phase
 moon-phases:
     FULL_MOON: "Full Moon"
@@ -260,7 +272,7 @@ moon-phases:
     WAXING_CRESCENT: "Waxing Crescent"
     FIRST_QUARTER: "First Quarter"
     WAXING_GIBBOUS: "Waxing Gibbous"
-    
+
 #What is replaces the placeholders in the menus
 menu:
     not-applied: "&7N/A"
@@ -277,8 +289,8 @@ menu:
         WITHERFANG: "&2&lWitherfang"
         SILVERMANE: "&d&lSilvermane"
         BLOODMOON: "&4&lBloodmoon"
-        
-    
+
+
 #List of items werewolves are not allowed to eat at all times
 #The idea is to only give them meat
 diet:
@@ -337,7 +349,7 @@ purity:
         diamond-chestplate: 45
         diamond-leggings: 35
         diamond-boots: 10
-        
+
 bonus:
     washed:
         diamond-helmet: 4
@@ -349,7 +361,7 @@ bonus:
         diamond-chestplate: 20
         diamond-leggings: 14
         diamond-boots: 8
-        
+
 #Plugin support
 support:
     PvPManager: false

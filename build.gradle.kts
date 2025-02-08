@@ -18,7 +18,7 @@ val getGitHash: String by lazy {
 }
 
 group = "us.rfsmassacre"
-version = "1.7.2".replace("SNAPSHOT", getGitHash)
+version = "1.7.2-SNAPSHOT"  // .replace("SNAPSHOT", getGitHash)
 description = "WerewolfPlugin"
 
 ext.set("projectName", gradle.extra["projectName"].toString())

@@ -1,5 +1,6 @@
 package us.rfsmassacre.Werewolf.Listeners;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.GameMode;
@@ -82,25 +83,27 @@ public class WerewolfListener implements Listener
 	public void onWerewolfDamage(EntityDamageByEntityEvent event)
 	{
 		//Cancel if the event was cancelled or not a player
-		if (!(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof Player player))
 			return;
-		
-		Player player = (Player)event.getEntity();
-		
-		//Mitigate combat damage if in wolf form
-		if (werewolves.isWerewolf(player))
-		{
-			Werewolf werewolf = werewolves.getWerewolf(player);
-			String clan = werewolf.getType().toKey();
-			
-			if (werewolf.inWolfForm())
-			{
-				if (werewolves.isAlpha(player))
-					event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".alpha.defense"));
-				else
-					event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".werewolf.defense"));
-			}
-		}
+
+		if (!werewolves.isWerewolf(player))
+			return;
+
+		Werewolf werewolf = werewolves.getWerewolf(player);
+		String clan = werewolf.getType().toKey();
+
+		if (!werewolf.inWolfForm())
+			return;
+
+		long numArmorPieces = Arrays.stream(player.getInventory().getArmorContents()).filter(item -> item != null && !item.getType().isAir()).count();
+		if (numArmorPieces > 0)
+			return;
+
+		//Mitigate combat damage if in wolf form with no armor
+		if (werewolves.isAlpha(player))
+			event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".alpha.defense"));
+		else
+			event.setDamage(event.getDamage() * config.getDouble("werewolf-stats." + clan + ".werewolf.defense"));
 	}
 	
 	/*
@@ -109,42 +112,53 @@ public class WerewolfListener implements Listener
 	 * 
 	 * Takes into account the new and old methods of holding items.
 	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
 	public void onWerewolfAttack(EntityDamageByEntityEvent event)
 	{
-		//Cancel if the event was cancelled or not a player
-		if (!(event.getDamager() instanceof Player))
+		// Ignore if not a player
+		if (!(event.getDamager() instanceof Player player))
 			return;
-		
-		Player player = (Player)event.getDamager();
-		
-		//Override combat damage based on whats on your hands
-		if (werewolves.isWerewolf(player))
-		{
-			Werewolf werewolf = werewolves.getWerewolf(player);
-			String clan = werewolf.getType().toKey();
-			
-			if (werewolf.inWolfForm())
-			{
-				ItemStack[] itemsInHands = werewolf.getItemsInHands();
-				
-				if ((itemsInHands[0] == null || itemsInHands[0].getType().equals(Material.AIR))
-				 && (itemsInHands[1] == null || itemsInHands[1].getType().equals(Material.AIR)))
-				{
-					if (werewolves.isAlpha(player))
-						event.setDamage(event.getDamage() + config.getDouble("werewolf-stats." + clan + ".alpha.fist-damage"));
-					else
-						event.setDamage(event.getDamage() + config.getDouble("werewolf-stats." + clan + ".werewolf.fist-damage"));
-				}
-				else
-				{
-					if (werewolves.isAlpha(player))
-						event.setDamage(config.getDouble("werewolf-stats." + clan + ".alpha.item-damage"));
-					else
-						event.setDamage(config.getDouble("werewolf-stats." + clan + ".werewolf.item-damage"));
-				}
+
+		// Ignore if not a melee attack (mainly for compatibility with magic plugins)
+		if (event.getCause() != DamageCause.ENTITY_ATTACK && event.getCause() != DamageCause.ENTITY_SWEEP_ATTACK)
+			return;
+
+		// Ignore if damager not a werewolf
+		if (!werewolves.isWerewolf(player))
+			return;
+
+		Werewolf werewolf = werewolves.getWerewolf(player);
+
+		// Ignore if damager not in werewolf form
+		if (werewolf == null || !werewolf.inWolfForm())
+			return;
+
+		//Override combat damage based on what's on your hands
+		String clan = werewolf.getType().toKey();
+		ItemStack[] itemsInHands = werewolf.getItemsInHands();
+		double offset, factor;
+
+		if (itemsInHands[0] == null) {
+			if (werewolves.isAlpha(player)) {
+				offset = config.getDouble("werewolf-stats." + clan + ".alpha.fist-damage");
+				factor = config.getDouble("werewolf-stats." + clan + ".alpha.fist-factor");
+			}
+			else {
+				offset = config.getDouble("werewolf-stats." + clan + ".werewolf.fist-damage");
+				factor = config.getDouble("werewolf-stats." + clan + ".werewolf.fist-factor");
 			}
 		}
+		else {
+			if (werewolves.isAlpha(player)) {
+				offset = config.getDouble("werewolf-stats." + clan + ".alpha.item-damage");
+				factor = config.getDouble("werewolf-stats." + clan + ".alpha.item-factor");
+			}
+			else {
+				offset = config.getDouble("werewolf-stats." + clan + ".werewolf.item-damage");
+				factor = config.getDouble("werewolf-stats." + clan + ".werewolf.item-factor");
+			}
+		}
+		event.setDamage(Math.max(factor * (event.getDamage() + offset), Math.min(event.getDamage(), 1D)));
 	}
 	
 	/*

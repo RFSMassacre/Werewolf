@@ -114,6 +114,7 @@ admin:
         not-infected: "&f{player}&c is not a Werewolf!"
     infect:
         no-args: "&cYou must specify the who to infect and the clan type."
+        bad-clan: "&cThe specified clan type does not exist."
         success: "&eYou have infected &f{player}&e with the &3{clan} &eInfection."
         not-human: "&f{player}&c must be a human to be infected!"
         failed: "&cThe infection failed for &f{player}&c!"
@@ -131,6 +132,13 @@ admin:
         no-args: "&cYou must specify the item to spawn."
         console: "&cOnly players can run this command."
         success: "&aYou have spawned a(n) {item}&a."
+    show:
+        no-args: "&cYou must specify the player to check."
+        wrong-name: "&cThe specified player does not exist."
+        not-ww: "&cThe specified player is not a werewolf."
+        success: "-------&a{player}&a data-------"
+        clan: "&aClan: {clan}&a."
+        level: "&aLevel: {level}&a."
     setalpha:
         success: "&aYou have set &f{werewolf}&a as the &3{clan} Alpha&a!"
         not-infected: "&f{player}&c is not a Werewolf!"

@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
@@ -87,7 +88,7 @@ public class Werewolf implements Comparable<Werewolf>
 		return this.playerId;
 	}
 
-	public Player getPlayer()
+	public @Nullable Player getPlayer()
 	{
 		return Bukkit.getPlayer(playerId);
 	}
@@ -222,6 +223,8 @@ public class Werewolf implements Comparable<Werewolf>
 	public boolean transform()
 	{
 		Player player = getPlayer();
+		if (player == null)
+			return false;
 		if (!inWolfForm() && player != null)
 		{
 			WerewolfTransformEvent event = new WerewolfTransformEvent(player, this.type, true);
@@ -267,6 +270,8 @@ public class Werewolf implements Comparable<Werewolf>
 	public boolean untransform()
 	{
 		Player player = getPlayer();
+		if (player == null)
+			return false;
 		if (inWolfForm() && player != null)
 		{
 			WerewolfTransformEvent event = new WerewolfTransformEvent(player, this.type, false);
@@ -322,6 +327,8 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
+			if (player == null)
+				return;
 			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.howl")),
 					(float)config.getDouble("sound.volume"),	1.0F);
 		}
@@ -338,6 +345,8 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
+			if (player == null)
+				return;
 			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.growl")),
 					(float)config.getDouble("sound.volume"), 1.0F);
 		}
@@ -354,6 +363,8 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
+			if (player == null)
+				return;
 			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.pant")), 5.0F, 0.6F);
 		}
 		catch (Exception exception)
@@ -369,6 +380,8 @@ public class Werewolf implements Comparable<Werewolf>
 	public boolean isOutside()
 	{
 		Player player = getPlayer();
+		if (player == null)
+			return false;
 		Location location = player.getLocation();
 		int playerY = location.getBlockY();
 		int highestY = location.getWorld().getHighestBlockYAt(location);
@@ -438,62 +451,52 @@ public class Werewolf implements Comparable<Werewolf>
 	public void dropArmor()
 	{
 		Player player = getPlayer();
-		ItemStack[] equipment = player.getInventory().getArmorContents();
+		if (player == null)
+			return;
+		if (level >= config.getInt("maturity.no-drop"))
+			return;
 
+		ItemStack[] equipment = player.getInventory().getArmorContents();
 		//Drop each item
-		for (ItemStack armor : equipment)
-		{
-			if (armor != null && !armor.getType().equals(Material.AIR))
-			{
+		for (ItemStack armor : equipment) {
+			if (armor != null && !armor.getType().isAir()) {
 				//High level werewolves just have it placed back in their inventory
-				if (level >= config.getInt("maturity.no-drop") && player.getInventory().firstEmpty() > -1)
-				{
+				if (player.getInventory().firstEmpty() > -1)
 					player.getInventory().addItem(armor);
-					player.updateInventory();
-				}
 				else
-				{
 					player.getWorld().dropItemNaturally(player.getLocation(), armor);
-				}
 			}
 		}
 
-
 		//Then remove each item equipped
 		for (int slot = 0; slot < equipment.length; slot++)
-		{
 			equipment[slot] = new ItemStack(Material.AIR);
-		}
 		player.getInventory().setArmorContents(equipment);
 	}
 
 	@SuppressWarnings("deprecation")
 	public ItemStack[] getItemsInHands()
 	{
+		ItemStack[] items = new ItemStack[] {null, null};
 		Player player = getPlayer();
-		ItemStack[] items = new ItemStack[2];
-		try
-		{
+		if (player == null)
+			return items;
+		try {
 			//Both hands much be empty in order to be considered fist
-			ItemStack rightItem = player.getInventory().getItemInMainHand();
-			ItemStack leftItem = player.getInventory().getItemInOffHand();
-
-			items[0] = rightItem;
-			items[1] = leftItem;
+			items[0] = player.getInventory().getItemInMainHand();
+			items[1] = player.getInventory().getItemInOffHand();
 		}
-		catch (NoSuchMethodError exception)
-		{
+		catch (NoSuchMethodError exception) {
 			//Run the pre 1.9 item getter
-			ItemStack item = player.getItemInHand();
-
-			items[0] = item;
-			items[1] = null;
+			items[0] = player.getItemInHand();
+			if (items[0] != null && items[0].getType().equals(Material.AIR))
+				items[0] = null;
+			return items;
 		}
 
-		//Had to use old style methods to work across all versions
-		if (items[0].getType().equals(Material.AIR))
+		if (items[0] != null && items[0].getType().isAir())
 			items[0] = null;
-		if (items[1] == null || items[1].getType().equals(Material.AIR))
+		if (items[1] != null && items[1].getType().isAir())
 			items[1] = null;
 
 		return items;
@@ -503,34 +506,30 @@ public class Werewolf implements Comparable<Werewolf>
 	public void dropItems()
 	{
 		Player player = getPlayer();
+		if (player == null)
+			return;
 		ItemStack[] items = getItemsInHands();
 
-		if (items[0] != null)
-		{
+		if (items[0] != null) {
 			player.getWorld().dropItemNaturally(player.getLocation(), items[0]);
 
-			try
-			{
+			try {
 				player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 			}
-			catch (NoSuchMethodError exception)
-			{
+			catch (NoSuchMethodError exception) {
 				player.getInventory().setItemInHand(new ItemStack(Material.AIR));
 			}
 		}
-		else if (items[1] != null)
-		{
+		else if (items[1] != null) {
 			player.getWorld().dropItemNaturally(player.getLocation(), items[1]);
-
 			player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
 		}
-
-		player.updateInventory();
 	}
 
-	public boolean showTrail()
-	{
+	public boolean showTrail() {
 		Player player = getPlayer();
+		if (player == null)
+			return false;
 		Player target = Bukkit.getPlayer(targetId);
 		if (target != null && player.getWorld().equals(target.getWorld()))
 		{
@@ -539,7 +538,7 @@ public class Werewolf implements Comparable<Werewolf>
 			Vector direction = target.getLocation().toVector().subtract(start);
 			double yOffset = config.getDouble("track.y-offset");
 			int range = config.getInt("track.range");
-			double targetDistance = player.getLocation().distance(Bukkit.getPlayer(targetId).getLocation());
+			double targetDistance = player.getLocation().distance(target.getLocation());
 
 			String particleName = config.getString("track.particle");
 			int amount = config.getInt("track.particle-amount");
@@ -550,8 +549,7 @@ public class Werewolf implements Comparable<Werewolf>
 			int close = config.getInt("track.distances.close");
 			int veryClose = config.getInt("track.distances.very-close");
 
-			while(iterator.hasNext())
-			{
+			while(iterator.hasNext()) {
 				Color color;
 
 				if (targetDistance >= far)
@@ -565,9 +563,7 @@ public class Werewolf implements Comparable<Werewolf>
 
 				Location nextLoc = iterator.next().getLocation();
 				for (int times = 0; times < amount; times++)
-				{
 				    player.spawnParticle(Particle.valueOf(particleName), nextLoc, 0, color.getRed(), color.getGreen(), color.getBlue());
-				}
 			}
 			return true;
 		}
@@ -595,8 +591,9 @@ public class Werewolf implements Comparable<Werewolf>
 	public boolean stopTracking()
 	{
 		Player player = getPlayer();
-		if (isTracking())
-		{
+		if (player == null)
+			return false;
+		if (isTracking()) {
 			setTracking(false);
 
             player.removePotionEffect(PotionEffectType.BLINDNESS);

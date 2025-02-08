@@ -47,6 +47,7 @@ public class WerewolfAdminCommand extends SpigotCommand
 
 		addSubCommand(new MainCommand());
 		addSubCommand(new SpawnCommand());
+		addSubCommand(new ShowCommand());
 		addSubCommand(new TransformCommand());
 		addSubCommand(new InfectCommand());
 		addSubCommand(new CureCommand());
@@ -121,49 +122,97 @@ public class WerewolfAdminCommand extends SpigotCommand
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			if (!isConsole(sender))
+			if (isConsole(sender)) {
+				// Give console error
+				messages.sendWolfLocale(sender, "admin.spawn.console");
+				return;
+			}
+			Player player = (Player)sender;
+			if (args.length != 2) {
+				// No args
+				messages.sendWolfLocale(sender, "admin.spawn.no-args");
+				return;
+			}
+			String name = args[1];
+			if (name == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.spawn.no-args");
+				return;
+			}
+			WerewolfItem werewolfItem = items.getWerewolfItem(args[1].toUpperCase());
+			if (werewolfItem != null)
 			{
-				Player player = (Player)sender;
-				if (args.length >= 2)
-				{
-					String name = args[1];
-					if (name != null)
-					{
-						WerewolfItem werewolfItem = items.getWerewolfItem(args[1].toUpperCase());
-						if (werewolfItem != null)
-						{
-							ItemStack item = werewolfItem.getItemStack();
-							player.getInventory().addItem(item);
+				ItemStack item = werewolfItem.getItemStack();
+				player.getInventory().addItem(item);
 
-							messages.sendWolfLocale(player, "admin.spawn.success",
-									"{item}", werewolfItem.getDisplayName());
-							return;
-						}
-					}
-					
-					//Invalid arg error
-					messages.sendWolfLocale(sender, "admin.spawn.no-args");
-				}
-				else
-				{
-					//Give console error
-					messages.sendWolfLocale(sender, "admin.spawn.console");
-				}
+				messages.sendWolfLocale(player, "admin.spawn.success",
+						"{item}", werewolfItem.getDisplayName());
 			}
 		}
 
 		@Override
 		protected List<String> onTabComplete(CommandSender sender, String[] args)
 		{
+			if (args.length != 2)
+				return List.of();
 			List<String> suggestions = new ArrayList<>();
-			if (args.length == 2)
-			{
-				Collection<WerewolfItem> werewolfItems = items.getWerewolfItems();
-				for (WerewolfItem item : werewolfItems)
-				{
-					suggestions.add(item.getName());
-				}
+			Collection<WerewolfItem> werewolfItems = items.getWerewolfItems();
+			for (WerewolfItem item : werewolfItems)
+				suggestions.add(item.getName());
+
+			return suggestions;
+		}
+	}
+
+	/*
+	 * Show Other Command
+	 */
+	private class ShowCommand extends SubCommand
+	{
+		public ShowCommand() {
+			super("show");
+		}
+
+		@Override
+		protected void onCommandRun(CommandSender sender, String[] args)
+		{
+			if (args.length != 2) {
+				// No args
+				messages.sendWolfLocale(sender, "admin.show.no-args");
+				return;
 			}
+			if (args[1] == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.show.no-args");
+				return;
+			}
+			Player player = Bukkit.getPlayer(args[1]);
+			if (player == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.show.wrong-name");
+				return;
+			}
+
+			Werewolf werewolf = werewolves.getWerewolf(player);
+			if (werewolf == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.show.not-ww");
+				return;
+			}
+
+			messages.sendWolfLocale(sender, "admin.show.success", "{player}", args[1]);
+			messages.sendWolfLocale(sender, "admin.show.level", "{level}:" + werewolf.getLevel());
+			messages.sendWolfLocale(sender, "admin.show.clan", "{clan}:" + werewolf.getType());
+		}
+
+		@Override
+		protected List<String> onTabComplete(CommandSender sender, String[] args)
+		{
+			if (args.length != 2)
+				return List.of();
+			List<String> suggestions = new ArrayList<>();
+			for (Player player : Bukkit.getOnlinePlayers())
+				suggestions.add(player.getName());
 
 			return suggestions;
 		}
@@ -182,60 +231,51 @@ public class WerewolfAdminCommand extends SpigotCommand
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			if (args.length == 2)
-			{
-				Player player = Bukkit.getPlayer(args[1]);
-				// TODO: Send message if player could not be found by that name
-				if (player != null && werewolves.isWerewolf(player))
-				{
-					if (WerewolfPlugin.getMoonManager().isFullMoon(player.getWorld()))
-					{
-						//Send full moon cancels transform message
-						messages.sendWolfLocale(sender, "admin.transform.full-moon");
-					}
-					else
-					{
-						Werewolf werewolf = werewolves.getWerewolf(player);
-						if (!werewolf.inWolfForm())
-						{
-							werewolf.transform();
-							messages.sendWolfLocale(player, "transform.to-form");
-						}
-						else
-						{
-							werewolf.untransform();
-							messages.sendWolfLocale(player, "transform.from-form");
-						}
-						
-						messages.sendWolfLocale(sender, "admin.transform.success",
-								"{werewolf}", werewolf.getDisplayName());
-
-					}
-				}
-				else if (player != null)
-				{
-					messages.sendWolfLocale(sender, "admin.transform.not-infected",
-							"{player}", player.getDisplayName());
-				}
-
+			if (args.length != 2) {
+				//Give not Werewolf error
+				messages.sendWolfLocale(sender, "admin.transform.no-args");
 				return;
 			}
-			
-			//Give not Werewolf error
-			messages.sendWolfLocale(sender, "admin.transform.no-args");
+			Player player = Bukkit.getPlayer(args[1]);
+			if (player == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.spawn.wrong-name");
+				return;
+			}
+			if (!werewolves.isWerewolf(player))
+			{
+				messages.sendWolfLocale(sender, "admin.transform.not-infected",
+						"{player}", player.getDisplayName());
+				return;
+			}
+			if (WerewolfPlugin.getMoonManager().isFullMoon(player.getWorld()))
+			{
+				//Send full moon cancels transform message
+				messages.sendWolfLocale(sender, "admin.transform.full-moon");
+				return;
+			}
+			Werewolf werewolf = werewolves.getWerewolf(player);
+			if (!werewolf.inWolfForm()) {
+				werewolf.transform();
+				messages.sendWolfLocale(player, "transform.to-form");
+			}
+			else {
+				werewolf.untransform();
+				messages.sendWolfLocale(player, "transform.from-form");
+			}
+
+			messages.sendWolfLocale(sender, "admin.transform.success",
+					"{werewolf}", werewolf.getDisplayName());
 		}
 
 		@Override
 		protected List<String> onTabComplete(CommandSender sender, String[] args)
 		{
+			if (args.length != 2)
+				return List.of();
 			List<String> suggestions = new ArrayList<>();
-			if (args.length == 2)
-			{
-				for (Player player : Bukkit.getOnlinePlayers())
-				{
-					suggestions.add(player.getName());
-				}
-			}
+			for (Player player : Bukkit.getOnlinePlayers())
+				suggestions.add(player.getName());
 
 			return suggestions;
 		}
@@ -254,61 +294,58 @@ public class WerewolfAdminCommand extends SpigotCommand
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			if (args.length >= 3)
-			{
-				Player player = Bukkit.getPlayer(args[1]);
-				ClanType type = ClanType.fromString(args[2]);
-				Clan clan = clans.getClan(type);
-				if (player != null && type != null)
-				{
-					if (werewolves.isHuman(player))
-					{
-						WerewolfInfectionEvent event = new WerewolfInfectionEvent(player, type);
-						Bukkit.getPluginManager().callEvent(event);
-						if (!event.isCancelled())
-						{
-							werewolves.infectWerewolf(player, type);
-							clan.addMember(player);
-							messages.sendWolfLocale(sender, "admin.infect.success",
-									"{player}", player.getDisplayName(),
-									"{clan}", type.toString());
-						}
-						else
-						{
-							messages.sendWolfLocale(sender, "admin.infect.failed",
-									"{player}", player.getDisplayName());
-						}
-					}
-					else
-					{
-						messages.sendWolfLocale(sender, "admin.infect.not-human",
-								"{player}", player.getDisplayName());
-					}
-					
-					return;
-				}
+			if (args.length < 3) {
+				messages.sendWolfLocale(sender, "admin.infect.no-args");
+				return;
 			}
-			
-			messages.sendWolfLocale(sender, "admin.infect.no-args");
+			Player player = Bukkit.getPlayer(args[1]);
+			if (player == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.spawn.wrong-name");
+				return;
+			}
+			ClanType type = ClanType.fromString(args[2]);
+			if (type == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.spawn.bad-clan");
+				return;
+			}
+			Clan clan = clans.getClan(type);
+			if (!werewolves.isHuman(player)) {
+				messages.sendWolfLocale(sender, "admin.infect.not-human",
+						"{player}", player.getDisplayName());
+				return;
+			}
+			WerewolfInfectionEvent event = new WerewolfInfectionEvent(player, type);
+			Bukkit.getPluginManager().callEvent(event);
+			if (!event.isCancelled())
+			{
+				werewolves.infectWerewolf(player, type);
+				clan.addMember(player);
+				messages.sendWolfLocale(sender, "admin.infect.success",
+						"{player}", player.getDisplayName(),
+						"{clan}", type.toString());
+			}
+			else
+			{
+				messages.sendWolfLocale(sender, "admin.infect.failed",
+						"{player}", player.getDisplayName());
+			}
 		}
 
 		@Override
 		protected List<String> onTabComplete(CommandSender sender, String[] args)
 		{
+			if (args.length != 2 && args.length != 3)
+				return List.of();
 			List<String> suggestions = new ArrayList<>();
-			if (args.length == 2)
-			{
+			if (args.length == 2) {
 				for (Player player : Bukkit.getOnlinePlayers())
-				{
 					suggestions.add(player.getName());
-				}
 			}
-			else if (args.length == 3)
-			{
+			else {
 				for (ClanType type : ClanType.values())
-				{
 					suggestions.add(type.toString());
-				}
 			}
 
 			return suggestions;
@@ -328,60 +365,49 @@ public class WerewolfAdminCommand extends SpigotCommand
 		@Override
 		protected void onCommandRun(CommandSender sender, String[] args) 
 		{
-			if (args.length >= 2)
-			{
-				Player player = Bukkit.getPlayer(args[1]);
-				if (player != null)
-				{
-					if (werewolves.isWerewolf(player))
-					{
-						Werewolf werewolf = werewolves.getWerewolf(player);
-						Clan clan = werewolf.getClan();
-
-						WerewolfCureEvent event = new WerewolfCureEvent(player.getUniqueId(), CureType.COMMAND);
-						if (events != null)
-						{
-							events.callEvent(event);
-						}
-
-						if (!event.isCancelled())
-						{
-							werewolves.cureWerewolf(werewolf);
-							clan.removeMember(player);
-
-							messages.sendWolfLocale(sender, "admin.cure.success",
-									"{player}", player.getDisplayName());
-						}
-						else
-						{
-							messages.sendWolfLocale(sender, "admin.cure.failed",
-									"{player}", player.getDisplayName());
-						}
-					}
-					else
-					{
-						messages.sendWolfLocale(sender, "admin.cure.not-infected",
-								"{player}", player.getDisplayName());
-					}
-					
-					return;
-				}
+			if (args.length < 2) {
+				messages.sendWolfLocale(sender, "admin.cure.no-args");
+				return;
 			}
-			
-			messages.sendWolfLocale(sender, "admin.cure.no-args");
+			Player player = Bukkit.getPlayer(args[1]);
+			if (player == null) {
+				// Invalid arg error
+				messages.sendWolfLocale(sender, "admin.spawn.wrong-name");
+				return;
+			}
+			if (!werewolves.isWerewolf(player)) {
+				messages.sendWolfLocale(sender, "admin.cure.not-infected",
+						"{player}", player.getDisplayName());
+				return;
+			}
+			Werewolf werewolf = werewolves.getWerewolf(player);
+			Clan clan = werewolf.getClan();
+
+			WerewolfCureEvent event = new WerewolfCureEvent(player.getUniqueId(), CureType.COMMAND);
+			if (events != null)
+				events.callEvent(event);
+
+			if (!event.isCancelled()) {
+				werewolves.cureWerewolf(werewolf);
+				clan.removeMember(player);
+
+				messages.sendWolfLocale(sender, "admin.cure.success",
+						"{player}", player.getDisplayName());
+			}
+			else {
+				messages.sendWolfLocale(sender, "admin.cure.failed",
+						"{player}", player.getDisplayName());
+			}
 		}
 
 		@Override
 		protected List<String> onTabComplete(CommandSender sender, String[] args)
 		{
+			if (args.length != 2)
+				return List.of();
 			List<String> suggestions = new ArrayList<>();
-			if (args.length == 2)
-			{
-				for (Player player : Bukkit.getOnlinePlayers())
-				{
-					suggestions.add(player.getName());
-				}
-			}
+			for (Player player : Bukkit.getOnlinePlayers())
+				suggestions.add(player.getName());
 
 			return suggestions;
 		}
