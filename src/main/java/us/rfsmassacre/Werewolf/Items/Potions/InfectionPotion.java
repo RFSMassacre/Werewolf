@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 @SuppressWarnings("deprecation")
@@ -11,7 +12,7 @@ public class InfectionPotion extends WerewolfPotion
 {
 	public InfectionPotion() 
 	{
-		super("INFECTION_POTION", false, Color.ORANGE, PotionType.FIRE_RESISTANCE);
+		super("INFECTION_POTION", false, Color.ORANGE, PotionEffectType.FIRE_RESISTANCE);
 	}
 
 	@Override
@@ -21,7 +22,7 @@ public class InfectionPotion extends WerewolfPotion
 		
 		try
 		{
-			recipe = new ShapelessRecipe(getKey(), getItemStack());
+			recipe = new ShapelessRecipe(key, getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{

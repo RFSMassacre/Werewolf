@@ -1,12 +1,11 @@
 package us.rfsmassacre.Werewolf.Items;
 
-import de.tr7zw.changeme.nbtapi.NBTCompound;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import us.rfsmassacre.HeavenLib.Items.HeavenItem;
 import us.rfsmassacre.Werewolf.Data.ItemDataManager;
+import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 
 import java.util.ArrayList;
@@ -38,10 +37,9 @@ public abstract class WerewolfItem extends HeavenItem
             return false;
         }
 
-        NBTItem otherItem = new NBTItem(itemStack);
-        NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
-
-        return compound != null;
+        ItemManager items = WerewolfPlugin.getItemManager();
+        WerewolfItem werewolfItem = items.getWerewolfItem(itemStack);
+        return werewolfItem != null;
     }
 
     @SuppressWarnings("deprecation")

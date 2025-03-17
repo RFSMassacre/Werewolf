@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import us.rfsmassacre.Werewolf.Managers.ItemManager;
@@ -13,7 +14,8 @@ public class WolfsbanePotion extends WerewolfPotion
 {
 	public WolfsbanePotion() 
 	{
-		super("WOLFSBANE_POTION", true, Color.RED, PotionType.INSTANT_HEAL);
+		super("WOLFSBANE_POTION", true, Color.RED,
+				ItemManager.getPotionEffectType("INSTANT_HEALTH"));
 	}
 	
 	@Override
@@ -23,7 +25,7 @@ public class WolfsbanePotion extends WerewolfPotion
 		
 		try
 		{
-			recipe = new ShapelessRecipe(getKey(), getItemStack());
+			recipe = new ShapelessRecipe(key, getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{

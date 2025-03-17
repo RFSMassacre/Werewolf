@@ -2,10 +2,13 @@ package us.rfsmassacre.Werewolf.Managers;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import com.clanjhoo.vampire.VampireAPI;
 import com.clanjhoo.vampire.VampireRevamp;
+import com.clanjhoo.vampire.entity.VPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
@@ -14,8 +17,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-
-import me.NoChance.PvPManager.PvPlayer;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 import us.rfsmassacre.HeavenLib.Managers.DependencyManager;
@@ -173,18 +174,6 @@ public class WerewolfManager
 							}
         				}
         			}
-        			
-        			//Ensure that alpha werewolves cannot toggle their PVP off
-        			if (isAlpha(werewolf.getUUID()) && dependency.hasPlugin("PvPManager") 
-           				 && config.getBoolean("support.PvPManager"))
-       				{
-       					PvPlayer player = PvPlayer.get(werewolf.getPlayer());
-       					if (!player.hasPvPEnabled())
-       					{
-       						player.setPvP(true);
-       						messages.sendWolfLocale(werewolf.getPlayer(), "clan.alpha-pvp");
-       					}
-       				}
         		}
             }
         }.runTaskTimer(WerewolfPlugin.getInstance(), 0L, config.getInt("intervals.werewolf-buffs")));
@@ -287,9 +276,14 @@ public class WerewolfManager
         				//Blind them and slow them down
         				werewolf.showTrail();
 						if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.BLINDNESS))
+						{
 							werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 720000, 0));
-						if (!werewolf.getPlayer().hasPotionEffect(PotionEffectType.SLOW))
-							werewolf.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 720000, 5));
+						}
+
+						if (!werewolf.getPlayer().hasPotionEffect(ItemManager.getPotionEffectType("SLOWNESS")))
+						{
+							werewolf.getPlayer().addPotionEffect(new PotionEffect(ItemManager.getPotionEffectType("SLOWNESS"), 720000, 5));
+						}
 
         				if (werewolf.canSniff())
 						{
@@ -318,8 +312,11 @@ public class WerewolfManager
 				{
 					if (isVampire(werewolf.getPlayer()))
 					{
-						VampireRevamp.getVPlayerManager().getDataAsynchronous((uPlayer) -> uPlayer.setVampire(false),
-								() -> {}, werewolf.getUUID());
+						VPlayer vampire = VampireRevamp.getVPlayer(werewolf.getUUID());
+						if (vampire != null)
+						{
+							vampire.setVampire(false);
+						}
 					}
 				}
 			}
@@ -615,17 +612,9 @@ public class WerewolfManager
 		{
 			switch (werewolf.getType())
 			{
-				case WITHERFANG:
-					witherfang.addMemberId(werewolf.getUUID());
-					break;
-				case SILVERMANE:
-					silvermane.addMemberId(werewolf.getUUID());
-					break;
-				case BLOODMOON:
-					bloodmoon.addMemberId(werewolf.getUUID());
-					break;
-				default:
-					break;
+				case WITHERFANG -> witherfang.addMemberId(werewolf.getUUID());
+				case SILVERMANE -> silvermane.addMemberId(werewolf.getUUID());
+				case BLOODMOON -> bloodmoon.addMemberId(werewolf.getUUID());
 			}
 		}
 	}

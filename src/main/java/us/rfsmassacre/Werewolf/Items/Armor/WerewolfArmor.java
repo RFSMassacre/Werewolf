@@ -19,7 +19,7 @@ public abstract class WerewolfArmor extends WerewolfItem
 		this.config = WerewolfPlugin.getConfigManager();
 
 		List<String> newLore = new ArrayList<>();
-		for (String line : getItemLore())
+		for (String line : getItemStack().getItemMeta().getLore())
 		{
 			String finalLine = line.replace("+?%", "+" + getPurity() + "%");
 			finalLine = finalLine.replace("+!%", "+" + getDefense() + "%");

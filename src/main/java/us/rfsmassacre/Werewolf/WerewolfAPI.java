@@ -2,11 +2,14 @@ package us.rfsmassacre.Werewolf;
 
 import java.util.UUID;
 
-import de.tr7zw.changeme.nbtapi.NBTCompound;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import us.rfsmassacre.Werewolf.Items.WerewolfItem;
+import us.rfsmassacre.Werewolf.Managers.ItemManager;
 
 public class WerewolfAPI 
 {
@@ -52,15 +55,9 @@ public class WerewolfAPI
 			return false;
 		}
 
-		NBTItem otherItem = new NBTItem(item);
-		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
-		if (compound == null)
-		{
-			return false;
-		}
-
-		String value = compound.getString("IID");
-		return value != null;
+		ItemManager items = WerewolfPlugin.getItemManager();
+		WerewolfItem werewolfItem = items.getWerewolfItem(item);
+		return werewolfItem != null;
 	}
 	public static boolean isWerewolfItem(ItemStack item, String name)
 	{
@@ -69,15 +66,8 @@ public class WerewolfAPI
 			return false;
 		}
 
-		NBTItem otherItem = new NBTItem(item);
-		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
-		if (compound == null)
-		{
-			return false;
-		}
-
-		String value = compound.getString("IID");
-		return value.equalsIgnoreCase(name);
+		ItemManager items = WerewolfPlugin.getItemManager();
+		return items.getWerewolfItem(item).getName().equals(name);
 	}
 	public static String getWerewolfItemID(ItemStack item)
 	{
@@ -86,13 +76,13 @@ public class WerewolfAPI
 			return null;
 		}
 
-		NBTItem otherItem = new NBTItem(item);
-		NBTCompound compound = otherItem.getCompound("WerewolfPlugin");
-		if (compound == null)
+		ItemManager items = WerewolfPlugin.getItemManager();
+		WerewolfItem werewolfItem = items.getWerewolfItem(item);
+		if (werewolfItem == null)
 		{
 			return null;
 		}
 
-		return compound.getString("IID");
+		return werewolfItem.getName();
 	}
 }

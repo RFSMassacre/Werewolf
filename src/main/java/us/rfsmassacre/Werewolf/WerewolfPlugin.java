@@ -1,5 +1,6 @@
 package us.rfsmassacre.Werewolf;
 
+import lombok.Getter;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,7 +21,9 @@ import us.rfsmassacre.Werewolf.Managers.*;
 
 public class WerewolfPlugin extends JavaPlugin
 {
-	private static WerewolfPlugin instance;
+    //Get the instance needed across this plugin
+    @Getter
+    private static WerewolfPlugin instance;
 	
 	private ChatManager chat;
 	private ConfigManager config;
@@ -98,7 +101,7 @@ public class WerewolfPlugin extends JavaPlugin
 		getServer().getPluginManager().registerEvents(new WerewolfHuntingListener(), this);
 		getServer().getPluginManager().registerEvents(new PvPListener(), this);
 		//Sets up the needed modules for skins
-		if (dependency.hasPlugin("SkinsRestorer"))
+		if (dependency.hasPlugin("SkinsRestorer") && config.getBoolean("enable-skins"))
 		{
 			skinsManager = new SkinManager();
 			getServer().getPluginManager().registerEvents(new SkinListener(), this);
@@ -132,7 +135,6 @@ public class WerewolfPlugin extends JavaPlugin
 		{
 			messages.sendWolfLocale(Bukkit.getConsoleSender(), "invalid.no-vampire");
 		}
-		//getServer().getPluginManager().registerEvents(new OnLogin(this), this);
 
 		//Register commands
 		this.getCommand("werewolf").setExecutor(new WerewolfCommand());
@@ -151,13 +153,6 @@ public class WerewolfPlugin extends JavaPlugin
 		clans.storeClans();
 		werewolves.storeWerewolves();
 	}
-	
-	//Get the instance needed across this plugin
-	public static WerewolfPlugin getInstance()
-	{
-		return instance;
-	}
-
 	/*
 	 * User Group Toggle
 	 */

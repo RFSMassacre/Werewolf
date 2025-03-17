@@ -26,10 +26,11 @@ cooldowns:
     howl: 3
     growl: 3
     
-#Howl Sound
+#Wolf Sound
 sound:
     growl: "ENTITY_WOLF_GROWL"
     howl: "ENTITY_WOLF_HOWL"
+    pant: "ENTITY_WOLF_PANT"
     volume: 10.0
 
 #Werewolf Level Perks
@@ -166,8 +167,11 @@ tracker-ingredient:
     werewolf: RABBIT_FOOT
     
 #Werewolf Clan Skins
-#You have the option to use URL or names below. Remember to specify whether you want CLASSIC or SLIM in each option.
-#Changing skin options will take effect on start up.
+enable-skins: true
+
+#You can use URL or names below.
+#Remember to specify whether you want CLASSIC or SLIM in each option.
+#Changing skin options will take effect on startup.
 skins:
     Alpha: "WerewolfAlpha"
     Witherfang: "WF_Werewolf"

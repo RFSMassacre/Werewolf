@@ -19,7 +19,7 @@ public class WashedArmor extends WerewolfArmor
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItemStack());
+			recipe = new ShapedRecipe(key, getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{

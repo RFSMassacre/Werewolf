@@ -1,16 +1,17 @@
 package us.rfsmassacre.Werewolf.Managers;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
@@ -96,10 +97,12 @@ public class ItemManager
 		{
 			String name = item.getName().toLowerCase().replace("_", "-");
 			Recipe recipe = item.getRecipe();
-			
 			if (config.getBoolean("recipes." + name) && recipe != null)
 			{
-				instance.getServer().addRecipe(recipe);
+				if (instance.getServer().getRecipe(item.getKey()) == null)
+				{
+					instance.getServer().addRecipe(recipe);
+				}
 			}
 		}
 	}
@@ -122,10 +125,12 @@ public class ItemManager
 	}
 	public WerewolfItem getWerewolfItem(ItemStack item)
 	{
-		for (WerewolfItem werewolfItemOld : items.values())
+		for (WerewolfItem werewolfItem : items.values())
 		{
-			if (werewolfItemOld.equals(item))
-				return werewolfItemOld;
+			if (werewolfItem.equals(item))
+			{
+				return werewolfItem;
+			}
 		}
 		
 		return null;
@@ -158,7 +163,7 @@ public class ItemManager
 
 						if (werewolfItemOld != null)
 						{
-							if (!werewolfItemOld.getItemLore().equals(meta))
+							if (!werewolfItemOld.getItemStack().getItemMeta().getLore().equals(meta))
 							{
 								update = true;
 							}
@@ -234,17 +239,74 @@ public class ItemManager
 	public static Material getCorrectMaterial(String name)
 	{
 		String version = WerewolfPlugin.getDependencyManager().getServerVersion();
-		Material material = Material.getMaterial(name);
+		Material material = Material.getMaterial(name.toUpperCase());
 		
 		if (version.startsWith("1.13") || version.startsWith("1.14")
 		|| version.startsWith("1.15") || version.startsWith("1.16")
 		|| version.startsWith("1.17") || version.startsWith("1.18")
-		|| version.startsWith("1.19") || version.startsWith("1.20"))
+		|| version.startsWith("1.19") || version.startsWith("1.20")
+		|| version.startsWith("1.21"))
 		{
 			if (material == null)
-				material = Material.getMaterial(name, true);
+			{
+				material = Material.getMaterial(name.toUpperCase(), true);
+			}
 		}
 		
 		return material;
+	}
+
+	public static Attribute getAttribute(String attributeName)
+	{
+		try
+		{
+			if (WerewolfPlugin.getDependencyManager().getServerVersion().startsWith("1.21"))
+			{
+				return Attribute.valueOf(attributeName.toUpperCase());
+			}
+			else
+			{
+				return Attribute.valueOf("GENERIC_" + attributeName.toUpperCase());
+			}
+		}
+		catch (IllegalArgumentException exception)
+		{
+			return null;
+		}
+	}
+
+	public static PotionEffectType getPotionEffectType(String potionType)
+	{
+		try
+		{
+			if (WerewolfPlugin.getDependencyManager().getServerVersion().startsWith("1.21"))
+			{
+				return PotionEffectType.getByName(potionType.toUpperCase());
+			}
+
+			switch (potionType.toUpperCase())
+			{
+				case "NAUSEA" ->
+				{
+					return PotionEffectType.getByName("CONFUSION");
+				}
+				case "INSTANT_HEALTH" ->
+				{
+					return PotionEffectType.getByName("HEAL");
+				}
+				case "SLOWNESS" ->
+				{
+					return PotionEffectType.getByName("SLOW");
+				}
+				default ->
+				{
+					return PotionEffectType.getByName(potionType.toUpperCase());
+				}
+			}
+		}
+		catch (IllegalArgumentException exception)
+		{
+			return null;
+		}
 	}
 }

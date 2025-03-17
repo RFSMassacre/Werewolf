@@ -76,7 +76,7 @@ public class MessageManager
 	{
 		sendMessage(sender, locale.getMessage("prefix.werewolf") + locale.getMessage(key), replacers);
 	}
-	public void sendHunterLocale(CommandSender sender, String key, String...replacers)
+	public void sendHunterLocale(CommandSender sender, String key, String... replacers)
 	{
 		sendMessage(sender, locale.getMessage("prefix.hunter") + locale.getMessage(key), replacers);
 	}

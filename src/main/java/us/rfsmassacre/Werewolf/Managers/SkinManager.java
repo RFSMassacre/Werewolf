@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class SkinManager
 {
-	private final SkinsRestorer api;
+	private SkinsRestorer api;
 
 	private final ConfigManager config;
 	private final MessageManager messages;
@@ -35,11 +35,19 @@ public class SkinManager
 		this.config = WerewolfPlugin.getConfigManager();
 		this.werewolves = WerewolfPlugin.getWerewolfManager();
 		this.messages = WerewolfPlugin.getMessageManager();
-
-		this.api = SkinsRestorerProvider.get();
 		this.skins = new HashMap<>();
 		this.oldSkins = new HashMap<>();
-		generateSkins(true);
+
+		try
+		{
+			this.api = SkinsRestorerProvider.get();
+			generateSkins(true);
+		}
+		catch (IllegalStateException exception)
+		{
+			//Do nothing
+			this.api = null;
+		}
 	}
 
 	public void applySkin(Werewolf werewolf)

@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import us.rfsmassacre.HeavenLib.Managers.ConfigManager;
 
+import us.rfsmassacre.Werewolf.Managers.ItemManager;
 import us.rfsmassacre.Werewolf.WerewolfPlugin;
 import us.rfsmassacre.Werewolf.Events.WerewolfTransformEvent;
 import us.rfsmassacre.Werewolf.Managers.EventManager;
@@ -246,7 +247,7 @@ public class Werewolf implements Comparable<Werewolf>
 					player.removePotionEffect(effect.getType());
 				}
 
-				player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
+				player.addPotionEffect(new PotionEffect(ItemManager.getPotionEffectType("NAUSEA"), 100, 1));
 				player.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 1, 0)), Effect.SMOKE, 100);
 				player.getLocation().getWorld().playEffect(player.getLocation().add(new Vector(0, 2, 0)), Effect.SMOKE, 100);
@@ -317,8 +318,8 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
-			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.howl")),
-					(float)config.getDouble("sound.volume"),	1.0F);
+			player.getWorld().playSound(player.getLocation(), config.getString("sound.howl"),
+					(float) config.getDouble("sound.volume"), 1.0F);
 		}
 		catch (Exception exception)
 		{
@@ -333,8 +334,8 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
-			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.growl")),
-					(float)config.getDouble("sound.volume"), 1.0F);
+			player.getWorld().playSound(player.getLocation(), config.getString("sound.growl"),
+					(float) config.getDouble("sound.volume"), 1.0F);
 		}
 		catch (Exception exception)
 		{
@@ -349,7 +350,7 @@ public class Werewolf implements Comparable<Werewolf>
 		try
 		{
 			Player player = getPlayer();
-			player.getWorld().playSound(player.getLocation(), Sound.valueOf(config.getString("sound.pant")), 5.0F, 0.6F);
+			player.getWorld().playSound(player.getLocation(), config.getString("sound.pant"), 5.0F, 0.6F);
 		}
 		catch (Exception exception)
 		{
@@ -595,7 +596,7 @@ public class Werewolf implements Comparable<Werewolf>
 			setTracking(false);
 
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-            player.removePotionEffect(PotionEffectType.SLOW);
+            player.removePotionEffect(ItemManager.getPotionEffectType("SLOWNESS"));
 
 			return true;
 		}

@@ -3,6 +3,9 @@ package us.rfsmassacre.HeavenLib.BaseManagers;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FileManager extends Manager

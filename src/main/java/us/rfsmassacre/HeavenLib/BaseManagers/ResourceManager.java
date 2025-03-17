@@ -2,6 +2,7 @@ package us.rfsmassacre.HeavenLib.BaseManagers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,15 +33,20 @@ public abstract class ResourceManager extends Manager
 		
 		try
 		{
-			defaultFile = YamlConfiguration.loadConfiguration(new InputStreamReader(instance.getResource(fileName)));
-			
+			InputStream stream = instance.getResource(fileName);
+			if (stream != null)
+			{
+				InputStreamReader reader = new InputStreamReader(stream);
+				this.defaultFile = YamlConfiguration.loadConfiguration(reader);
+			}
+
 			if (!newFile.exists())
 			{
 				newFile.createNewFile();
-				instance.saveResource(fileName, true);
+				this.defaultFile.save(newFile);
 			}
 			
-			file = YamlConfiguration.loadConfiguration(newFile);
+			this.file = YamlConfiguration.loadConfiguration(newFile);
 		}
 		catch (IOException exception)
 		{

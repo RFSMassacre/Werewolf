@@ -24,7 +24,7 @@ public class SilverSword extends WerewolfItem
 		
 		try
 		{
-			recipe = new ShapedRecipe(getKey(), getItemStack());
+			recipe = new ShapedRecipe(key, getItemStack());
 		}
 		catch (NoSuchMethodError exception)
 		{

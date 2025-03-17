@@ -42,11 +42,14 @@ public class VampireInfectionListener implements Listener
 			return;
 		
 		VPlayer uPlayer = event.getUplayer();
-		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()))
+		if (werewolves.isWerewolf(uPlayer.getUuid()))
 		{
 			event.setInfection(0);
 			if (uPlayer.isVampire())
+			{
 				uPlayer.setVampire(false);
+			}
+
 			event.setCancelled(true);
 		}
 	}
@@ -63,7 +66,7 @@ public class VampireInfectionListener implements Listener
 			return;
 		
 		VPlayer uPlayer = event.getUplayer();
-		if (werewolves.isWerewolf(uPlayer.getPlayer().getUniqueId()) && event.isVampire())
+		if (werewolves.isWerewolf(uPlayer.getUuid()))
 		{
 			event.setCancelled(true);
 		}
@@ -82,9 +85,8 @@ public class VampireInfectionListener implements Listener
 			for (ItemStack armor : hunter.getInventory().getArmorContents())
 			{
 				WerewolfItem item = items.getWerewolfItem(armor);
-				if (item instanceof WerewolfArmor)
+				if (item instanceof WerewolfArmor werewolfArmor)
 				{
-					WerewolfArmor werewolfArmor = (WerewolfArmor)item;
 					purity += werewolfArmor.getPurity();
 				}
 			}

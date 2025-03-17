@@ -2,28 +2,26 @@ package us.rfsmassacre.Werewolf.Items.Potions;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 import us.rfsmassacre.Werewolf.Items.WerewolfItem;
 
 @SuppressWarnings("deprecation")
 public abstract class WerewolfPotion extends WerewolfItem
 {	
 	private boolean splash;
-	private PotionType potionType;
+	private PotionEffectType effectType;
 	
 	//Constructs the Werewolf Potion based on its type
-	public WerewolfPotion(String name, boolean splash, Color color, PotionType potionType)
+	public WerewolfPotion(String name, boolean splash, Color color, PotionEffectType effectType)
 	{	
 		super(Material.POTION, name);
 		
 		setSplash(splash);
-		setPotionType(potionType);
-		
+		Material material = this.splash ? Material.SPLASH_POTION : Material.POTION;
+		this.item.setType(material);
+
+		/*
 		try
 		{
 			Material material = this.splash ? Material.SPLASH_POTION : Material.POTION;
@@ -42,6 +40,7 @@ public abstract class WerewolfPotion extends WerewolfItem
 			this.setDisplayName(data.getItemName(name));
 			this.setItemLore(data.getItemLore(name));
 		}
+		 */
 		
 		try
 		{
@@ -50,7 +49,7 @@ public abstract class WerewolfPotion extends WerewolfItem
 		catch (NoSuchMethodError exception)
 		{
 			//This means it's running 1.10 or lower and requires the old methods to change colors.
-			setMainEffect(this.potionType.getEffectType());
+			setMainEffect(effectType);
 		}
 		
 		//Running it on this level should make the color kick in before the recipe is created.
@@ -64,7 +63,7 @@ public abstract class WerewolfPotion extends WerewolfItem
 	{
 		PotionMeta meta = (PotionMeta)getItemStack().getItemMeta();
 		meta.setColor(color);
-		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+		//meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		this.item.setItemMeta(meta);
 	}
 	public Color getPotionColor()
@@ -89,14 +88,5 @@ public abstract class WerewolfPotion extends WerewolfItem
 	private void setSplash(boolean splash) 
 	{
 		this.splash = splash;
-	}
-
-	public PotionType getPotionType() 
-	{
-		return potionType;
-	}
-	private void setPotionType(PotionType potionType) 
-	{
-		this.potionType = potionType;
 	}
 }
