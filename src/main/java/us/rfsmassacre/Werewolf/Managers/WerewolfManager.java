@@ -246,7 +246,7 @@ public class WerewolfManager
         			long cureDelay = config.getLong("auto-cure.days") * MILLIS_IN_DAY;
         			if (noCureTime >= cureDelay)
         			{
-        				WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getPlayer(), CureType.AUTO_CURE);
+        				WerewolfCureEvent cureEvent = new WerewolfCureEvent(werewolf.getUUID(), CureType.AUTO_CURE);
         				if (events != null)
         					events.callEvent(cureEvent);
         				if (!cureEvent.isCancelled())
