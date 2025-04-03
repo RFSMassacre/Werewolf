@@ -1,5 +1,7 @@
 # Werewolves Is Now Free And Open Source!
 I have decided to drop Spigot support due to the hard fork, so here we are!
+![Banner](https://cdn.modrinth.com/data/cached_images/7ae67d1710fd895ea4dba40b21739fa017857fd0.png)
+
 
 # Installation
 ## Requirements
@@ -14,7 +16,7 @@ Ensure you have Java 21 or higher to run this.
 It must be placed in the Spigot plugin folder. 
 Once done, you create a blank file and name it "disableProxyMode.txt" and make sure it's a text file in the SkinsRestorer folder. 
 If you have multiple servers in which you need SkinsRestorer, place them in servers individually and link them through a database.
-6. Modify the configuration files to your liking, then either reboot your server or run the /wwa reload command.
+6. Modify the configuration files to your liking, then either reboot your server or run the `/wwa reload` command.
 
 # Configuration
 
